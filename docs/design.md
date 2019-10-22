@@ -1,6 +1,6 @@
 ***DESIGN DOC for SnowcrashNetwork, or sncn***
 
-The game loop will have a server-->client-->server loop
+*The game loop will have a server-->client-->server loop*
 
 This means that all actions will have to "Bounce" off
 the server to get their results. Whether an attack hits,
@@ -10,14 +10,14 @@ void etc.
 This gives the ability to make different client versions
 for this, and I want to take full advantage of that fact.
 
-One interface will be a MUD-like setup, that is, text
-based. Not extremely wordy, but then again not totally
-unaware that words are what are needed to drive the story.
+***One interface will be a MUD-like setup, that is, text***
+***based. Not extremely wordy, but then again not totally***
+***unaware that words are what are needed to drive the story.***
 
-The second interface will be a pixellated version of the
-first.
+***The second interface will be a pixellated version of the***
+***first.***
 
-The third interface will be the social aspect of the game.
+***The third interface will be the social aspect of the game.***
 
 using small packets of words to command your characters'
 minions from outside the regular interface will hopefully
