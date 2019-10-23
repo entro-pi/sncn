@@ -54,8 +54,7 @@ func InitZoneRooms(roomRange string, zoneName string) {
 	}
 }
 
-func main() {
-	InitZoneRooms("0-100", "The Void")
+func PopulateAreas() []Room {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		panic(err)
@@ -82,7 +81,13 @@ func main() {
 
 //			fmt.Println(rooms.Vnum)
 	}
+	return rooms
+}
 
+func main() {
+	InitZoneRooms("0-100", "The Void")
+
+	populated := PopulateAreas()
 	//Game loop
 	for {
 		input := ""
@@ -91,7 +96,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(rooms[inp].Vnum, rooms[inp].Vnums, rooms[inp].Zone)
+		fmt.Println(populated[inp].Vnum, populated[inp].Vnums, populated[inp].Zone)
 	}
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"Verb":"+"})
