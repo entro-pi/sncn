@@ -10,8 +10,9 @@ import (
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
-
 type Room struct{
+	Vnums string
+	Zone string
 	Vnum int
 	Desc string
 	Mobiles []int
@@ -29,10 +30,7 @@ func InitZoneRooms(roomRange string, zoneName string) {
 		panic(err)
 	}
 	collection := client.Database("zone").Collection("rooms")
-	_, err = collection.InsertOne(context.Background(), bson.M{"zone":zoneName})
-	if err != nil {
-		panic(err)
-	}
+
 	vnums := strings.Split(roomRange, "-")
 	vnumStart, err := strconv.Atoi(vnums[0])
 	if err != nil {
@@ -43,13 +41,12 @@ func InitZoneRooms(roomRange string, zoneName string) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = collection.InsertOne(context.Background(), bson.M{"vnums":roomRange})
 	for i := vnumStart;i < vnumEnd;i++ {
 		var mobiles []int
 		var items []int
 		mobiles = append(mobiles, 0)
 		items = append(items, 0)
-		_, err = collection.InsertOne(context.Background(), bson.M{"vnum":i, "desc":"The absence of light is blinding.",
+		_, err = collection.InsertOne(context.Background(), bson.M{"vnums":roomRange,"zone":zoneName,"vnum":i, "desc":"The absence of light is blinding.",
 							"mobiles": mobiles, "items": items })
 	}
 	if err != nil {
@@ -68,18 +65,33 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	var rooms Room
+	var rooms []Room
 	collection := client.Database("zone").Collection("rooms")
 	results, err := collection.Find(context.Background(), bson.M{})
 	if err != nil {
 		panic(err)
 	}
 	for results.Next(context.Background()) {
-			err := results.Decode(&rooms)
+
+			var room Room
+			err := results.Decode(&room)
 			if err != nil {
 				panic(err)
 			}
+			rooms = append(rooms, room)
+
 //			fmt.Println(rooms.Vnum)
+	}
+
+	//Game loop
+	for {
+		input := ""
+		fmt.Scanln(&input)
+		inp, err := strconv.Atoi(input)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(rooms[inp].Vnum, rooms[inp].Vnums, rooms[inp].Zone)
 	}
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"Verb":"+"})
