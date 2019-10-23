@@ -142,13 +142,25 @@ func DescribeRoom(vnum int, rooms []Room) {
 func main() {
 	//TODO Get the rooms that are already loaded in the database and skip
 	//if vnum is taken
+	//Get the flags passed in
+	var populated []Room
+	var play Player
+	if len(os.Args) > 1 {
+		if os.Args[1] == "--init" {
+			//TODO testing suite - one test will be randomly generating 10,000 rooms
+			//and seeing if the system can take it
+			InitZoneRooms("0-100", "The Void", "The absence of light is blinding.")
+			InitZoneRooms("100-150", "Midgaard", "I wonder what day is recycling day.")
+			populated = PopulateAreas()
+			play = InitPlayer("FSM")
+		} else {
+			os.Exit(1)
+		}
+	} else {
+		os.Exit(1)
+	}
 
-	//TODO testing suite - one test will be randomly generating 10,000 rooms
-	//and seeing if the system can take it
-	InitZoneRooms("0-100", "The Void", "The absence of light is blinding.")
-	InitZoneRooms("100-150", "Midgaard", "I wonder what day is recycling day.")
-	populated := PopulateAreas()
-	play := InitPlayer("FSM")
+
 	//Game loop
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
