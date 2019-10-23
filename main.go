@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"os"
 	"context"
 	"time"
 	"fmt"
@@ -128,6 +130,13 @@ func PopulateAreas() []Room {
 	}
 	return rooms
 }
+func DescribeRoom(vnum int, rooms []Room) {
+	for i := 0; i < len(rooms);i++ {
+		if rooms[i].Vnum == vnum {
+			fmt.Println(rooms[i].Desc)
+		}
+	}
+}
 
 func main() {
 	InitZoneRooms("0-100", "The Void")
@@ -135,9 +144,18 @@ func main() {
 	populated := PopulateAreas()
 	play := InitPlayer("FSM")
 	//Game loop
-	for {
-		input := ""
-		fmt.Scanln(&input)
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan(){
+		input := scanner.Text()
+
+		if strings.HasPrefix(input, "look at") {
+			fmt.Println(input)
+			splitCommand := strings.Split(input, "at")
+			fmt.Println(splitCommand)
+			vnumLook, _ := strconv.Atoi(splitCommand[1])
+
+			DescribeRoom(vnumLook, populated)
+		}
 		inp, err := strconv.Atoi(input)
 		if err != nil {
 			if input == "score" {
