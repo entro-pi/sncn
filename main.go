@@ -160,14 +160,20 @@ func main() {
 			vnumLook, _ := strconv.Atoi(stripped)
 			DescribeRoom(vnumLook, populated)
 		}
-		inp, err := strconv.Atoi(input)
-		if err != nil {
-			if input == "score" {
-				DescribePlayer(play)
+		if strings.HasPrefix(input, "go to") {
+			splitCommand := strings.Split(input, "to")
+			stripped := strings.TrimSpace(splitCommand[1])
+			inp, err := strconv.Atoi(stripped)
+			if err != nil {
+				fmt.Println("Error converting a stripped string")
 			}
+			fmt.Println(play.Name, play.Inventory, play.Equipment)
+			fmt.Println(populated[inp].Vnum, populated[inp].Vnums, populated[inp].Zone)
+
 		}
-		fmt.Println(play.Name, play.Inventory, play.Equipment)
-		fmt.Println(populated[inp].Vnum, populated[inp].Vnums, populated[inp].Zone)
+		if input == "score" {
+			DescribePlayer(play)
+		}
 	}
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"Verb":"+"})
