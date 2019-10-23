@@ -133,6 +133,7 @@ func PopulateAreas() []Room {
 func DescribeRoom(vnum int, rooms []Room) {
 	for i := 0; i < len(rooms);i++ {
 		if rooms[i].Vnum == vnum {
+			fmt.Println(rooms[i].Zone)
 			fmt.Println(rooms[i].Desc)
 		}
 	}
@@ -149,11 +150,9 @@ func main() {
 		input := scanner.Text()
 
 		if strings.HasPrefix(input, "look at") {
-			fmt.Println(input)
 			splitCommand := strings.Split(input, "at")
-			fmt.Println(splitCommand)
-			vnumLook, _ := strconv.Atoi(splitCommand[1])
-
+			stripped := strings.TrimSpace(splitCommand[1])
+			vnumLook, _ := strconv.Atoi(stripped)
 			DescribeRoom(vnumLook, populated)
 		}
 		inp, err := strconv.Atoi(input)
