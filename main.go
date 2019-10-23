@@ -66,7 +66,7 @@ func InitPlayer(name string) Player {
 	return play
 }
 
-func InitZoneRooms(roomRange string, zoneName string) {
+func InitZoneRooms(roomRange string, zoneName string, desc string) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		panic(err)
@@ -93,7 +93,7 @@ func InitZoneRooms(roomRange string, zoneName string) {
 		var items []int
 		mobiles = append(mobiles, 0)
 		items = append(items, 0)
-		_, err = collection.InsertOne(context.Background(), bson.M{"vnums":roomRange,"zone":zoneName,"vnum":i, "desc":"The absence of light is blinding.",
+		_, err = collection.InsertOne(context.Background(), bson.M{"vnums":roomRange,"zone":zoneName,"vnum":i, "desc":desc,
 							"mobiles": mobiles, "items": items })
 	}
 	if err != nil {
@@ -140,8 +140,8 @@ func DescribeRoom(vnum int, rooms []Room) {
 }
 
 func main() {
-	InitZoneRooms("0-100", "The Void")
-	InitZoneRooms("100-150", "Midgaard")
+	InitZoneRooms("0-100", "The Void", "The absence of light is blinding.")
+	InitZoneRooms("100-150", "Midgaard", "I wonder what day is recycling day.")
 	populated := PopulateAreas()
 	play := InitPlayer("FSM")
 	//Game loop
