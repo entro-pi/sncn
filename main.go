@@ -32,6 +32,19 @@ type Player struct {
 	Cha int
 }
 
+func DescribePlayer(play Player) {
+	fmt.Println("======================")
+	fmt.Println("\033[38:2:0:200:0mStrength     :\033[0m", play.Str)
+	fmt.Println("\033[38:2:0:200:0mIntelligence :\033[0m", play.Int)
+	fmt.Println("\033[38:2:0:200:0mDexterity    :\033[0m", play.Dex)
+	fmt.Println("\033[38:2:0:200:0mWisdom       :\033[0m", play.Wis)
+	fmt.Println("\033[38:2:0:200:0mConstitution :\033[0m", play.Con)
+	fmt.Println("\033[38:2:0:200:0mCharisma     :\033[0m", play.Cha)
+	fmt.Println("======================")
+}
+
+
+
 func InitPlayer(name string) Player {
 	var play Player
 	var inv []int
@@ -127,7 +140,9 @@ func main() {
 		fmt.Scanln(&input)
 		inp, err := strconv.Atoi(input)
 		if err != nil {
-			panic(err)
+			if input == "score" {
+				DescribePlayer(play)
+			}
 		}
 		fmt.Println(play.Name, play.Inventory, play.Equipment)
 		fmt.Println(populated[inp].Vnum, populated[inp].Vnums, populated[inp].Zone)
