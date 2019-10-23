@@ -18,6 +18,38 @@ type Room struct{
 	Mobiles []int
 	Items []int
 }
+type Player struct {
+	Name string
+	Title string
+	Inventory []int
+	Equipment []int
+
+	Str int
+	Int int
+	Dex int
+	Wis int
+	Con int
+	Cha int
+}
+
+func InitPlayer(name string) Player {
+	var play Player
+	var inv []int
+	var equ []int
+	inv = append(inv, 1)
+	equ = append(equ, 1)
+	play.Name = name
+	play.Title = "The Unknown"
+	play.Inventory = inv
+	play.Equipment = equ
+	play.Str = 1
+	play.Int = 1
+	play.Dex = 1
+	play.Wis = 1
+	play.Con = 1
+	play.Cha = 1
+	return play
+}
 
 func InitZoneRooms(roomRange string, zoneName string) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
@@ -86,8 +118,9 @@ func PopulateAreas() []Room {
 
 func main() {
 	InitZoneRooms("0-100", "The Void")
-
+	InitZoneRooms("100-150", "Midgaard")
 	populated := PopulateAreas()
+	play := InitPlayer("FSM")
 	//Game loop
 	for {
 		input := ""
@@ -96,6 +129,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println(play.Name, play.Inventory, play.Equipment)
 		fmt.Println(populated[inp].Vnum, populated[inp].Vnums, populated[inp].Zone)
 	}
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
