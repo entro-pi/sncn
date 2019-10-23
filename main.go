@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"time"
+	"fmt"
 	"strconv"
 	"strings"
   "go.mongodb.org/mongo-driver/bson"
@@ -10,7 +11,14 @@ import (
   "go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func InitZone(roomRange string, zoneName string) {
+type Room struct{
+	Vnum int
+	Desc string
+	Mobiles []int
+	Items []int
+}
+
+func InitZoneRooms(roomRange string, zoneName string) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		panic(err)
@@ -37,8 +45,12 @@ func InitZone(roomRange string, zoneName string) {
 	}
 	_, err = collection.InsertOne(context.Background(), bson.M{"vnums":roomRange})
 	for i := vnumStart;i < vnumEnd;i++ {
-		vnum := strconv.Itoa(i)
-		_, err = collection.InsertOne(context.Background(), bson.M{"vnum":vnum})
+		var mobiles []int
+		var items []int
+		mobiles = append(mobiles, 0)
+		items = append(items, 0)
+		_, err = collection.InsertOne(context.Background(), bson.M{"vnum":i, "desc":"The absence of light is blinding.",
+							"mobiles": mobiles, "items": items })
 	}
 	if err != nil {
 		panic(err)
@@ -46,7 +58,7 @@ func InitZone(roomRange string, zoneName string) {
 }
 
 func main() {
-	InitZone("0-100", "The Void")
+	InitZoneRooms("0-100", "The Void")
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		panic(err)
@@ -56,7 +68,19 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	_ = client.Database("zone").Collection("rooms")
+	var rooms Room
+	collection := client.Database("zone").Collection("rooms")
+	results, err := collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		panic(err)
+	}
+	for results.Next(context.Background()) {
+			err := results.Decode(&rooms)
+			if err != nil {
+				panic(err)
+			}
+//			fmt.Println(rooms.Vnum)
+	}
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"Verb":"+"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"ProperNoun":"y"})
