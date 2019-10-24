@@ -52,3 +52,17 @@ the mission or not.
 Ok, THAT is a good idea. running with it.
 
 WIP!
+
+
+Solving the Kick Problem, basically making battling more exciting
+than typing kick over and over. One solution I'm going to use
+is to colour code your attacks, as well as have them trigger
+via a Q-to-win setup that triggers when you're in a dungeon run.
+
+Another thing is going to be voice chat and speech to text.
+
+Fighting stances? maybe.
+
+Dungeons will be jack-chips that can be mastered by running
+them yourself, or getting a hireling to run them enough times
+to "master" them.
