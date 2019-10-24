@@ -22,13 +22,14 @@ type Space struct{
 	Desc string
 	Mobiles []int
 	Items []int
-	Dungeon string
+	CoreBoard string
 }
 type Player struct {
 	Name string
 	Title string
 	Inventory []int
 	Equipment []int
+	CoreBoard string
 
 	Str int
 	Int int
@@ -150,7 +151,34 @@ func DescribeSpace(vnum int, Spaces []Space) {
 		}
 	}
 }
-
+func addPfile(play Player) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+	collection := client.Database("pfiles").Collection("Players")
+	_, err = collection.InsertOne(context.Background(), bson.M{"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipment":play.Equipment,
+						"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha })
+}
+func savePfile(play Player) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+	collection := client.Database("pfiles").Collection("Players")
+	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipment":play.Equipment,
+						"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha })
+}
 func main() {
 	//TODO Get the Spaces that are already loaded in the database and skip
 	//if vnum is taken
@@ -165,11 +193,13 @@ func main() {
 			InitZoneSpaces("100-150", "Midgaard", "I wonder what day is recycling day.")
 			populated = PopulateAreas()
 			play = InitPlayer("FSM")
+			addPfile(play)
 		}
 		if os.Args[1] == "--client" {
 			//Continue on
 			populated = PopulateAreas()
 			play = InitPlayer("FSM")
+			addPfile(play)
 			fmt.Println("In client loop")
 		}
 	} else {
@@ -181,7 +211,11 @@ func main() {
 	//Game loop
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
+		fmt.Println("Saving")
+		savePfile(play)
 		input := scanner.Text()
+		//Save pfile first
+
 		if input == "quit" {
 			fmt.Println("Bai!")
 			os.Exit(1)
@@ -219,11 +253,12 @@ func main() {
 					newValue = strings.ReplaceAll(newValue, "%", "\033[48:2:0:150:150m%\033[0m")
 					newValue = strings.ReplaceAll(newValue, "D", "\033[38:2:200:150:150mD\033[0m")
 					newValue = strings.ReplaceAll(newValue, " ", "\033[48:2:0:200:150m \033[0m")
-					populated[0].Dungeon += newValue + "\n"
+					populated[0].CoreBoard += newValue + "\n"
+					play.CoreBoard += newValue + "\n"
 			}
 		}
 		if strings.Contains(input, "open map") {
-			fmt.Println(populated[0].Dungeon)
+			fmt.Println(populated[0].CoreBoard)
 		}
 		if strings.HasPrefix(input, "view from") {
 			splitCommand := strings.Split(input, "from")
