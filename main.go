@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"math/rand"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
@@ -21,6 +22,7 @@ type Space struct{
 	Desc string
 	Mobiles []int
 	Items []int
+	Dungeon string
 }
 type Player struct {
 	Name string
@@ -90,7 +92,7 @@ func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 	if err != nil {
 		panic(err)
 	}
-	//Create a room map
+	//Create a room mapelse
 	Room := dngn.NewRoom(50, 30)
 //	Room.GenerateRandomRooms('-', 25, 4, 4, 12, 6, true)
 	Room.GenerateBSP('%', 'D', 50)
@@ -184,16 +186,44 @@ func main() {
 			fmt.Println("Bai!")
 			os.Exit(1)
 		}
-		if strings.Contains(input, "open map") {
-			fmt.Println("Opening map")
+
+		if strings.Contains(input, "gen map") {
+			fmt.Println("Generating and populating map")
 			for i := 0;i < len(populated[0].Room.Data);i++ {
+				if i == 0 {
+					continue
+				}
 //				fmt.Println(populated[0].Room.Data[populated[0].Room.Width-1][i])
 					value := string(populated[0].Room.Data[i])
-					value = strings.ReplaceAll(value, "%", "\033[48:2:0:150:150m%\033[0m")
-					value = strings.ReplaceAll(value, "D", "\033[38:2:200:150:150mD\033[0m")
-					value = strings.ReplaceAll(value, " ", "\033[48:2:0:200:150m \033[0m")
-					fmt.Println(value)
+					newValue := ""
+					for s := 0;s < len(value);s++ {
+						if string(value[s]) == " " {
+							ChanceTreasure := "\033[48:2:200:150:0mT\033[0m"
+							if rand.Intn(100) > 98 {
+									newValue += ChanceTreasure
+									continue
+							}
+							if rand.Intn(100) > 95 {
+								ChanceMonster := "\033[48:2:200:50:50mM\033[0m"
+								newValue += ChanceMonster
+								continue
+							}else {
+								newValue += string(value[s])
+							}
+						}else {
+							newValue += string(value[s])
+						}
+
+					}
+
+					newValue = strings.ReplaceAll(newValue, "%", "\033[48:2:0:150:150m%\033[0m")
+					newValue = strings.ReplaceAll(newValue, "D", "\033[38:2:200:150:150mD\033[0m")
+					newValue = strings.ReplaceAll(newValue, " ", "\033[48:2:0:200:150m \033[0m")
+					populated[0].Dungeon += newValue + "\n"
 			}
+		}
+		if strings.Contains(input, "open map") {
+			fmt.Println(populated[0].Dungeon)
 		}
 		if strings.HasPrefix(input, "view from") {
 			splitCommand := strings.Split(input, "from")
