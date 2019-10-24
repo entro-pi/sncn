@@ -180,11 +180,19 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
 		input := scanner.Text()
+		if input == "quit" {
+			fmt.Println("Bai!")
+			os.Exit(1)
+		}
 		if strings.Contains(input, "open map") {
 			fmt.Println("Opening map")
 			for i := 0;i < len(populated[0].Room.Data);i++ {
 //				fmt.Println(populated[0].Room.Data[populated[0].Room.Width-1][i])
-					fmt.Println(string(populated[0].Room.Data[i]))
+					value := string(populated[0].Room.Data[i])
+					value = strings.ReplaceAll(value, "%", "\033[48:2:0:150:150m%\033[0m")
+					value = strings.ReplaceAll(value, "D", "\033[38:2:200:150:150mD\033[0m")
+					value = strings.ReplaceAll(value, " ", "\033[48:2:0:200:150m \033[0m")
+					fmt.Println(value)
 			}
 		}
 		if strings.HasPrefix(input, "view from") {
