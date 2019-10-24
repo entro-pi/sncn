@@ -199,7 +199,7 @@ func main() {
 			//Continue on
 			populated = PopulateAreas()
 			play = InitPlayer("FSM")
-			addPfile(play)
+			savePfile(play)
 			fmt.Println("In client loop")
 		}
 	} else {
