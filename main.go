@@ -95,7 +95,6 @@ func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 	}
 	//Create a room mapelse
 	Room := dngn.NewRoom(50, 30)
-//	Room.GenerateRandomRooms('-', 25, 4, 4, 12, 6, true)
 	Room.GenerateBSP('%', 'D', 50)
 	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
 	if err != nil {
@@ -179,6 +178,22 @@ func savePfile(play Player) {
 	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipment":play.Equipment,
 						"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha })
 }
+
+//TODO make this modular
+func createMobiles(name string) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+	collection := client.Database("mobiles").Collection("lvl1")
+	_, err = collection.InsertOne(context.Background(), bson.M{"name":name,
+						"str": 1, "int": 1, "dex": 1, "wis": 1, "con":1, "cha":1, "challengedice":1 })
+}
 func main() {
 	//TODO Get the Spaces that are already loaded in the database and skip
 	//if vnum is taken
@@ -194,6 +209,7 @@ func main() {
 			populated = PopulateAreas()
 			play = InitPlayer("FSM")
 			addPfile(play)
+			createMobiles("Noodles")
 		}
 		if os.Args[1] == "--client" {
 			//Continue on
