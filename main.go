@@ -11,8 +11,10 @@ import (
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/SolarLune/dngn"
 )
-type Room struct{
+type Space struct{
+	Room dngn.Room
 	Vnums string
 	Zone string
 	Vnum int
@@ -66,7 +68,7 @@ func InitPlayer(name string) Player {
 	return play
 }
 
-func InitZoneRooms(roomRange string, zoneName string, desc string) {
+func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		panic(err)
@@ -76,9 +78,9 @@ func InitZoneRooms(roomRange string, zoneName string, desc string) {
 	if err != nil {
 		panic(err)
 	}
-	collection := client.Database("zone").Collection("rooms")
+	collection := client.Database("zone").Collection("Spaces")
 
-	vnums := strings.Split(roomRange, "-")
+	vnums := strings.Split(SpaceRange, "-")
 	vnumStart, err := strconv.Atoi(vnums[0])
 	if err != nil {
 		panic(err)
@@ -88,12 +90,20 @@ func InitZoneRooms(roomRange string, zoneName string, desc string) {
 	if err != nil {
 		panic(err)
 	}
+	//Create a room map
+	Room := dngn.NewRoom(50, 30)
+//	Room.GenerateRandomRooms('-', 25, 4, 4, 12, 6, true)
+	Room.GenerateBSP('%', 'D', 50)
+	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
+	if err != nil {
+		panic(err)
+	}
 	for i := vnumStart;i < vnumEnd;i++ {
 		var mobiles []int
 		var items []int
 		mobiles = append(mobiles, 0)
 		items = append(items, 0)
-		_, err = collection.InsertOne(context.Background(), bson.M{"vnums":roomRange,"zone":zoneName,"vnum":i, "desc":desc,
+		_, err = collection.InsertOne(context.Background(), bson.M{"vnums":SpaceRange,"zone":zoneName,"vnum":i, "desc":desc,
 							"mobiles": mobiles, "items": items })
 	}
 	if err != nil {
@@ -101,7 +111,7 @@ func InitZoneRooms(roomRange string, zoneName string, desc string) {
 	}
 }
 
-func PopulateAreas() []Room {
+func PopulateAreas() []Space {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		panic(err)
@@ -111,52 +121,57 @@ func PopulateAreas() []Room {
 	if err != nil {
 		panic(err)
 	}
-	var rooms []Room
-	collection := client.Database("zone").Collection("rooms")
+	var Spaces []Space
+	collection := client.Database("zone").Collection("Spaces")
 	results, err := collection.Find(context.Background(), bson.M{})
 	if err != nil {
 		panic(err)
 	}
 	for results.Next(context.Background()) {
 
-			var room Room
-			err := results.Decode(&room)
+			var Space Space
+			err := results.Decode(&Space)
 			if err != nil {
 				panic(err)
 			}
-			rooms = append(rooms, room)
+			Spaces = append(Spaces, Space)
 
-//			fmt.Println(rooms.Vnum)
+//			fmt.Println(Spaces.Vnum)
 	}
-	return rooms
+	return Spaces
 }
-func DescribeRoom(vnum int, rooms []Room) {
-	for i := 0; i < len(rooms);i++ {
-		if rooms[i].Vnum == vnum {
-			fmt.Println(rooms[i].Zone)
-			fmt.Println(rooms[i].Desc)
+func DescribeSpace(vnum int, Spaces []Space) {
+	for i := 0; i < len(Spaces);i++ {
+		if Spaces[i].Vnum == vnum {
+			fmt.Println(Spaces[i].Zone)
+			fmt.Println(Spaces[i].Desc)
 		}
 	}
 }
 
 func main() {
-	//TODO Get the rooms that are already loaded in the database and skip
+	//TODO Get the Spaces that are already loaded in the database and skip
 	//if vnum is taken
 	//Get the flags passed in
-	var populated []Room
+	var populated []Space
 	var play Player
 	if len(os.Args) > 1 {
 		if os.Args[1] == "--init" {
-			//TODO testing suite - one test will be randomly generating 10,000 rooms
+			//TODO testing suite - one test will be randomly generating 10,000 Spaces
 			//and seeing if the system can take it
-			InitZoneRooms("0-100", "The Void", "The absence of light is blinding.")
-			InitZoneRooms("100-150", "Midgaard", "I wonder what day is recycling day.")
+			InitZoneSpaces("0-100", "The Void", "The absence of light is blinding.")
+			InitZoneSpaces("100-150", "Midgaard", "I wonder what day is recycling day.")
 			populated = PopulateAreas()
 			play = InitPlayer("FSM")
-		} else {
-			os.Exit(1)
+		}
+		if os.Args[1] == "--client" {
+			//Continue on
+			populated = PopulateAreas()
+			play = InitPlayer("FSM")
+			fmt.Println("In client loop")
 		}
 	} else {
+		fmt.Println("Use --init to build and launch the world, --client to just connect.")
 		os.Exit(1)
 	}
 
@@ -165,12 +180,21 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
 		input := scanner.Text()
-
-		if strings.HasPrefix(input, "look at") {
-			splitCommand := strings.Split(input, "at")
+		if strings.Contains(input, "open map") {
+			fmt.Println("Opening map")
+			for i := 0;i < len(populated[0].Room.Data);i++ {
+//				fmt.Println(populated[0].Room.Data[populated[0].Room.Width-1][i])
+					fmt.Println(string(populated[0].Room.Data[i]))
+			}
+		}
+		if strings.HasPrefix(input, "view from") {
+			splitCommand := strings.Split(input, "from")
 			stripped := strings.TrimSpace(splitCommand[1])
-			vnumLook, _ := strconv.Atoi(stripped)
-			DescribeRoom(vnumLook, populated)
+			vnumLook, err := strconv.Atoi(stripped)
+			if err != nil {
+				fmt.Println("Error converting a stripped string")
+			}
+			DescribeSpace(vnumLook, populated)
 		}
 		if strings.HasPrefix(input, "go to") {
 			splitCommand := strings.Split(input, "to")
