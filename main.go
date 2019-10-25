@@ -289,36 +289,33 @@ func AssembleComposeCel(inWord string, row int) (string, int) {
 	if len(inWord) > 68 {
 		return "DONE COMPOSTING", 0
 	}
-	for len(inWord) < 68 {
-		inWord += " "
-	}
-	if len(inWord) > 19 && len(inWord) > 46 {
-		wor += inWord[:19]
-		word += inWord[23:46]
-		words += inWord[46:]
-		for i := len(words); i <= 19; i++ {
+	if len(inWord) > 27 && len(inWord) > 54 {
+		wor += inWord[:27]
+		word += inWord[27:54]
+		words += inWord[54:]
+		for i := len(words); i <= 27; i++ {
 			words += " "
 		}
 	}
-	if len(inWord) > 19 && len(inWord) < 46 {
-		wor += inWord[:19]
-		word += inWord[23:]
-		for i := len(word); i <= 19; i++ {
+	if len(inWord) > 27 && len(inWord) < 54 {
+		wor += inWord[:27]
+		word += inWord[27:]
+		for i := len(word); i <= 54; i++ {
 			word += " "
 		}
-		words = "                    "
+		words = "                            "
 
 	}
-	if len(inWord) < 19 {
-		wor = "                    "
+	if len(inWord) <= 27 {
+		wor = "                            "
 		word += " "
 		word += inWord
-		for i := len(word); i <= 19; i++ {
+		for i := len(word); i <= 27; i++ {
 			word += " "
 		}
-		words = "                    "
+		words = "                            "
 	}
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m                    \033[48;2;10;255;20m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m                         \033[48;2;10;255;20m \033[0m")
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", wor, "\033[48;2;10;255;20m \033[0m")
 	row++
@@ -326,7 +323,7 @@ func AssembleComposeCel(inWord string, row int) (string, int) {
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", words, "\033[48;2;10;255;20m \033[0m")
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m                       \033[48;2;10;255;20m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m                            \033[48;2;10;255;20m \033[0m")
 
 	return cel, row
 	//	fmt.Println(cel)
@@ -366,6 +363,9 @@ func showChat() {
 		chatPos := fmt.Sprintf("\033["+strconv.Itoa(count+3)+";180H")
 		count++
 		fmt.Printf(chatPos)
+		if row >= 51 {
+			row = 0
+		}
 		message, position := AssembleComposeCel(chatMess.Message, row)
 		row = position
 		fmt.Printf(message)
