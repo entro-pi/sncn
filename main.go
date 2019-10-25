@@ -187,6 +187,32 @@ func createMobiles(name string) {
 	_, err = collection.InsertOne(context.Background(), bson.M{"name":name,
 						"str": 1, "int": 1, "dex": 1, "wis": 1, "con":1, "cha":1, "challengedice":1 })
 }
+
+//TODO make this modular
+func createChat(message string, play Player) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+	//process the strings
+	if len(message) >= 180 {
+		message = message[:180]
+	}
+
+	collection := client.Database("chat").Collection("log")
+	_, err = collection.InsertOne(context.Background(), bson.M{"name":play.Name,
+						"message":message, "time":time.Now() })
+	if err != nil {
+		panic(err)
+	}
+}
+
+
 func genMap(play Player, populated []Space) (Player, []Space) {
 	//Create a room map
 	Room := dngn.NewRoom(50, 30)
@@ -208,6 +234,9 @@ func genMap(play Player, populated []Space) (Player, []Space) {
 			value := string(Room.Data[i])
 			newValue := ""
 			for s := 0;s < len(value);s++ {
+				if s == 0 {
+					continue
+				}
 				if string(value[s]) == " " {
 					ChanceTreasure := "\033[48:2:200:150:0mT\033[0m"
 					if rand.Intn(100) > 98 {
@@ -236,6 +265,11 @@ func genMap(play Player, populated []Space) (Player, []Space) {
 	}
 	return play, populated
 }
+
+const (
+	mapPos = "\033[0:0H"
+	chatPos = "\033[0:180H"
+)
 
 func main() {
 	//TODO Get the Spaces that are already loaded in the database and skip
@@ -279,13 +313,17 @@ func main() {
 			fmt.Println("Bai!")
 			os.Exit(1)
 		}
+		if strings.HasPrefix(input, "ooc") {
+			createChat(input[3:], play)
+		}
 
 		if strings.Contains(input, "gen map") {
 			play, populated = genMap(play, populated)
 		}
 
 		if strings.Contains(input, "open map") {
-			fmt.Println(populated[0].CoreBoard)
+			fmt.Printf(mapPos)
+			fmt.Print(populated[0].CoreBoard)
 		}
 		if strings.HasPrefix(input, "view from") {
 			splitCommand := strings.Split(input, "from")
