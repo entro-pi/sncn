@@ -274,17 +274,70 @@ func genMap(play Player, populated []Space) (Player, []Space) {
 const (
 	mapPos = "\033[0;0H"
 	descPos = "\033[0;50H"
-	chatStart = "\033[38:2:200:50:50m{{=\033[38:150:50:150m"
+	chatStart = "\033[38:2:200:50:50m{{=\033[38:2:150:50:150m"
 	chatEnd = "\033[38:2:200:50:50m=}}"
 	end = "\033[0m"
 
 )
 
+
+func AssembleComposeCel(inWord string, row int) (string, int) {
+	var cel string
+	wor := ""
+	word := ""
+	words := ""
+	if len(inWord) > 68 {
+		return "DONE COMPOSTING", 0
+	}
+	for len(inWord) < 68 {
+		inWord += " "
+	}
+	if len(inWord) > 19 && len(inWord) > 46 {
+		wor += inWord[:19]
+		word += inWord[23:46]
+		words += inWord[46:]
+		for i := len(words); i <= 19; i++ {
+			words += " "
+		}
+	}
+	if len(inWord) > 19 && len(inWord) < 46 {
+		wor += inWord[:19]
+		word += inWord[23:]
+		for i := len(word); i <= 19; i++ {
+			word += " "
+		}
+		words = "                    "
+
+	}
+	if len(inWord) < 19 {
+		wor = "                    "
+		word += " "
+		word += inWord
+		for i := len(word); i <= 19; i++ {
+			word += " "
+		}
+		words = "                    "
+	}
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m                    \033[48;2;10;255;20m \033[0m")
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", wor, "\033[48;2;10;255;20m \033[0m")
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", word, "\033[48;2;10;255;20m \033[0m")
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", words, "\033[48;2;10;255;20m \033[0m")
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m                       \033[48;2;10;255;20m \033[0m")
+
+	return cel, row
+	//	fmt.Println(cel)
+}
+
+
 func showDesc(room Space) {
 	fmt.Printf(descPos)
 	splitOnNewline := strings.Split(room.Desc, "\n")
 	for i := 0;i < len(splitOnNewline);i++ {
-		splitPos := fmt.Sprint("\033["+strconv.Itoa(i)+";50H"+splitOnNewline[i]+end)
+		splitPos := fmt.Sprint("\033["+strconv.Itoa(i+1)+";50H"+splitOnNewline[i]+end)
 		fmt.Printf(splitPos)
 	}
 }
@@ -303,19 +356,23 @@ func showChat() {
 	mess, err := collection.Find(context.Background(), bson.M{})
 
 	count := 0
+	var row int
 	for mess.Next(context.Background()) {
 		var chatMess Chat
 		err := mess.Decode(&chatMess)
 		if err != nil {
 			panic(err)
 		}
-		chatPos := fmt.Sprintf("\033["+strconv.Itoa(count)+";180H")
+		chatPos := fmt.Sprintf("\033["+strconv.Itoa(count+3)+";180H")
 		count++
 		fmt.Printf(chatPos)
-		fmt.Printf(chatStart)
-		fmt.Printf(chatMess.Message + " ")
-		fmt.Printf(chatEnd)
-		fmt.Printf(end)
+		message, position := AssembleComposeCel(chatMess.Message, row)
+		row = position
+		fmt.Printf(message)
+//		fmt.Printf(chatStart)
+//		fmt.Printf(chatMess.Message + " ")
+//		fmt.Printf(chatEnd)
+//  	fmt.Printf(end)
 
 	}
 }
@@ -343,6 +400,7 @@ func main() {
 			play = InitPlayer("FSM")
 			savePfile(play)
 			fmt.Println("In client loop")
+			fmt.Printf("\033[51;0H")
 		}
 	} else {
 		fmt.Println("Use --init to build and launch the world, --client to just connect.")
@@ -396,13 +454,15 @@ func main() {
 				fmt.Println("Error converting a stripped string")
 			}
 			play.CurrentRoom = populated[inp]
-			fmt.Println(play.Name, play.Inventory, play.Equipment)
-			fmt.Println(populated[inp].Vnum, populated[inp].Vnums, populated[inp].Zone)
+			fmt.Print(play.Name, play.Inventory, play.Equipment)
+			fmt.Print(populated[inp].Vnum, populated[inp].Vnums, populated[inp].Zone)
 
 		}
 		if input == "score" {
 			DescribePlayer(play)
 		}
+		//Reset the input to a standardized place
+		fmt.Printf("\033[51;0H")
 	}
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"Verb":"+"})
