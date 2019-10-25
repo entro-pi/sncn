@@ -66,3 +66,7 @@ Fighting stances? maybe.
 Dungeons will be jack-chips that can be mastered by running
 them yourself, or getting a hireling to run them enough times
 to "master" them.
+
+Getting a jack-chip mastered will either reward with quest xp
+or crafting xp. Depending on whether it's mastered by a character
+or by a minion. Haven't decided which one it is yet.
