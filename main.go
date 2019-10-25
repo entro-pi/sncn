@@ -34,6 +34,7 @@ type Player struct {
 	Inventory []int
 	Equipment []int
 	CoreBoard string
+	CurrentRoom Space
 
 	Str int
 	Int int
@@ -272,11 +273,21 @@ func genMap(play Player, populated []Space) (Player, []Space) {
 
 const (
 	mapPos = "\033[0;0H"
+	descPos = "\033[0;50H"
 	chatStart = "\033[38:2:200:50:50m{{=\033[38:150:50:150m"
 	chatEnd = "\033[38:2:200:50:50m=}}"
 	end = "\033[0m"
 
 )
+
+func showDesc(room Space) {
+	fmt.Printf(descPos)
+	splitOnNewline := strings.Split(room.Desc, "\n")
+	for i := 0;i < len(splitOnNewline);i++ {
+		splitPos := fmt.Sprint("\033["+strconv.Itoa(i)+";50H"+splitOnNewline[i]+end)
+		fmt.Printf(splitPos)
+	}
+}
 
 func showChat() {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
@@ -319,8 +330,8 @@ func main() {
 		if os.Args[1] == "--init" {
 			//TODO testing suite - one test will be randomly generating 10,000 Spaces
 			//and seeing if the system can take it
-			InitZoneSpaces("0-100", "The Void", "The absence of light is blinding.")
-			InitZoneSpaces("100-150", "Midgaard", "I wonder what day is recycling day.")
+			InitZoneSpaces("0-100", "The Void", "The absence of light is blinding.\nThree large telephone poles illuminate a small square.")
+			InitZoneSpaces("100-150", "Midgaard", "I wonder what day is recycling day.\nEven the gods create trash.")
 			populated = PopulateAreas()
 			play = InitPlayer("FSM")
 			addPfile(play)
@@ -356,6 +367,10 @@ func main() {
 			showChat()
 		}
 
+		if input == "look" {
+			fmt.Sprintf("Current room is ", play.CurrentRoom)
+			showDesc(play.CurrentRoom)
+		}
 		if strings.Contains(input, "gen map") {
 			play, populated = genMap(play, populated)
 		}
@@ -380,6 +395,7 @@ func main() {
 			if err != nil {
 				fmt.Println("Error converting a stripped string")
 			}
+			play.CurrentRoom = populated[inp]
 			fmt.Println(play.Name, play.Inventory, play.Equipment)
 			fmt.Println(populated[inp].Vnum, populated[inp].Vnums, populated[inp].Zone)
 
