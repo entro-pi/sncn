@@ -14,6 +14,10 @@ import (
   "go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/SolarLune/dngn"
 )
+type Chat struct {
+	Message string
+	Time time.Time
+}
 type Space struct{
 	Room dngn.Room
 	Vnums string
@@ -267,9 +271,43 @@ func genMap(play Player, populated []Space) (Player, []Space) {
 }
 
 const (
-	mapPos = "\033[0:0H"
-	chatPos = "\033[0:180H"
+	mapPos = "\033[0;0H"
+	chatStart = "\033[38:2:200:50:50m{{=\033[38:150:50:150m"
+	chatEnd = "\033[38:2:200:50:50m=}}"
+	end = "\033[0m"
+
 )
+
+func showChat() {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+	collection := client.Database("chat").Collection("log")
+	mess, err := collection.Find(context.Background(), bson.M{})
+
+	count := 0
+	for mess.Next(context.Background()) {
+		var chatMess Chat
+		err := mess.Decode(&chatMess)
+		if err != nil {
+			panic(err)
+		}
+		chatPos := fmt.Sprintf("\033["+strconv.Itoa(count)+";180H")
+		count++
+		fmt.Printf(chatPos)
+		fmt.Printf(chatStart)
+		fmt.Printf(chatMess.Message + " ")
+		fmt.Printf(chatEnd)
+		fmt.Printf(end)
+
+	}
+}
 
 func main() {
 	//TODO Get the Spaces that are already loaded in the database and skip
@@ -315,6 +353,7 @@ func main() {
 		}
 		if strings.HasPrefix(input, "ooc") {
 			createChat(input[3:], play)
+			showChat()
 		}
 
 		if strings.Contains(input, "gen map") {
