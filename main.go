@@ -93,13 +93,6 @@ func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 	if err != nil {
 		panic(err)
 	}
-	//Create a room mapelse
-	Room := dngn.NewRoom(50, 30)
-	Room.GenerateBSP('%', 'D', 50)
-	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
-	if err != nil {
-		panic(err)
-	}
 	for i := vnumStart;i < vnumEnd;i++ {
 		var mobiles []int
 		var items []int
@@ -194,6 +187,56 @@ func createMobiles(name string) {
 	_, err = collection.InsertOne(context.Background(), bson.M{"name":name,
 						"str": 1, "int": 1, "dex": 1, "wis": 1, "con":1, "cha":1, "challengedice":1 })
 }
+func genMap(play Player, populated []Space) (Player, []Space) {
+	//Create a room map
+	Room := dngn.NewRoom(50, 30)
+	splits := rand.Intn(75)
+	Room.GenerateBSP('%', 'D', splits)
+//	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
+//	if err != nil {
+//		panic(err)
+//	}
+
+	populated[0].CoreBoard = ""
+	play.CoreBoard = ""
+	fmt.Println("Generating and populating map")
+	for i := 0;i < len(Room.Data);i++ {
+		if i == 0 {
+			continue
+		}
+	//				fmt.Println(populated[0].Room.Data[populated[0].Room.Width-1][i])
+			value := string(Room.Data[i])
+			newValue := ""
+			for s := 0;s < len(value);s++ {
+				if string(value[s]) == " " {
+					ChanceTreasure := "\033[48:2:200:150:0mT\033[0m"
+					if rand.Intn(100) > 98 {
+							newValue += ChanceTreasure
+							continue
+					}
+					if rand.Intn(100) > 95 {
+						ChanceMonster := "\033[48:2:200:50:50mM\033[0m"
+						newValue += ChanceMonster
+						continue
+					}else {
+						newValue += string(value[s])
+					}
+				}else {
+					newValue += string(value[s])
+				}
+
+			}
+
+			newValue = strings.ReplaceAll(newValue, "%", "\033[48:2:0:150:150m%\033[0m")
+			newValue = strings.ReplaceAll(newValue, "D", "\033[38:2:200:150:150mD\033[0m")
+			newValue = strings.ReplaceAll(newValue, " ", "\033[48:2:0:200:150m \033[0m")
+			populated[0].CoreBoard += newValue + "\n"
+			play.CoreBoard += newValue + "\n"
+
+	}
+	return play, populated
+}
+
 func main() {
 	//TODO Get the Spaces that are already loaded in the database and skip
 	//if vnum is taken
@@ -238,41 +281,9 @@ func main() {
 		}
 
 		if strings.Contains(input, "gen map") {
-			fmt.Println("Generating and populating map")
-			for i := 0;i < len(populated[0].Room.Data);i++ {
-				if i == 0 {
-					continue
-				}
-//				fmt.Println(populated[0].Room.Data[populated[0].Room.Width-1][i])
-					value := string(populated[0].Room.Data[i])
-					newValue := ""
-					for s := 0;s < len(value);s++ {
-						if string(value[s]) == " " {
-							ChanceTreasure := "\033[48:2:200:150:0mT\033[0m"
-							if rand.Intn(100) > 98 {
-									newValue += ChanceTreasure
-									continue
-							}
-							if rand.Intn(100) > 95 {
-								ChanceMonster := "\033[48:2:200:50:50mM\033[0m"
-								newValue += ChanceMonster
-								continue
-							}else {
-								newValue += string(value[s])
-							}
-						}else {
-							newValue += string(value[s])
-						}
-
-					}
-
-					newValue = strings.ReplaceAll(newValue, "%", "\033[48:2:0:150:150m%\033[0m")
-					newValue = strings.ReplaceAll(newValue, "D", "\033[38:2:200:150:150mD\033[0m")
-					newValue = strings.ReplaceAll(newValue, " ", "\033[48:2:0:200:150m \033[0m")
-					populated[0].CoreBoard += newValue + "\n"
-					play.CoreBoard += newValue + "\n"
-			}
+			play, populated = genMap(play, populated)
 		}
+
 		if strings.Contains(input, "open map") {
 			fmt.Println(populated[0].CoreBoard)
 		}
