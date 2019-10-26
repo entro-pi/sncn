@@ -22,7 +22,7 @@ type Space struct{
 	Room dngn.Room
 	Vnums string
 	Zone string
-	ZoneMap string
+	ZoneMap [][]int
 	Vnum int
 	Desc string
 	Mobiles []int
@@ -42,11 +42,11 @@ type Exit struct {
 	Up int
 	Down int
 }
-func initDigRoom(play Player, vnum int) (Space) {
+func initDigRoom(digFrame [][]int, zoneVnums string, zoneName string, play Player, vnum int) (Space) {
 	var dg Space
-	dg.Vnums = play.CurrentRoom.Vnums
-	dg.Zone = play.CurrentRoom.Zone
-	dg.ZoneMap = play.CurrentRoom.ZoneMap
+	dg.Vnums = zoneVnums
+	dg.Zone = zoneName
+	dg.ZoneMap = digFrame
 	vnum += 1
 	dg.Vnum = vnum
 	dg.Desc = "Nothing but some cosmic rays"
@@ -114,7 +114,6 @@ func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 		panic(err)
 	}
 	collection := client.Database("zone").Collection("Spaces")
-	zonemap := ""
 	vnums := strings.Split(SpaceRange, "-")
 	vnumStart, err := strconv.Atoi(vnums[0])
 	if err != nil {
@@ -131,7 +130,7 @@ func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 		mobiles = append(mobiles, 0)
 		items = append(items, 0)
 		_, err = collection.InsertOne(context.Background(), bson.M{"vnums":SpaceRange,"zone":zoneName,"vnum":i, "desc":desc,
-							"mobiles": mobiles, "items": items,"zonemap":zonemap })
+							"mobiles": mobiles, "items": items })
 	}
 	if err != nil {
 		panic(err)
@@ -478,189 +477,194 @@ func main() {
 			fmt.Println("\033[38:2:255:0:0m", len(digFrame), "\033[0m")
 	//		digFrameD := make([][]int, 50)
 	//		digFrameU := make([][]int, 50)
+			//Make a bar that fills with how many rooms you dig
 			pos := make([]int, 2)
 			pos[0] = 25
 			pos[1] = 25
 			if len(strings.Split(input, " ")) == 4 {
-				digName := strings.Split(input, " ")[1]
-				digVnumStart, err := strconv.Atoi(strings.Split(input, " ")[2])
-				digVnumEnd, err := strconv.Atoi(strings.Split(input, " ")[3])
-					if err == nil {
-						//Error was nil so start the digging protocol
-						save = false
-						dug = dug[:0]
-						digNum := digVnumStart
-						DIG:
-						for scanner.Scan() {
-							input = scanner.Text()
-							fmt.Sprint(digName, digVnumStart, digVnumEnd)
-							inp, err := strconv.Atoi(input)
-							if err != nil {
-								fmt.Sprint("\033[0;0HIncorrect dig command")
-								err = nil
-							}
-							//Set up the whole keypad for "digging"
-							switch inp {
-							case 1101:
-								save = false
-								break DIG
-							case 1111:
-								save = true
-								break DIG
-							case 1:
-								//Sw
+				digZone := strings.Split(input, " ")[1]
+				digVnumStart := strings.Split(input, " ")[2]
+				digVnumEnd := strings.Split(input, " ")[3]
 
-								if digFrame[pos[0]+1][pos[1]-1] != 1 {
-									digFrame[pos[0]][pos[1]] = 1
-									pos[0] += 1
-									pos[1] -= 1
-									dg := initDigRoom(play, digNum)
-									dg.Exits.NorthEast = play.CurrentRoom.Vnum
-									play.CurrentRoom.Exits.SouthWest = dg.Vnum
-									digNum = dg.Vnum
-									play.CurrentRoom = dg
-									save = true
-									digFrame[pos[0]][pos[1]] = 8
+				//Error was nil so start the digging protocol
+				save = false
+				dug = dug[:0]
 
-									fmt.Println("dug ", dg)
-									drawDig(digFrame)
-								}
-							case 2:
-								//S
-								if digFrame[pos[0]+1][pos[1]] != 1 {
-									digFrame[pos[0]][pos[1]] = 1
-									pos[0] += 1
-									dg := initDigRoom(play, digNum)
-									dg.Exits.North = play.CurrentRoom.Vnum
-									play.CurrentRoom.Exits.South = dg.Vnum
-									digNum = dg.Vnum
-
-									play.CurrentRoom = dg
-									save = true
-									digFrame[pos[0]][pos[1]] = 8
-									fmt.Println("dug ", dg)
-									drawDig(digFrame)
-								}
-							case 3:
-								//Se
-								if digFrame[pos[0]+1][pos[1]+1] != 1 {
-									digFrame[pos[0]][pos[1]] = 1
-									pos[0] += 1
-									pos[1] += 1
-									dg := initDigRoom(play, digNum)
-									dg.Exits.NorthWest = play.CurrentRoom.Vnum
-									play.CurrentRoom.Exits.SouthEast = dg.Vnum
-									digNum = dg.Vnum
-
-									play.CurrentRoom = dg
-									save = true
-									digFrame[pos[0]][pos[1]] = 8
-									fmt.Println("dug ", dg)
-									drawDig(digFrame)
-								}
-							case 4:
-								//W
-								if digFrame[pos[0]][pos[1]-1] != 1 {
-									digFrame[pos[0]][pos[1]] = 1
-									pos[1] -= 1
-									dg := initDigRoom(play, digNum)
-									dg.Exits.East = play.CurrentRoom.Vnum
-									play.CurrentRoom.Exits.West = dg.Vnum
-									digNum = dg.Vnum
-
-									play.CurrentRoom = dg
-									save = true
-									digFrame[pos[0]][pos[1]] = 8
-									fmt.Println("dug ", dg)
-									drawDig(digFrame)
-								}
-							case 5:
-								//TODO, make a selector for which level is shown
-								//Down
-								dg := initDigRoom(play, digNum)
-								dg.Exits.Up = play.CurrentRoom.Vnum
-								play.CurrentRoom.Exits.Down = dg.Vnum
-								digNum = dg.Vnum
-								fmt.Println("dug ", dg)
-								drawDig(digFrame)
-								play.CurrentRoom = dg
-								save = true
-							case 6:
-								//E
-								if digFrame[pos[0]][pos[1]+1] != 1 {
-									digFrame[pos[0]][pos[1]] = 1
-									pos[1] += 1
-									dg := initDigRoom(play, digNum)
-									dg.Exits.West = play.CurrentRoom.Vnum
-									play.CurrentRoom.Exits.East = dg.Vnum
-									digNum = dg.Vnum
-
-									play.CurrentRoom = dg
-									save = true
-									digFrame[pos[0]][pos[1]] = 8
-									fmt.Println("dug ", dg)
-									drawDig(digFrame)
-
-								}
-							case 7:
-								//Nw
-								if digFrame[pos[0]-1][pos[1]-1] != 1 {
-									digFrame[pos[0]][pos[1]] = 1
-									pos[0] -= 1
-									pos[1] -= 1
-									dg := initDigRoom(play, digNum)
-									dg.Exits.SouthEast = play.CurrentRoom.Vnum
-									play.CurrentRoom.Exits.NorthWest = dg.Vnum
-									digNum = dg.Vnum
-
-									play.CurrentRoom = dg
-									save = true
-									digFrame[pos[0]][pos[1]] = 8
-									fmt.Println("dug ", dg)
-									drawDig(digFrame)
-
-								}
-							case 8:
-								//N
-								if digFrame[pos[0]-1][pos[1]] != 1 {
-									digFrame[pos[0]][pos[1]] = 1
-									pos[0] -= 1
-									dg := initDigRoom(play, digNum)
-									dg.Exits.South = play.CurrentRoom.Vnum
-									play.CurrentRoom.Exits.North = dg.Vnum
-									digNum = dg.Vnum
-
-									play.CurrentRoom = dg
-									save = true
-									digFrame[pos[0]][pos[1]] = 8
-									fmt.Println("dug ", dg)
-									drawDig(digFrame)
-
-								}
-							case 9:
-								//Ne
-								if digFrame[pos[0]-1][pos[1]+1] != 1 {
-									digFrame[pos[0]][pos[1]] = 1
-									pos[0] -= 1
-									pos[1] += 1
-									dg := initDigRoom(play, digNum)
-									dg.Exits.SouthWest = play.CurrentRoom.Vnum
-									play.CurrentRoom.Exits.NorthEast = dg.Vnum
-									digNum = dg.Vnum
-
-									play.CurrentRoom = dg
-									save = true
-									digFrame[pos[0]][pos[1]] = 8
-									fmt.Println("dug ", dg)
-									drawDig(digFrame)
-
-								}
-							default:
-								drawDig(digFrame)
-								fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
-							}
-						}
+				digNums := digVnumStart + "-" + digVnumEnd
+				digNum, err := strconv.Atoi(digVnumStart)
+				if err != nil {
+					panic(err)
+				}
+				DIG:
+				for scanner.Scan() {
+					input = scanner.Text()
+					inp, err := strconv.Atoi(input)
+					if err != nil {
+						fmt.Sprint("\033[0;0HIncorrect dig command")
+						err = nil
 					}
+					//Set up the whole keypad for "digging"
+					switch inp {
+					case 1101:
+						save = false
+						break DIG
+					case 1111:
+						save = true
+						break DIG
+					case 1:
+						//Sw
+
+						if digFrame[pos[0]+1][pos[1]-1] != 1 {
+							digFrame[pos[0]][pos[1]] = 1
+							pos[0] += 1
+							pos[1] -= 1
+							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
+							dg.Exits.NorthEast = play.CurrentRoom.Vnum
+							play.CurrentRoom.Exits.SouthWest = dg.Vnum
+							digNum = dg.Vnum
+							play.CurrentRoom = dg
+							save = true
+							digFrame[pos[0]][pos[1]] = 8
+
+							fmt.Println("dug ", dg)
+							drawDig(digFrame)
+						}
+					case 2:
+						//S
+						if digFrame[pos[0]+1][pos[1]] != 1 {
+							digFrame[pos[0]][pos[1]] = 1
+							pos[0] += 1
+							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
+							dg.Exits.North = play.CurrentRoom.Vnum
+							play.CurrentRoom.Exits.South = dg.Vnum
+							digNum = dg.Vnum
+
+							play.CurrentRoom = dg
+							save = true
+							digFrame[pos[0]][pos[1]] = 8
+							fmt.Println("dug ", dg)
+							drawDig(digFrame)
+						}
+					case 3:
+						//Se
+						if digFrame[pos[0]+1][pos[1]+1] != 1 {
+							digFrame[pos[0]][pos[1]] = 1
+							pos[0] += 1
+							pos[1] += 1
+							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
+							dg.Exits.NorthWest = play.CurrentRoom.Vnum
+							play.CurrentRoom.Exits.SouthEast = dg.Vnum
+							digNum = dg.Vnum
+
+							play.CurrentRoom = dg
+							save = true
+							digFrame[pos[0]][pos[1]] = 8
+							fmt.Println("dug ", dg)
+							drawDig(digFrame)
+						}
+					case 4:
+						//W
+						if digFrame[pos[0]][pos[1]-1] != 1 {
+							digFrame[pos[0]][pos[1]] = 1
+							pos[1] -= 1
+							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
+							dg.Exits.East = play.CurrentRoom.Vnum
+							play.CurrentRoom.Exits.West = dg.Vnum
+							digNum = dg.Vnum
+		initDigRoom(digFrame, digNums, digZone, play, digNum)
+							play.CurrentRoom = dg
+							save = true
+							digFrame[pos[0]][pos[1]] = 8
+							fmt.Println("dug ", dg)
+							drawDig(digFrame)
+						}
+					case 5:
+						//TODO, make a selector for which level is shown
+						//Down
+						dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
+						dg.Exits.Up = play.CurrentRoom.Vnum
+						play.CurrentRoom.Exits.Down = dg.Vnum
+						digNum = dg.Vnum
+						fmt.Println("dug ", dg)
+						drawDig(digFrame)
+						play.CurrentRoom = dg
+						save = true
+					case 6:
+						//E
+						if digFrame[pos[0]][pos[1]+1] != 1 {
+							digFrame[pos[0]][pos[1]] = 1
+							pos[1] += 1
+							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
+							dg.Exits.West = play.CurrentRoom.Vnum
+							play.CurrentRoom.Exits.East = dg.Vnum
+							digNum = dg.Vnum
+
+							play.CurrentRoom = dg
+							save = true
+							digFrame[pos[0]][pos[1]] = 8
+							fmt.Println("dug ", dg)
+							drawDig(digFrame)
+
+						}
+					case 7:
+						//Nw
+						if digFrame[pos[0]-1][pos[1]-1] != 1 {
+							digFrame[pos[0]][pos[1]] = 1
+							pos[0] -= 1
+							pos[1] -= 1
+							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
+							dg.Exits.SouthEast = play.CurrentRoom.Vnum
+							play.CurrentRoom.Exits.NorthWest = dg.Vnum
+							digNum = dg.Vnum
+
+							play.CurrentRoom = dg
+							save = true
+							digFrame[pos[0]][pos[1]] = 8
+							fmt.Println("dug ", dg)
+							drawDig(digFrame)
+
+						}
+					case 8:
+						//N
+						if digFrame[pos[0]-1][pos[1]] != 1 {
+							digFrame[pos[0]][pos[1]] = 1
+							pos[0] -= 1
+							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
+							dg.Exits.South = play.CurrentRoom.Vnum
+							play.CurrentRoom.Exits.North = dg.Vnum
+							digNum = dg.Vnum
+
+							play.CurrentRoom = dg
+							save = true
+							digFrame[pos[0]][pos[1]] = 8
+							fmt.Println("dug ", dg)
+							drawDig(digFrame)
+
+						}
+					case 9:
+						//Ne
+						if digFrame[pos[0]-1][pos[1]+1] != 1 {
+							digFrame[pos[0]][pos[1]] = 1
+							pos[0] -= 1
+							pos[1] += 1
+							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
+							dg.Exits.SouthWest = play.CurrentRoom.Vnum
+							play.CurrentRoom.Exits.NorthEast = dg.Vnum
+							digNum = dg.Vnum
+
+							play.CurrentRoom = dg
+							save = true
+							digFrame[pos[0]][pos[1]] = 8
+							fmt.Println("dug ", dg)
+							drawDig(digFrame)
+
+						}
+					default:
+						drawDig(digFrame)
+						fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
+					}
+				}
+
 
 			}
 			if save {
@@ -692,8 +696,8 @@ func main() {
 			play, populated = genMap(play, populated)
 		}
 		if strings.Contains(input, "open map") {
-			fmt.Printf(mapPos)
-			fmt.Printf(populated[play.CurrentRoom.Vnum].ZoneMap)
+			//// TODO:
+			//This
 		}
 
 		if strings.Contains(input, "open coreboard") {
