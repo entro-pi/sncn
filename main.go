@@ -403,7 +403,15 @@ func showChat(play Player) {
 
 	}
 }
-
+func drawDig(digFrame [][]int) {
+	for i := 0;i < len(digFrame);i++ {
+		for c := 0;c < len(digFrame[i]);c++ {
+				val := fmt.Sprint(digFrame[i][c])
+				fmt.Printf(val)
+		}
+		fmt.Println("")
+	}
+}
 func main() {
 	//TODO Get the Spaces that are already loaded in the database and skip
 	//if vnum is taken
@@ -481,7 +489,7 @@ func main() {
 							fmt.Sprint(digName, digVnumStart, digVnumEnd)
 							inp, err := strconv.Atoi(input)
 							if err != nil {
-								fmt.Printf("\033[0;0HIncorrect dig command")
+								fmt.Sprint("\033[0;0HIncorrect dig command")
 								err = nil
 							}
 							//Set up the whole keypad for "digging"
@@ -495,41 +503,44 @@ func main() {
 							case 1:
 								//Sw
 
-								if digFrame[pos[0]-1][pos[1]-1] != 1 {
-									pos[0] -= 1
+								if digFrame[pos[0]+1][pos[1]-1] != 1 {
+									pos[0] += 1
 									pos[1] -= 1
 									dg := initDigRoom(play, digNum)
 									dg.Exits.NorthEast = play.CurrentRoom.Vnum
 									play.CurrentRoom.Exits.SouthWest = dg.Vnum
 									digNum = dg.Vnum
 									fmt.Println("dug ", dg)
+									drawDig(digFrame)
 									play.CurrentRoom = dg
 									save = true
 									digFrame[pos[0]][pos[1]] = 1
 								}
 							case 2:
 								//S
-								if digFrame[pos[0]-1][pos[1]] != 1 {
-									pos[0] -= 1
+								if digFrame[pos[0]+1][pos[1]] != 1 {
+									pos[0] += 1
 									dg := initDigRoom(play, digNum)
 									dg.Exits.North = play.CurrentRoom.Vnum
 									play.CurrentRoom.Exits.South = dg.Vnum
 									digNum = dg.Vnum
 									fmt.Println("dug ", dg)
+									drawDig(digFrame)
 									play.CurrentRoom = dg
 									save = true
 									digFrame[pos[0]][pos[1]] = 1
 								}
 							case 3:
 								//Se
-								if digFrame[pos[0]-1][pos[1]+1] != 1 {
-									pos[0] -= 1
+								if digFrame[pos[0]+1][pos[1]+1] != 1 {
+									pos[0] += 1
 									pos[1] += 1
 									dg := initDigRoom(play, digNum)
 									dg.Exits.NorthWest = play.CurrentRoom.Vnum
 									play.CurrentRoom.Exits.SouthEast = dg.Vnum
 									digNum = dg.Vnum
 									fmt.Println("dug ", dg)
+									drawDig(digFrame)
 									play.CurrentRoom = dg
 									save = true
 									digFrame[pos[0]][pos[1]] = 1
@@ -543,6 +554,7 @@ func main() {
 									play.CurrentRoom.Exits.West = dg.Vnum
 									digNum = dg.Vnum
 									fmt.Println("dug ", dg)
+									drawDig(digFrame)
 									play.CurrentRoom = dg
 									save = true
 									digFrame[pos[0]][pos[1]] = 1
@@ -555,6 +567,7 @@ func main() {
 								play.CurrentRoom.Exits.Down = dg.Vnum
 								digNum = dg.Vnum
 								fmt.Println("dug ", dg)
+								drawDig(digFrame)
 								play.CurrentRoom = dg
 								save = true
 							case 6:
@@ -566,58 +579,64 @@ func main() {
 									play.CurrentRoom.Exits.East = dg.Vnum
 									digNum = dg.Vnum
 									fmt.Println("dug ", dg)
+									drawDig(digFrame)
 									play.CurrentRoom = dg
 									save = true
 									digFrame[pos[0]][pos[1]] = 1
 								}
 							case 7:
 								//Nw
-								if digFrame[pos[0]+1][pos[1]-1] != 1 {
-									pos[0] += 1
+								if digFrame[pos[0]-1][pos[1]-1] != 1 {
+									pos[0] -= 1
 									pos[1] -= 1
 									dg := initDigRoom(play, digNum)
 									dg.Exits.SouthEast = play.CurrentRoom.Vnum
 									play.CurrentRoom.Exits.NorthWest = dg.Vnum
 									digNum = dg.Vnum
 									fmt.Println("dug ", dg)
+									drawDig(digFrame)
 									play.CurrentRoom = dg
 									save = true
 									digFrame[pos[0]][pos[1]] = 1
 								}
 							case 8:
 								//N
-								if digFrame[pos[0]+1][pos[1]] != 1 {
-									pos[0] += 1
+								if digFrame[pos[0]-1][pos[1]] != 1 {
+									pos[0] -= 1
 									dg := initDigRoom(play, digNum)
 									dg.Exits.South = play.CurrentRoom.Vnum
 									play.CurrentRoom.Exits.North = dg.Vnum
 									digNum = dg.Vnum
 									fmt.Println("dug ", dg)
+									drawDig(digFrame)
 									play.CurrentRoom = dg
 									save = true
 									digFrame[pos[0]][pos[1]] = 1
 								}
 							case 9:
 								//Ne
-								if digFrame[pos[0]+1][pos[1]+1] != 1 {
-									pos[0] += 1
+								if digFrame[pos[0]-1][pos[1]+1] != 1 {
+									pos[0] -= 1
 									pos[1] += 1
 									dg := initDigRoom(play, digNum)
 									dg.Exits.SouthWest = play.CurrentRoom.Vnum
 									play.CurrentRoom.Exits.NorthEast = dg.Vnum
 									digNum = dg.Vnum
 									fmt.Println("dug ", dg)
+									drawDig(digFrame)
 									play.CurrentRoom = dg
 									save = true
 									digFrame[pos[0]][pos[1]] = 1
 								}
 							default:
-								for i := 0;i < len(digFrame[0]);i++ {
+								for i := 0;i < len(digFrame);i++ {
 									for c := 0;c < len(digFrame[i]);c++ {
 											val := fmt.Sprint(digFrame[i][c])
 											fmt.Printf(val)
 									}
+									fmt.Println("")
 								}
+
 								fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 							}
 						}
