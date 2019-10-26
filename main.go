@@ -28,7 +28,29 @@ type Space struct{
 	Mobiles []int
 	Items []int
 	CoreBoard string
+	Exits Exit
 }
+type Exit struct {
+	North int
+	South int
+	East int
+	West int
+	NorthWest int
+	NorthEast int
+	SouthWest int
+	SouthEast int
+}
+func initDigRoom(play Player, vnum int) (Space) {
+	var dg Space
+	dg.Vnums = play.CurrentRoom.Vnums
+	dg.Zone = play.CurrentRoom.Zone
+	dg.ZoneMap = play.CurrentRoom.ZoneMap
+	vnum += 1
+	dg.Vnum = vnum
+	dg.Desc = "Nothing but some cosmic rays"
+	return dg
+}
+
 type Player struct {
 	Name string
 	Title string
@@ -44,6 +66,7 @@ type Player struct {
 	Con int
 	Cha int
 }
+
 
 func DescribePlayer(play Player) {
 	fmt.Printf("\033[40;0H")
@@ -385,6 +408,8 @@ func main() {
 	//Get the flags passed in
 	var populated []Space
 	var play Player
+	//Make this relate to character level
+	var dug []Space
 	if len(os.Args) > 1 {
 		if os.Args[1] == "--init" {
 			//TODO testing suite - one test will be randomly generating 10,000 Spaces
@@ -396,12 +421,21 @@ func main() {
 			addPfile(play)
 			createMobiles("Noodles")
 		}
-		if os.Args[1] == "--client" {
+		if os.Args[1] == "--user" {
 			//Continue on
 			populated = PopulateAreas()
-			play = InitPlayer("FSM")
+			play = InitPlayer("Wallace")
 			savePfile(play)
 			fmt.Println("In client loop")
+			fmt.Printf("\033[51;0H")
+		}
+		if os.Args[1] == "--builder" {
+			//Continue on
+			populated = PopulateAreas()
+			play = InitPlayer("FlyingSpaghettiMonster")
+			savePfile(play)
+
+			fmt.Println("Builder log-in")
 			fmt.Printf("\033[51;0H")
 		}
 	} else {
@@ -417,12 +451,17 @@ func main() {
 		savePfile(play)
 		input := scanner.Text()
 		//Save pfile first
+		save := false
 		if strings.HasPrefix(input, "dig") {
 			if len(strings.Split(input, " ")) == 4 {
 				digName := strings.Split(input, " ")[1]
 				digVnumStart, err := strconv.Atoi(strings.Split(input, " ")[2])
 				digVnumEnd, err := strconv.Atoi(strings.Split(input, " ")[3])
 					if err == nil {
+						//Error was nil so start the digging protocol
+						save = false
+						dug = dug[:0]
+						digNum := digVnumStart
 						DIG:
 						for scanner.Scan() {
 							input = scanner.Text()
@@ -435,31 +474,53 @@ func main() {
 							//Set up the whole keypad for "digging"
 							switch inp {
 							case 1101:
+								save = false
+								break DIG
+							case 1111:
+								save = true
 								break DIG
 							case 1:
-
 								//Sw
 							case 2:
 								//S
+								dg := initDigRoom(play, digNum)
+								dg.Exits.North = play.CurrentRoom.Vnum
+								play.CurrentRoom.Exits.South = dg.Vnum
+								digNum = dg.Vnum
+								fmt.Println("dug ", dg)
+								play.CurrentRoom = dg
+								save = true
 							case 3:
 								//Se
+
 							case 4:
 								//W
+
 							case 5:
 								//Down
+
 							case 6:
 								//E
+
 							case 7:
 								//Nw
+
 							case 8:
 								//N
+
 							case 9:
 								//Ne
+							default:
+								fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 							}
 						}
 					}
 
 			}
+			if save {
+				fmt.Println("Export and save the area here")
+			}
+
 			}
 
 
