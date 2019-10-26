@@ -22,6 +22,7 @@ type Space struct{
 	Room dngn.Room
 	Vnums string
 	Zone string
+	ZoneMap string
 	Vnum int
 	Desc string
 	Mobiles []int
@@ -87,7 +88,7 @@ func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 		panic(err)
 	}
 	collection := client.Database("zone").Collection("Spaces")
-
+	zonemap := ""
 	vnums := strings.Split(SpaceRange, "-")
 	vnumStart, err := strconv.Atoi(vnums[0])
 	if err != nil {
@@ -104,7 +105,7 @@ func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 		mobiles = append(mobiles, 0)
 		items = append(items, 0)
 		_, err = collection.InsertOne(context.Background(), bson.M{"vnums":SpaceRange,"zone":zoneName,"vnum":i, "desc":desc,
-							"mobiles": mobiles, "items": items })
+							"mobiles": mobiles, "items": items,"zonemap":zonemap })
 	}
 	if err != nil {
 		panic(err)
@@ -303,7 +304,7 @@ func AssembleComposeCel(inWord string, row int) (string, int) {
 		for i := len(word); i <= 54; i++ {
 			word += " "
 		}
-		words = "                            "
+		words = "                           "
 
 	}
 	if len(inWord) <= 27 {
@@ -429,11 +430,15 @@ func main() {
 			fmt.Sprintf("Current room is ", play.CurrentRoom)
 			showDesc(play.CurrentRoom)
 		}
-		if strings.Contains(input, "gen map") {
+		if strings.Contains(input, "gen coreboard") {
 			play, populated = genMap(play, populated)
 		}
-
 		if strings.Contains(input, "open map") {
+			fmt.Printf(mapPos)
+			fmt.Printf(populated[play.CurrentRoom.Vnum].ZoneMap)
+		}
+
+		if strings.Contains(input, "open coreboard") {
 			fmt.Printf(mapPos)
 			fmt.Print(populated[0].CoreBoard)
 		}
