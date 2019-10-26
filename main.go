@@ -412,10 +412,34 @@ func main() {
 	//Game loop
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
-		fmt.Println("Saving")
+		showChat()
 		savePfile(play)
 		input := scanner.Text()
 		//Save pfile first
+
+		//Set up the whole keypad for "digging"
+		switch input {
+		case 1:
+			//Sw
+		case 2:
+			//S
+		case 3:
+			//Se
+		case 4:
+			//W
+		case 5:
+			//Down
+		case 6:
+			//E
+		case 7:
+			//Nw
+		case 8:
+			//N
+		case 9:
+			//Ne
+		}
+
+
 
 		if input == "quit" {
 			fmt.Println("Bai!")
