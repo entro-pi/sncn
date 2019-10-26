@@ -528,6 +528,7 @@ func main() {
 
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 						}
 					case 2:
 						//S
@@ -544,6 +545,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 						}
 					case 3:
 						//Se
@@ -561,6 +563,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 						}
 					case 4:
 						//W
@@ -577,6 +580,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 						}
 					case 5:
 						//TODO, make a selector for which level is shown
@@ -604,6 +608,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 
 						}
 					case 7:
@@ -622,6 +627,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 
 						}
 					case 8:
@@ -639,6 +645,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 
 						}
 					case 9:
@@ -657,7 +664,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
-
+							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 						}
 					default:
 						drawDig(digFrame)
