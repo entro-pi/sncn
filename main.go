@@ -39,6 +39,8 @@ type Exit struct {
 	NorthEast int
 	SouthWest int
 	SouthEast int
+	Up int
+	Down int
 }
 func initDigRoom(play Player, vnum int) (Space) {
 	var dg Space
@@ -453,6 +455,17 @@ func main() {
 		//Save pfile first
 		save := false
 		if strings.HasPrefix(input, "dig") {
+			var digFrame [][]int
+			for i := 0;i < 50;i++ {
+				Frame := make([]int, 50)
+				digFrame = append(digFrame, Frame)
+			}
+			fmt.Println("\033[38:2:255:0:0m", len(digFrame), "\033[0m")
+	//		digFrameD := make([][]int, 50)
+	//		digFrameU := make([][]int, 50)
+			pos := make([]int, 2)
+			pos[0] = 25
+			pos[1] = 25
 			if len(strings.Split(input, " ")) == 4 {
 				digName := strings.Split(input, " ")[1]
 				digVnumStart, err := strconv.Atoi(strings.Split(input, " ")[2])
@@ -481,36 +494,130 @@ func main() {
 								break DIG
 							case 1:
 								//Sw
+
+								if digFrame[pos[0]-1][pos[1]-1] != 1 {
+									pos[0] -= 1
+									pos[1] -= 1
+									dg := initDigRoom(play, digNum)
+									dg.Exits.NorthEast = play.CurrentRoom.Vnum
+									play.CurrentRoom.Exits.SouthWest = dg.Vnum
+									digNum = dg.Vnum
+									fmt.Println("dug ", dg)
+									play.CurrentRoom = dg
+									save = true
+									digFrame[pos[0]][pos[1]] = 1
+								}
 							case 2:
 								//S
+								if digFrame[pos[0]-1][pos[1]] != 1 {
+									pos[0] -= 1
+									dg := initDigRoom(play, digNum)
+									dg.Exits.North = play.CurrentRoom.Vnum
+									play.CurrentRoom.Exits.South = dg.Vnum
+									digNum = dg.Vnum
+									fmt.Println("dug ", dg)
+									play.CurrentRoom = dg
+									save = true
+									digFrame[pos[0]][pos[1]] = 1
+								}
+							case 3:
+								//Se
+								if digFrame[pos[0]-1][pos[1]+1] != 1 {
+									pos[0] -= 1
+									pos[1] += 1
+									dg := initDigRoom(play, digNum)
+									dg.Exits.NorthWest = play.CurrentRoom.Vnum
+									play.CurrentRoom.Exits.SouthEast = dg.Vnum
+									digNum = dg.Vnum
+									fmt.Println("dug ", dg)
+									play.CurrentRoom = dg
+									save = true
+									digFrame[pos[0]][pos[1]] = 1
+								}
+							case 4:
+								//W
+								if digFrame[pos[0]][pos[1]-1] != 1 {
+									pos[1] -= 1
+									dg := initDigRoom(play, digNum)
+									dg.Exits.East = play.CurrentRoom.Vnum
+									play.CurrentRoom.Exits.West = dg.Vnum
+									digNum = dg.Vnum
+									fmt.Println("dug ", dg)
+									play.CurrentRoom = dg
+									save = true
+									digFrame[pos[0]][pos[1]] = 1
+								}
+							case 5:
+								//TODO, make a selector for which level is shown
+								//Down
 								dg := initDigRoom(play, digNum)
-								dg.Exits.North = play.CurrentRoom.Vnum
-								play.CurrentRoom.Exits.South = dg.Vnum
+								dg.Exits.Up = play.CurrentRoom.Vnum
+								play.CurrentRoom.Exits.Down = dg.Vnum
 								digNum = dg.Vnum
 								fmt.Println("dug ", dg)
 								play.CurrentRoom = dg
 								save = true
-							case 3:
-								//Se
-
-							case 4:
-								//W
-
-							case 5:
-								//Down
-
 							case 6:
 								//E
-
+								if digFrame[pos[0]][pos[1]+1] != 1 {
+									pos[1] += 1
+									dg := initDigRoom(play, digNum)
+									dg.Exits.West = play.CurrentRoom.Vnum
+									play.CurrentRoom.Exits.East = dg.Vnum
+									digNum = dg.Vnum
+									fmt.Println("dug ", dg)
+									play.CurrentRoom = dg
+									save = true
+									digFrame[pos[0]][pos[1]] = 1
+								}
 							case 7:
 								//Nw
-
+								if digFrame[pos[0]+1][pos[1]-1] != 1 {
+									pos[0] += 1
+									pos[1] -= 1
+									dg := initDigRoom(play, digNum)
+									dg.Exits.SouthEast = play.CurrentRoom.Vnum
+									play.CurrentRoom.Exits.NorthWest = dg.Vnum
+									digNum = dg.Vnum
+									fmt.Println("dug ", dg)
+									play.CurrentRoom = dg
+									save = true
+									digFrame[pos[0]][pos[1]] = 1
+								}
 							case 8:
 								//N
-
+								if digFrame[pos[0]+1][pos[1]] != 1 {
+									pos[0] += 1
+									dg := initDigRoom(play, digNum)
+									dg.Exits.South = play.CurrentRoom.Vnum
+									play.CurrentRoom.Exits.North = dg.Vnum
+									digNum = dg.Vnum
+									fmt.Println("dug ", dg)
+									play.CurrentRoom = dg
+									save = true
+									digFrame[pos[0]][pos[1]] = 1
+								}
 							case 9:
 								//Ne
+								if digFrame[pos[0]+1][pos[1]+1] != 1 {
+									pos[0] += 1
+									pos[1] += 1
+									dg := initDigRoom(play, digNum)
+									dg.Exits.SouthWest = play.CurrentRoom.Vnum
+									play.CurrentRoom.Exits.NorthEast = dg.Vnum
+									digNum = dg.Vnum
+									fmt.Println("dug ", dg)
+									play.CurrentRoom = dg
+									save = true
+									digFrame[pos[0]][pos[1]] = 1
+								}
 							default:
+								for i := 0;i < len(digFrame[0]);i++ {
+									for c := 0;c < len(digFrame[i]);c++ {
+											val := fmt.Sprint(digFrame[i][c])
+											fmt.Printf(val)
+									}
+								}
 								fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 							}
 						}
