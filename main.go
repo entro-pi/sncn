@@ -46,6 +46,7 @@ type Player struct {
 }
 
 func DescribePlayer(play Player) {
+	fmt.Printf("\033[40;0H")
 	fmt.Println("======================")
 	fmt.Println("\033[38:2:0:200:0mStrength     :\033[0m", play.Str)
 	fmt.Println("\033[38:2:0:200:0mIntelligence :\033[0m", play.Int)
@@ -282,7 +283,7 @@ const (
 )
 
 
-func AssembleComposeCel(inWord string, row int) (string, int) {
+func AssembleComposeCel(inWord string, row int, play Player) (string, int) {
 	var cel string
 	wor := ""
 	word := ""
@@ -290,33 +291,32 @@ func AssembleComposeCel(inWord string, row int) (string, int) {
 	if len(inWord) > 68 {
 		return "DONE COMPOSTING", 0
 	}
-	if len(inWord) > 27 && len(inWord) > 54 {
-		wor += inWord[:27]
-		word += inWord[27:54]
+	if len(inWord) > 28 && len(inWord) > 54 {
+		wor += inWord[:28]
+		word += inWord[28:54]
 		words += inWord[54:]
-		for i := len(words); i <= 27; i++ {
+		for i := len(words); i <= 28; i++ {
 			words += " "
 		}
 	}
-	if len(inWord) > 27 && len(inWord) < 54 {
-		wor += inWord[:27]
-		word += inWord[27:]
-		for i := len(word); i <= 54; i++ {
+	if len(inWord) > 28 && len(inWord) < 54 {
+		wor += inWord[:28]
+		word += inWord[28:]
+		for i := len(word); i <= 28; i++ {
 			word += " "
 		}
 		words = "                           "
 
 	}
-	if len(inWord) <= 27 {
+	if len(inWord) <= 28 {
 		wor = "                            "
 		word += " "
 		word += inWord
-		for i := len(word); i <= 27; i++ {
+		for i := len(word); i <= 28; i++ {
 			word += " "
 		}
 		words = "                            "
 	}
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m                         \033[48;2;10;255;20m \033[0m")
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", wor, "\033[48;2;10;255;20m \033[0m")
 	row++
@@ -324,7 +324,8 @@ func AssembleComposeCel(inWord string, row int) (string, int) {
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", words, "\033[48;2;10;255;20m \033[0m")
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m                            \033[48;2;10;255;20m \033[0m")
+	namePlate := "                            "[len(play.Name):]
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m\033[38:2:50:0:50m@"+play.Name+namePlate+"\033[48;2;10;255;20m \033[0m")
 
 	return cel, row
 	//	fmt.Println(cel)
@@ -340,7 +341,7 @@ func showDesc(room Space) {
 	}
 }
 
-func showChat() {
+func showChat(play Player) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		panic(err)
@@ -367,7 +368,7 @@ func showChat() {
 		if row >= 51 {
 			row = 0
 		}
-		message, position := AssembleComposeCel(chatMess.Message, row)
+		message, position := AssembleComposeCel(chatMess.Message, row, play)
 		row = position
 		fmt.Printf(message)
 //		fmt.Printf(chatStart)
@@ -412,7 +413,7 @@ func main() {
 	//Game loop
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
-		showChat()
+
 		savePfile(play)
 		input := scanner.Text()
 		//Save pfile first
@@ -459,9 +460,7 @@ func main() {
 					}
 
 			}
-			}else {
-					fmt.Println("Usage is \"dig areaname 0 100\"")
-				}
+			}
 
 
 
@@ -475,7 +474,7 @@ func main() {
 		}
 		if strings.HasPrefix(input, "ooc") {
 			createChat(input[3:], play)
-			showChat()
+			showChat(play)
 		}
 
 		if input == "look" {
@@ -519,6 +518,7 @@ func main() {
 			DescribePlayer(play)
 		}
 		//Reset the input to a standardized place
+		showChat(play)
 		fmt.Printf("\033[51;0H")
 	}
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
