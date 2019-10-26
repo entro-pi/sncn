@@ -656,14 +656,7 @@ func main() {
 
 								}
 							default:
-								for i := 0;i < len(digFrame);i++ {
-									for c := 0;c < len(digFrame[i]);c++ {
-											val := fmt.Sprint(digFrame[i][c])
-											fmt.Printf(val)
-									}
-									fmt.Println("")
-								}
-
+								drawDig(digFrame)
 								fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 							}
 						}
