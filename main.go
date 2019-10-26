@@ -416,28 +416,56 @@ func main() {
 		savePfile(play)
 		input := scanner.Text()
 		//Save pfile first
+		if strings.HasPrefix(input, "dig") {
+			if len(strings.Split(input, " ")) == 4 {
+				digName := strings.Split(input, " ")[1]
+				digVnumStart, err := strconv.Atoi(strings.Split(input, " ")[2])
+				digVnumEnd, err := strconv.Atoi(strings.Split(input, " ")[3])
+					if err == nil {
+						DIG:
+						for scanner.Scan() {
+							input = scanner.Text()
+							fmt.Sprint(digName, digVnumStart, digVnumEnd)
+							inp, err := strconv.Atoi(input)
+							if err != nil {
+								fmt.Printf("\033[0;0HIncorrect dig command")
+								err = nil
+							}
+							//Set up the whole keypad for "digging"
+							switch inp {
+							case 1101:
+								break DIG
+							case 1:
 
-		//Set up the whole keypad for "digging"
-		switch input {
-		case 1:
-			//Sw
-		case 2:
-			//S
-		case 3:
-			//Se
-		case 4:
-			//W
-		case 5:
-			//Down
-		case 6:
-			//E
-		case 7:
-			//Nw
-		case 8:
-			//N
-		case 9:
-			//Ne
-		}
+								//Sw
+							case 2:
+								//S
+							case 3:
+								//Se
+							case 4:
+								//W
+							case 5:
+								//Down
+							case 6:
+								//E
+							case 7:
+								//Nw
+							case 8:
+								//N
+							case 9:
+								//Ne
+							}
+						}
+					}
+
+			}
+			}else {
+					fmt.Println("Usage is \"dig areaname 0 100\"")
+				}
+
+
+
+
 
 
 
