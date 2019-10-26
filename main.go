@@ -305,7 +305,7 @@ func AssembleComposeCel(inWord string, row int, play Player) (string, int) {
 		for i := len(word); i <= 28; i++ {
 			word += " "
 		}
-		words = "                           "
+		words = "                            "
 
 	}
 	if len(inWord) <= 28 {
