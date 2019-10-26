@@ -15,6 +15,7 @@ import (
 	"github.com/SolarLune/dngn"
 )
 type Chat struct {
+	User Player
 	Message string
 	Time time.Time
 }
@@ -237,7 +238,7 @@ func createChat(message string, play Player) {
 
 	collection := client.Database("chat").Collection("log")
 	_, err = collection.InsertOne(context.Background(), bson.M{"name":play.Name,
-						"message":message, "time":time.Now() })
+						"message":message, "time":time.Now(), "user":play })
 	if err != nil {
 		panic(err)
 	}
@@ -307,8 +308,9 @@ const (
 )
 
 
-func AssembleComposeCel(inWord string, row int, play Player) (string, int) {
+func AssembleComposeCel(chatMess Chat, row int) (string, int) {
 	var cel string
+	inWord := chatMess.Message
 	wor := ""
 	word := ""
 	words := ""
@@ -348,8 +350,8 @@ func AssembleComposeCel(inWord string, row int, play Player) (string, int) {
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", words, "\033[48;2;10;255;20m \033[0m")
 	row++
-	namePlate := "                            "[len(play.Name):]
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m\033[38:2:50:0:50m@"+play.Name+namePlate+"\033[48;2;10;255;20m \033[0m")
+	namePlate := "                            "[len(chatMess.User.Name):]
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m\033[38:2:50:0:50m@"+chatMess.User.Name+namePlate+"\033[48;2;10;255;20m \033[0m")
 
 	return cel, row
 	//	fmt.Println(cel)
@@ -392,7 +394,7 @@ func showChat(play Player) {
 		if row >= 51 {
 			row = 0
 		}
-		message, position := AssembleComposeCel(chatMess.Message, row, play)
+		message, position := AssembleComposeCel(chatMess, row)
 		row = position
 		fmt.Printf(message)
 //		fmt.Printf(chatStart)
@@ -436,16 +438,14 @@ func main() {
 			play = InitPlayer("FSM")
 			addPfile(play)
 			createMobiles("Noodles")
-		}
-		if os.Args[1] == "--user" {
+		}else if os.Args[1] == "--user" {
 			//Continue on
 			populated = PopulateAreas()
 			play = InitPlayer("Wallace")
 			savePfile(play)
 			fmt.Println("In client loop")
 			fmt.Printf("\033[51;0H")
-		}
-		if os.Args[1] == "--builder" {
+		}else if os.Args[1] == "--builder" {
 			//Continue on
 			populated = PopulateAreas()
 			play = InitPlayer("FlyingSpaghettiMonster")
@@ -453,9 +453,13 @@ func main() {
 
 			fmt.Println("Builder log-in")
 			fmt.Printf("\033[51;0H")
+		}else {
+			fmt.Println("Unrecognized flag")
+			os.Exit(1)
 		}
 	} else {
 		fmt.Println("Use --init to build and launch the world, --client to just connect.")
+		fmt.Println("--builder for a building session")
 		os.Exit(1)
 	}
 
@@ -500,7 +504,32 @@ func main() {
 					input = scanner.Text()
 					inp, err := strconv.Atoi(input)
 					if err != nil {
-						fmt.Sprint("\033[0;0HIncorrect dig command")
+						fmt.Sprint("\033[0;0HAlphabetic code entry found")
+						switch input {
+						case "edit desc":
+							//desc
+							play.CurrentRoom.Desc = ""
+							fmt.Println("Enter the room's new description, enter for a new line, @ on a new line to end.")
+							descScanner := bufio.NewScanner(os.Stdin)
+							DESC:
+							for descScanner.Scan() {
+								if descScanner.Text() == "@" {
+									break DESC
+								}else {
+									play.CurrentRoom.Desc += descScanner.Text() + "\n"
+								}
+
+							}
+						case "edit title":
+							//room title
+						case "edit mobiles":
+							//mobiles
+						case "edit items":
+							//items
+						default:
+							fmt.Println("I don't understand")
+						}
+
 						err = nil
 					}
 					//Set up the whole keypad for "digging"
@@ -675,7 +704,20 @@ func main() {
 
 			}
 			if save {
+				file, err := os.Create("dat/zone.bson")
+				if err != nil {
+					panic(err)
+				}
+				writer := bufio.NewWriter(file)
 				fmt.Println("Export and save the area here")
+				for i := 0;i < 150;i++ {
+					marshalledBson, err := bson.Marshal(populated[i])
+					if err != nil {
+						panic(err)
+					}
+					writer.Write(marshalledBson)
+					writer.Flush()
+				}
 			}
 
 			}
