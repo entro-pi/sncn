@@ -514,6 +514,7 @@ func main() {
 							DESC:
 							for descScanner.Scan() {
 								if descScanner.Text() == "@" {
+									populated[play.CurrentRoom.Vnum].Desc = play.CurrentRoom.Desc
 									break DESC
 								}else {
 									play.CurrentRoom.Desc += descScanner.Text() + "\n"
@@ -552,6 +553,8 @@ func main() {
 							play.CurrentRoom.Exits.SouthWest = dg.Vnum
 							digNum = dg.Vnum
 							play.CurrentRoom = dg
+							populated[dg.Vnum] = dg
+
 							save = true
 							digFrame[pos[0]][pos[1]] = 8
 
@@ -570,6 +573,8 @@ func main() {
 							digNum = dg.Vnum
 
 							play.CurrentRoom = dg
+							populated[dg.Vnum] = dg
+
 							save = true
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
@@ -588,6 +593,8 @@ func main() {
 							digNum = dg.Vnum
 
 							play.CurrentRoom = dg
+							populated[dg.Vnum] = dg
+
 							save = true
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
@@ -603,8 +610,10 @@ func main() {
 							dg.Exits.East = play.CurrentRoom.Vnum
 							play.CurrentRoom.Exits.West = dg.Vnum
 							digNum = dg.Vnum
-		initDigRoom(digFrame, digNums, digZone, play, digNum)
+
 							play.CurrentRoom = dg
+							populated[dg.Vnum] = dg
+
 							save = true
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
@@ -621,6 +630,8 @@ func main() {
 						fmt.Println("dug ", dg)
 						drawDig(digFrame)
 						play.CurrentRoom = dg
+						populated[dg.Vnum] = dg
+
 						save = true
 					case 6:
 						//E
@@ -633,6 +644,8 @@ func main() {
 							digNum = dg.Vnum
 
 							play.CurrentRoom = dg
+							populated[dg.Vnum] = dg
+
 							save = true
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
@@ -652,6 +665,8 @@ func main() {
 							digNum = dg.Vnum
 
 							play.CurrentRoom = dg
+							populated[dg.Vnum] = dg
+
 							save = true
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
@@ -670,6 +685,8 @@ func main() {
 							digNum = dg.Vnum
 
 							play.CurrentRoom = dg
+							populated[dg.Vnum] = dg
+
 							save = true
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
@@ -689,6 +706,7 @@ func main() {
 							digNum = dg.Vnum
 
 							play.CurrentRoom = dg
+							populated[dg.Vnum] = dg
 							save = true
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
@@ -708,8 +726,9 @@ func main() {
 				if err != nil {
 					panic(err)
 				}
+				defer file.Close()
 				writer := bufio.NewWriter(file)
-				fmt.Println("Export and save the area here")
+				fmt.Println("Saving the area")
 				for i := 0;i < 150;i++ {
 					marshalledBson, err := bson.Marshal(populated[i])
 					if err != nil {
