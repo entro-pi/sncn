@@ -111,3 +111,20 @@ CR	XP	Prof B	AC	HP	Atk+	Dam/Rn	SaveDC
 30	155,000	9	19	805-850	14	303-320	23
 
 
+
+"Digging new ground"
+
+I want this to be a tool that will get used more
+as it is needed, so I'm trying to get past the
+obvious problems. The Snake problem is the
+first I've seen. When one wants to turn back
+on oneself, there's nothing telling the digger
+that there is another room already "in" that spot
+
+My solution is to have a grid laid out for each Digging
+session and populated by "dig" movements. We'll deal
+with making mazes later. For now building sanely is
+the goal.
+
+The tool will assume a grid of 50-50 with three layers
+to begin with.
