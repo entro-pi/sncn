@@ -14,6 +14,11 @@ import (
   "go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/SolarLune/dngn"
 )
+func clear() {
+	for i := 0;i < 50;i++ {
+		fmt.Println("                                                              ")
+	}
+}
 type Chat struct {
 	User Player
 	Message string
@@ -100,7 +105,7 @@ func updateRoom(play Player, populated []Space) {
 		"zone":populated[play.CurrentRoom.Vnum].Zone,"vnum":populated[play.CurrentRoom.Vnum].Vnum,
 		 "desc":populated[play.CurrentRoom.Vnum].Desc,"exits": populated[play.CurrentRoom.Vnum].Exits,
 			"mobiles": populated[play.CurrentRoom.Vnum].Mobiles, "items": populated[play.CurrentRoom.Vnum].Items,
-			 "altered": true }}
+			 "altered": true, "zonemap": populated[play.CurrentRoom.Vnum].ZoneMap }}
 
 	result, err := collection.UpdateMany(context.Background(), filter, update, options.Update().SetUpsert(true))
 	if err != nil {
@@ -161,6 +166,10 @@ func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 	if err != nil {
 		panic(err)
 	}
+}
+func PopulateAreaBuild() []Space {
+	areas := make([]Space, 150)
+	return areas
 }
 
 func PopulateAreas() []Space {
@@ -390,6 +399,8 @@ func showDesc(room Space) {
 		splitPos := fmt.Sprint("\033["+strconv.Itoa(i+1)+";50H"+splitOnNewline[i]+end)
 		fmt.Printf(splitPos)
 	}
+	fmt.Printf("\033[0;0H")
+	drawDig(room.ZoneMap)
 }
 
 func showChat(play Player) {
@@ -472,11 +483,12 @@ func main() {
 			fmt.Printf("\033[51;0H")
 		}else if os.Args[1] == "--builder" {
 			//Continue on
-			populated = PopulateAreas()
+			populated = PopulateAreaBuild()
 			play = InitPlayer("FlyingSpaghettiMonster")
 			savePfile(play)
 
 			fmt.Println("Builder log-in")
+
 			fmt.Printf("\033[51;0H")
 		}else {
 			fmt.Println("Unrecognized flag")
@@ -492,7 +504,7 @@ func main() {
 	//Game loop
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
-
+		clear()
 		savePfile(play)
 		input := scanner.Text()
 		//Save pfile first
@@ -776,6 +788,16 @@ func main() {
 
 			}
 			if save {
+				client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+				if err != nil {
+					panic(err)
+				}
+				ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+				err = client.Connect(ctx)
+				if err != nil {
+					panic(err)
+				}
+
 				file, err := os.Create("dat/zone.bson")
 				if err != nil {
 					panic(err)
@@ -783,7 +805,7 @@ func main() {
 				defer file.Close()
 				writer := bufio.NewWriter(file)
 				fmt.Println("Saving the area")
-				for i := 0;i < 150;i++ {
+				for i := 0;i < len(populated);i++ {
 					marshalledBson, err := bson.Marshal(populated[i])
 					if err != nil {
 						panic(err)
@@ -842,15 +864,20 @@ func main() {
 			if err != nil {
 				fmt.Println("Error converting a stripped string")
 			}
-			play.CurrentRoom = populated[inp]
-			fmt.Print(play.Name, play.Inventory, play.Equipment)
-			fmt.Print(populated[inp].Vnum, populated[inp].Vnums, populated[inp].Zone)
-
+			for i := 0;i < len(populated);i++ {
+				if inp == populated[i].Vnum {
+					fmt.Println("\033[48:2:200:0:0m",populated[i].Vnum,"\033[0m")
+					play.CurrentRoom = populated[i]
+					fmt.Print(populated[i].Vnum, populated[i].Vnums, populated[i].Zone)
+					showDesc(play.CurrentRoom)
+				}
+			}
 		}
 		if input == "score" {
 			DescribePlayer(play)
 		}
 		//Reset the input to a standardized place
+
 		showChat(play)
 		fmt.Printf("\033[51;0H")
 	}
