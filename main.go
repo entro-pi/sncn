@@ -116,6 +116,32 @@ func updateRoom(play Player, populated []Space) {
 	fmt.Println("\033[38:2:255:0:0m", result, "\033[0m")
 }
 
+func updateZoneMap(play Player, populated []Space) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+	filter := bson.M{"zone": bson.M{"$eq":play.CurrentRoom.Zone}}
+	collection := client.Database("zones").Collection("Spaces")
+	update := bson.M{"$set": bson.M{"vnums":populated[play.CurrentRoom.Vnum].Vnums,
+		"zone":populated[play.CurrentRoom.Vnum].Zone,"vnum":populated[play.CurrentRoom.Vnum].Vnum,
+		 "desc":populated[play.CurrentRoom.Vnum].Desc,"exits": populated[play.CurrentRoom.Vnum].Exits,
+			"mobiles": populated[play.CurrentRoom.Vnum].Mobiles, "items": populated[play.CurrentRoom.Vnum].Items,
+			 "altered": true,"zonepos":populated[play.CurrentRoom.Vnum].ZonePos, "zonemap": populated[play.CurrentRoom.Vnum].ZoneMap }}
+
+	result, err := collection.UpdateMany(context.Background(), filter, update, options.Update().SetUpsert(true))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("\033[38:2:255:0:0m", result, "\033[0m")
+}
+
+
 
 func InitPlayer(name string) Player {
 	var play Player
@@ -509,6 +535,7 @@ func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone st
 	populated[digNum] = dg
 	dg.Vnum = digNum
 	digFrame[pos[0]][pos[1]] = 8
+	dg.ZonePos = dg.ZonePos[0:]
 	dg.ZonePos = append(dg.ZonePos, pos[0])
 	dg.ZonePos = append(dg.ZonePos, pos[1])
 	fmt.Println("dug ", dg)
@@ -605,11 +632,13 @@ func main() {
 					if err != nil {
 						fmt.Sprint("\033[0;0HAlphabetic code entry found")
 						switch input {
+						case "update zonemap":
+							updateZoneMap(play, populated)
 						case "edit desc":
 							//desc
 							//room has to exist before we edit it
-							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
-							play.CurrentRoom.Vnum = digNum
+							digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							//dignum shouldn't change because we're editing the same room
 
 							play.CurrentRoom.Desc = ""
 							fmt.Println("Enter the room's new description, enter for a new line, @ on a new line to end.")
