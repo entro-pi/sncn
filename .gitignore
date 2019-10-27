@@ -1,3 +1,5 @@
 sncn
 .bson
 dat/*.bson
+
+dat/mongodump
