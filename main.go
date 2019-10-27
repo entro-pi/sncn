@@ -49,7 +49,7 @@ type Exit struct {
 	Up int
 	Down int
 }
-func initDigRoom(digFrame [][]int, zoneVnums string, zoneName string, play Player, vnum int) (Space) {
+func initDigRoom(digFrame [][]int, zoneVnums string, zoneName string, play Player, vnum int) (Space, int) {
 	var dg Space
 	dg.Vnums = zoneVnums
 	dg.Zone = zoneName
@@ -58,7 +58,7 @@ func initDigRoom(digFrame [][]int, zoneVnums string, zoneName string, play Playe
 	dg.Vnum = vnum
 	dg.Altered = true
 	dg.Desc = "Nothing but some cosmic rays"
-	return dg
+	return dg, vnum
 }
 
 type Player struct {
@@ -456,6 +456,24 @@ func drawDig(digFrame [][]int) {
 		fmt.Println("")
 	}
 }
+
+func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone string, digNum int, populated []Space) (int) {
+	digVnumEnd := strings.Split(digNums, "-")[1]
+	dg, digNum := initDigRoom(digFrame, digNums, digZone, play, digNum)
+	dg.Exits.NorthEast = play.CurrentRoom.Vnum
+	play.CurrentRoom.Exits.SouthWest = dg.Vnum
+	play.CurrentRoom = dg
+	populated[dg.Vnum] = dg
+
+	digFrame[pos[0]][pos[1]] = 8
+
+	fmt.Println("dug ", dg)
+	drawDig(digFrame)
+	updateRoom(play, populated)
+	fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
+	return digNum
+}
+
 func main() {
 	//TODO Get the Spaces that are already loaded in the database and skip
 	//if vnum is taken
@@ -566,15 +584,13 @@ func main() {
 							if err != nil {
 								panic(err)
 							}
-							filter := bson.M{"altered":false}
+							filter := bson.M{"vnum": play.CurrentRoom.Vnum}
 							collection := client.Database("zones").Collection("Spaces")
 							update := bson.M{"$set": bson.M{"vnums":populated[play.CurrentRoom.Vnum].Vnums,
-								"zone":populated[play.CurrentRoom.Vnum].Zone,"vnum":populated[play.CurrentRoom.Vnum].Vnum,
 								 "desc":populated[play.CurrentRoom.Vnum].Desc,"exits": populated[play.CurrentRoom.Vnum].Exits,
-								  "mobiles": populated[play.CurrentRoom.Vnum].Mobiles, "items": populated[play.CurrentRoom.Vnum].Items,
 									 "altered": true }}
 
-							result, err := collection.UpdateMany(context.Background(), filter, update, options.Update().SetUpsert(true))
+							result, err := collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
 							if err != nil {
 								panic(err)
 							}
@@ -606,40 +622,16 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] += 1
 							pos[1] -= 1
-							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
-							dg.Exits.NorthEast = play.CurrentRoom.Vnum
-							play.CurrentRoom.Exits.SouthWest = dg.Vnum
-							digNum = dg.Vnum
-							play.CurrentRoom = dg
-							populated[dg.Vnum] = dg
-
-							save = true
-							digFrame[pos[0]][pos[1]] = 8
-
-							fmt.Println("dug ", dg)
-							drawDig(digFrame)
-							updateRoom(play, populated)
-							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
+							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							play.CurrentRoom.Vnum = digNum
 						}
 					case 2:
 						//S
 						if digFrame[pos[0]+1][pos[1]] != 1 {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] += 1
-							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
-							dg.Exits.North = play.CurrentRoom.Vnum
-							play.CurrentRoom.Exits.South = dg.Vnum
-							digNum = dg.Vnum
-
-							play.CurrentRoom = dg
-							populated[dg.Vnum] = dg
-
-							save = true
-							digFrame[pos[0]][pos[1]] = 8
-							fmt.Println("dug ", dg)
-							drawDig(digFrame)
-							updateRoom(play, populated)
-							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
+							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							play.CurrentRoom.Vnum = digNum
 						}
 					case 3:
 						//Se
@@ -647,45 +639,21 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] += 1
 							pos[1] += 1
-							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
-							dg.Exits.NorthWest = play.CurrentRoom.Vnum
-							play.CurrentRoom.Exits.SouthEast = dg.Vnum
-							digNum = dg.Vnum
-
-							play.CurrentRoom = dg
-							populated[dg.Vnum] = dg
-
-							save = true
-							digFrame[pos[0]][pos[1]] = 8
-							fmt.Println("dug ", dg)
-							drawDig(digFrame)
-							updateRoom(play, populated)
-							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
+							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							play.CurrentRoom.Vnum = digNum
 						}
 					case 4:
 						//W
 						if digFrame[pos[0]][pos[1]-1] != 1 {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[1] -= 1
-							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
-							dg.Exits.East = play.CurrentRoom.Vnum
-							play.CurrentRoom.Exits.West = dg.Vnum
-							digNum = dg.Vnum
-
-							play.CurrentRoom = dg
-							populated[dg.Vnum] = dg
-
-							save = true
-							digFrame[pos[0]][pos[1]] = 8
-							fmt.Println("dug ", dg)
-							drawDig(digFrame)
-							updateRoom(play, populated)
-							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
-						}
+							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							play.CurrentRoom.Vnum = digNum
+							}
 					case 5:
 						//TODO, make a selector for which level is shown
 						//Down
-						dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
+						dg, _ := initDigRoom(digFrame, digNums, digZone, play, digNum)
 						dg.Exits.Up = play.CurrentRoom.Vnum
 						play.CurrentRoom.Exits.Down = dg.Vnum
 						digNum = dg.Vnum
@@ -700,21 +668,8 @@ func main() {
 						if digFrame[pos[0]][pos[1]+1] != 1 {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[1] += 1
-							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
-							dg.Exits.West = play.CurrentRoom.Vnum
-							play.CurrentRoom.Exits.East = dg.Vnum
-							digNum = dg.Vnum
-
-							play.CurrentRoom = dg
-							populated[dg.Vnum] = dg
-
-							save = true
-							digFrame[pos[0]][pos[1]] = 8
-							fmt.Println("dug ", dg)
-							drawDig(digFrame)
-							updateRoom(play, populated)
-							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
-
+							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							play.CurrentRoom.Vnum = digNum
 						}
 					case 7:
 						//Nw
@@ -722,42 +677,16 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] -= 1
 							pos[1] -= 1
-							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
-							dg.Exits.SouthEast = play.CurrentRoom.Vnum
-							play.CurrentRoom.Exits.NorthWest = dg.Vnum
-							digNum = dg.Vnum
-
-							play.CurrentRoom = dg
-							populated[dg.Vnum] = dg
-
-							save = true
-							digFrame[pos[0]][pos[1]] = 8
-							fmt.Println("dug ", dg)
-							drawDig(digFrame)
-							updateRoom(play, populated)
-							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
-
+							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							play.CurrentRoom.Vnum = digNum
 						}
 					case 8:
 						//N
 						if digFrame[pos[0]-1][pos[1]] != 1 {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] -= 1
-							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
-							dg.Exits.South = play.CurrentRoom.Vnum
-							play.CurrentRoom.Exits.North = dg.Vnum
-							digNum = dg.Vnum
-
-							play.CurrentRoom = dg
-							populated[dg.Vnum] = dg
-
-							save = true
-							digFrame[pos[0]][pos[1]] = 8
-							fmt.Println("dug ", dg)
-							drawDig(digFrame)
-							updateRoom(play, populated)
-							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
-
+							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							play.CurrentRoom.Vnum = digNum
 						}
 					case 9:
 						//Ne
@@ -765,19 +694,8 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] -= 1
 							pos[1] += 1
-							dg := initDigRoom(digFrame, digNums, digZone, play, digNum)
-							dg.Exits.SouthWest = play.CurrentRoom.Vnum
-							play.CurrentRoom.Exits.NorthEast = dg.Vnum
-							digNum = dg.Vnum
-
-							play.CurrentRoom = dg
-							populated[dg.Vnum] = dg
-							save = true
-							digFrame[pos[0]][pos[1]] = 8
-							fmt.Println("dug ", dg)
-							drawDig(digFrame)
-							updateRoom(play, populated)
-							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
+							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							play.CurrentRoom.Vnum = digNum
 						}
 					default:
 						drawDig(digFrame)
