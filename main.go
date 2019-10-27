@@ -128,17 +128,32 @@ func updateZoneMap(play Player, populated []Space) {
 	}
 	filter := bson.M{"zone": bson.M{"$eq":play.CurrentRoom.Zone}}
 	collection := client.Database("zones").Collection("Spaces")
-	update := bson.M{"$set": bson.M{"vnums":populated[play.CurrentRoom.Vnum].Vnums,
-		"zone":populated[play.CurrentRoom.Vnum].Zone,"vnum":populated[play.CurrentRoom.Vnum].Vnum,
-		 "desc":populated[play.CurrentRoom.Vnum].Desc,"exits": populated[play.CurrentRoom.Vnum].Exits,
-			"mobiles": populated[play.CurrentRoom.Vnum].Mobiles, "items": populated[play.CurrentRoom.Vnum].Items,
-			 "altered": true,"zonepos":populated[play.CurrentRoom.Vnum].ZonePos, "zonemap": populated[play.CurrentRoom.Vnum].ZoneMap }}
-
-	result, err := collection.UpdateMany(context.Background(), filter, update, options.Update().SetUpsert(true))
+	findOptions := options.Find()
+	result, err := collection.Find(context.Background(), filter, findOptions)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("\033[38:2:255:0:0m", result, "\033[0m")
+	defer result.Close(context.Background())
+	for result.Next(context.Background()) {
+		var current Space
+		err := result.Decode(&current)
+		if err != nil {
+			panic(err)
+		}
+		filter = bson.M{"vnum": bson.M{"$eq":current.Vnum}}
+		update := bson.M{"$set": bson.M{"vnums":populated[current.Vnum].Vnums,
+			"zone":populated[current.Vnum].Zone,"vnum":populated[current.Vnum].Vnum,
+			 "desc":populated[current.Vnum].Desc,"exits": populated[current.Vnum].Exits,
+				"mobiles": populated[current.Vnum].Mobiles, "items": populated[current.Vnum].Items,
+				 "altered": true,"zonepos":populated[current.Vnum].ZonePos, "zonemap": populated[current.Vnum].ZoneMap }}
+
+		result, err := collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("\033[38:2:255:0:0m", result, "\033[0m")
+	}
+
 }
 
 
@@ -801,7 +816,9 @@ func main() {
 				}
 				defer file.Close()
 				writer := bufio.NewWriter(file)
-				fmt.Println("Saving the area")
+				fmt.Println("\033[38:2:200:50:50mUpdating the zone with final map.\033[0m")
+				updateZoneMap(play, populated)
+				fmt.Println("Dumping the area list to dat/zone.bson")
 				for i := 0;i < len(populated);i++ {
 					marshalledBson, err := bson.Marshal(populated[i])
 					if err != nil {
