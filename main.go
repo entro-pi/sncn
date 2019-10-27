@@ -28,6 +28,7 @@ type Space struct{
 	Room dngn.Room
 	Vnums string
 	Zone string
+	ZonePos []int
 	ZoneMap [][]int
 	Vnum int
 	Desc string
@@ -53,6 +54,7 @@ func initDigRoom(digFrame [][]int, zoneVnums string, zoneName string, play Playe
 	var dg Space
 	dg.Vnums = zoneVnums
 	dg.Zone = zoneName
+	dg.ZonePos = make([]int, 2)
 	dg.ZoneMap = digFrame
 	vnum += 1
 	dg.Vnum = vnum
@@ -99,15 +101,15 @@ func updateRoom(play Player, populated []Space) {
 	if err != nil {
 		panic(err)
 	}
-	filter := bson.M{"altered":false}
+	filter := bson.M{"vnum": bson.M{"$eq":play.CurrentRoom.Vnum}}
 	collection := client.Database("zones").Collection("Spaces")
 	update := bson.M{"$set": bson.M{"vnums":populated[play.CurrentRoom.Vnum].Vnums,
 		"zone":populated[play.CurrentRoom.Vnum].Zone,"vnum":populated[play.CurrentRoom.Vnum].Vnum,
 		 "desc":populated[play.CurrentRoom.Vnum].Desc,"exits": populated[play.CurrentRoom.Vnum].Exits,
 			"mobiles": populated[play.CurrentRoom.Vnum].Mobiles, "items": populated[play.CurrentRoom.Vnum].Items,
-			 "altered": true, "zonemap": populated[play.CurrentRoom.Vnum].ZoneMap }}
+			 "altered": true,"zonepos":populated[play.CurrentRoom.Vnum].ZonePos, "zonemap": populated[play.CurrentRoom.Vnum].ZoneMap }}
 
-	result, err := collection.UpdateMany(context.Background(), filter, update, options.Update().SetUpsert(true))
+	result, err := collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
 	if err != nil {
 		panic(err)
 	}
@@ -396,11 +398,45 @@ func showDesc(room Space) {
 	fmt.Printf(descPos)
 	splitOnNewline := strings.Split(room.Desc, "\n")
 	for i := 0;i < len(splitOnNewline);i++ {
-		splitPos := fmt.Sprint("\033["+strconv.Itoa(i+1)+";50H"+splitOnNewline[i]+end)
+		splitPos := fmt.Sprint("\033["+strconv.Itoa(i+1)+";51H"+splitOnNewline[i]+end)
 		fmt.Printf(splitPos)
 	}
-	fmt.Printf("\033[0;0H")
-	drawDig(room.ZoneMap)
+	fmt.Printf("\033[38:2:140:40:140m[[")
+	if room.Exits.North != 0 {
+		fmt.Printf("\033[38:2:180:20:180mNorth")
+	}
+	if room.Exits.South != 0 {
+		fmt.Printf("\033[38:2:180:20:180mSouth")
+	}
+	if room.Exits.East != 0 {
+		fmt.Printf("\033[38:2:180:20:180mEast")
+	}
+	if room.Exits.West != 0 {
+		fmt.Printf("\033[38:2:180:20:180mWest")
+	}
+	if room.Exits.NorthWest != 0 {
+		fmt.Printf("\033[38:2:180:20:180mNorthWest")
+	}
+	if room.Exits.NorthEast != 0 {
+		fmt.Printf("\033[38:2:180:20:180mNorthEast")
+	}
+	if room.Exits.SouthWest != 0 {
+		fmt.Printf("\033[38:2:180:20:180mSouthWest")
+	}
+	if room.Exits.SouthEast != 0 {
+		fmt.Printf("\033[38:2:180:20:180mSouthEast")
+	}
+	if room.Exits.Up != 0 {
+		fmt.Printf("\033[38:2:180:20:180mUp")
+	}
+	if room.Exits.Down != 0 {
+		fmt.Printf("\033[38:2:180:20:180mDown")
+	}
+
+	fmt.Printf("\033[38:2:140:40:140m]]\033[0m\033[0;0H")
+	if len(room.ZonePos) >= 2 {
+		drawDig(room.ZoneMap, room.ZonePos)
+	}
 }
 
 func showChat(play Player) {
@@ -440,14 +476,18 @@ func showChat(play Player) {
 
 	}
 }
-func drawDig(digFrame [][]int) {
+func drawDig(digFrame [][]int, zonePos []int) {
 	for i := 0;i < len(digFrame);i++ {
 		for c := 0;c < len(digFrame[i]);c++ {
+				prn := ""
 				val := fmt.Sprint(digFrame[i][c])
-
-				if val == "8" {
+				if i == zonePos[0] && c == zonePos[1] {
+					prn = "8"
+				}
+				if prn == "8" {
 					fmt.Printf("\033[38:2:150:10:50m"+val+"\033[0m")
-				}else if val == "1" {
+				}else if val == "1" || val == "8" {
+					val = "1"
 					fmt.Printf("\033[38:2:50:10:50m"+val+"\033[0m")
 				}else {
 						fmt.Printf(val)
@@ -463,12 +503,16 @@ func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone st
 	dg.Exits.NorthEast = play.CurrentRoom.Vnum
 	play.CurrentRoom.Exits.SouthWest = digNum
 	play.CurrentRoom = dg
+	for len(populated) <= digNum {
+		populated = append(populated, dg)
+	}
 	populated[digNum] = dg
 	dg.Vnum = digNum
 	digFrame[pos[0]][pos[1]] = 8
-
+	dg.ZonePos = append(dg.ZonePos, pos[0])
+	dg.ZonePos = append(dg.ZonePos, pos[1])
 	fmt.Println("dug ", dg)
-	drawDig(digFrame)
+	drawDig(digFrame, dg.ZonePos)
 	updateRoom(play, populated)
 	fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 	return digNum
@@ -563,6 +607,10 @@ func main() {
 						switch input {
 						case "edit desc":
 							//desc
+							//room has to exist before we edit it
+							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							play.CurrentRoom.Vnum = digNum
+
 							play.CurrentRoom.Desc = ""
 							fmt.Println("Enter the room's new description, enter for a new line, @ on a new line to end.")
 							descScanner := bufio.NewScanner(os.Stdin)
@@ -658,7 +706,7 @@ func main() {
 						play.CurrentRoom.Exits.Down = dg.Vnum
 						digNum = dg.Vnum
 						fmt.Println("dug ", dg)
-						drawDig(digFrame)
+
 						play.CurrentRoom = dg
 						populated[dg.Vnum] = dg
 
@@ -698,7 +746,9 @@ func main() {
 							play.CurrentRoom.Vnum = digNum
 						}
 					default:
-						drawDig(digFrame)
+						if len(play.CurrentRoom.ZonePos) >= 2 {
+							drawDig(digFrame, play.CurrentRoom.ZonePos)
+						}
 						fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 					}
 				}
@@ -798,7 +848,7 @@ func main() {
 			DescribePlayer(play)
 		}
 		//Reset the input to a standardized place
-
+		showDesc(play.CurrentRoom)
 		showChat(play)
 		fmt.Printf("\033[51;0H")
 	}
