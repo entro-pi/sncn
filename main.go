@@ -535,7 +535,7 @@ func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone st
 	populated[digNum] = dg
 	dg.Vnum = digNum
 	digFrame[pos[0]][pos[1]] = 8
-	dg.ZonePos = dg.ZonePos[0:]
+	dg.ZonePos = dg.ZonePos[:0]
 	dg.ZonePos = append(dg.ZonePos, pos[0])
 	dg.ZonePos = append(dg.ZonePos, pos[1])
 	fmt.Println("dug ", dg)
