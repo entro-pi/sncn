@@ -14,7 +14,7 @@ import (
   "go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone string, digNum int, populated []Space) (int) {
+func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone string, digNum int, populated []Space) (int, Space) {
 	digVnumEnd := strings.Split(digNums, "-")[1]
 	dg, digNum := initDigRoom(digFrame, digNums, digZone, play, digNum)
 	play.CurrentRoom = dg
@@ -31,7 +31,7 @@ func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone st
 	drawDig(digFrame, dg.ZonePos)
 	updateRoom(play, populated)
 	fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
-	return digNum
+	return digNum, dg
 }
 
 

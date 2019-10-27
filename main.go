@@ -252,7 +252,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] += 1
 							pos[1] -= 1
-							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							digNum, play.CurrentRoom = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
 							play.CurrentRoom.Vnum = digNum
 						}
 					case 2:
@@ -260,7 +260,7 @@ func main() {
 						if digFrame[pos[0]+1][pos[1]] != 1 {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] += 1
-							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							digNum, play.CurrentRoom = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
 							play.CurrentRoom.Vnum = digNum
 						}
 					case 3:
@@ -269,7 +269,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] += 1
 							pos[1] += 1
-							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							digNum, play.CurrentRoom = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
 							play.CurrentRoom.Vnum = digNum
 						}
 					case 4:
@@ -277,19 +277,12 @@ func main() {
 						if digFrame[pos[0]][pos[1]-1] != 1 {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[1] -= 1
-							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							digNum, play.CurrentRoom = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
 							play.CurrentRoom.Vnum = digNum
 							}
 					case 5:
 						//TODO, make a selector for which level is shown
 						//Down
-						dg, _ := initDigRoom(digFrame, digNums, digZone, play, digNum)
-
-						digNum = dg.Vnum
-						fmt.Println("dug ", dg)
-
-						play.CurrentRoom = dg
-						populated[dg.Vnum] = dg
 
 						save = true
 					case 6:
@@ -297,7 +290,7 @@ func main() {
 						if digFrame[pos[0]][pos[1]+1] != 1 {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[1] += 1
-							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							digNum, play.CurrentRoom = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
 							play.CurrentRoom.Vnum = digNum
 						}
 					case 7:
@@ -306,7 +299,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] -= 1
 							pos[1] -= 1
-							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							digNum, play.CurrentRoom = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
 							play.CurrentRoom.Vnum = digNum
 						}
 					case 8:
@@ -314,7 +307,7 @@ func main() {
 						if digFrame[pos[0]-1][pos[1]] != 1 {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] -= 1
-							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							digNum, play.CurrentRoom = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
 							play.CurrentRoom.Vnum = digNum
 						}
 					case 9:
@@ -323,7 +316,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 1
 							pos[0] -= 1
 							pos[1] += 1
-							digNum = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
+							digNum, play.CurrentRoom = digDug(pos, play, digFrame, digNums, digZone, digNum, populated)
 							play.CurrentRoom.Vnum = digNum
 						}
 					default:

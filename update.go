@@ -47,10 +47,12 @@ func updateZoneMap(play Player, populated []Space) {
 	filter := bson.M{"zone": bson.M{"$eq":play.CurrentRoom.Zone}}
 	collection := client.Database("zones").Collection("Spaces")
 	findOptions := options.Find()
+  findOptions.SetLimit(1000)
 	result, err := collection.Find(context.Background(), filter, findOptions)
 	if err != nil {
 		panic(err)
 	}
+  fmt.Println("\033[38:2:150:0:0m",play.CurrentRoom.Zone)
 	defer result.Close(context.Background())
 	for result.Next(context.Background()) {
 		var current Space
@@ -58,8 +60,8 @@ func updateZoneMap(play Player, populated []Space) {
 		if err != nil {
 			panic(err)
 		}
-		filter = bson.M{"zone": bson.M{"$eq":current.Zone}}
-		update := bson.M{"$set": bson.M{"zonepos":populated[current.Vnum].ZonePos, "zonemap": populated[current.Vnum].ZoneMap }}
+		filter = bson.M{"vnum": bson.M{"$eq":current.Vnum}}
+		update := bson.M{"$set": bson.M{"zonepos":populated[current.Vnum].ZonePos, "zonemap": populated[play.CurrentRoom.Vnum].ZoneMap }}
 
 		result, err := collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
 		if err != nil {
