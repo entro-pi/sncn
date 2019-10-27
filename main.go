@@ -30,6 +30,7 @@ type Space struct{
 	Items []int
 	CoreBoard string
 	Exits Exit
+	Altered bool
 }
 type Exit struct {
 	North int
@@ -50,6 +51,7 @@ func initDigRoom(digFrame [][]int, zoneVnums string, zoneName string, play Playe
 	dg.ZoneMap = digFrame
 	vnum += 1
 	dg.Vnum = vnum
+	dg.Altered = true
 	dg.Desc = "Nothing but some cosmic rays"
 	return dg
 }
@@ -82,7 +84,30 @@ func DescribePlayer(play Player) {
 	fmt.Println("\033[38:2:0:200:0mCharisma     :\033[0m", play.Cha)
 	fmt.Println("======================")
 }
+func updateRoom(play Player, populated []Space) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+	filter := bson.M{"altered":false}
+	collection := client.Database("zones").Collection("Spaces")
+	update := bson.M{"$set": bson.M{"vnums":populated[play.CurrentRoom.Vnum].Vnums,
+		"zone":populated[play.CurrentRoom.Vnum].Zone,"vnum":populated[play.CurrentRoom.Vnum].Vnum,
+		 "desc":populated[play.CurrentRoom.Vnum].Desc,"exits": populated[play.CurrentRoom.Vnum].Exits,
+			"mobiles": populated[play.CurrentRoom.Vnum].Mobiles, "items": populated[play.CurrentRoom.Vnum].Items,
+			 "altered": true }}
 
+	result, err := collection.UpdateMany(context.Background(), filter, update, options.Update().SetUpsert(true))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("\033[38:2:255:0:0m", result, "\033[0m")
+}
 
 
 func InitPlayer(name string) Player {
@@ -432,8 +457,8 @@ func main() {
 		if os.Args[1] == "--init" {
 			//TODO testing suite - one test will be randomly generating 10,000 Spaces
 			//and seeing if the system can take it
-			InitZoneSpaces("0-100", "The Void", "The absence of light is blinding.\nThree large telephone poles illuminate a small square.")
-			InitZoneSpaces("100-150", "Midgaard", "I wonder what day is recycling day.\nEven the gods create trash.")
+			InitZoneSpaces("0-5", "The Void", "The absence of light is blinding.\nThree large telephone poles illuminate a small square.")
+			InitZoneSpaces("5-15", "Midgaard", "I wonder what day is recycling day.\nEven the gods create trash.")
 			populated = PopulateAreas()
 			play = InitPlayer("FSM")
 			addPfile(play)
@@ -519,8 +544,29 @@ func main() {
 								}else {
 									play.CurrentRoom.Desc += descScanner.Text() + "\n"
 								}
-
 							}
+							client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+							if err != nil {
+								panic(err)
+							}
+							ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+							err = client.Connect(ctx)
+							if err != nil {
+								panic(err)
+							}
+							filter := bson.M{"altered":false}
+							collection := client.Database("zones").Collection("Spaces")
+							update := bson.M{"$set": bson.M{"vnums":populated[play.CurrentRoom.Vnum].Vnums,
+								"zone":populated[play.CurrentRoom.Vnum].Zone,"vnum":populated[play.CurrentRoom.Vnum].Vnum,
+								 "desc":populated[play.CurrentRoom.Vnum].Desc,"exits": populated[play.CurrentRoom.Vnum].Exits,
+								  "mobiles": populated[play.CurrentRoom.Vnum].Mobiles, "items": populated[play.CurrentRoom.Vnum].Items,
+									 "altered": true }}
+
+							result, err := collection.UpdateMany(context.Background(), filter, update, options.Update().SetUpsert(true))
+							if err != nil {
+								panic(err)
+							}
+							fmt.Println("\033[38:2:255:0:0m", result, "\033[0m")
 						case "edit title":
 							//room title
 						case "edit mobiles":
@@ -560,6 +606,7 @@ func main() {
 
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							updateRoom(play, populated)
 							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 						}
 					case 2:
@@ -579,6 +626,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							updateRoom(play, populated)
 							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 						}
 					case 3:
@@ -599,6 +647,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							updateRoom(play, populated)
 							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 						}
 					case 4:
@@ -618,6 +667,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							updateRoom(play, populated)
 							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 						}
 					case 5:
@@ -650,6 +700,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							updateRoom(play, populated)
 							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 
 						}
@@ -671,6 +722,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							updateRoom(play, populated)
 							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 
 						}
@@ -691,6 +743,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							updateRoom(play, populated)
 							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 
 						}
@@ -711,6 +764,7 @@ func main() {
 							digFrame[pos[0]][pos[1]] = 8
 							fmt.Println("dug ", dg)
 							drawDig(digFrame)
+							updateRoom(play, populated)
 							fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 						}
 					default:
