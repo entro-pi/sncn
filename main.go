@@ -19,6 +19,12 @@ func clear() {
 		fmt.Println("                                                              ")
 	}
 }
+type Descriptions struct {
+	BATTLESPAM int
+	ROOMDESC int
+	PLAYERDESC int
+	ROOMTITLE int
+}
 type Chat struct {
 	User Player
 	Message string
@@ -56,10 +62,14 @@ func initDigRoom(digFrame [][]int, zoneVnums string, zoneName string, play Playe
 	dg.Zone = zoneName
 	dg.ZonePos = make([]int, 2)
 	dg.ZoneMap = digFrame
+	//todo directions
 	vnum += 1
 	dg.Vnum = vnum
 	dg.Altered = true
 	dg.Desc = "Nothing but some cosmic rays"
+	for len(strings.Split(dg.Desc, "\n")) < 8 {
+		dg.Desc += "\n"
+	}
 	return dg, vnum
 }
 
@@ -140,12 +150,8 @@ func updateZoneMap(play Player, populated []Space) {
 		if err != nil {
 			panic(err)
 		}
-		filter = bson.M{"vnum": bson.M{"$eq":current.Vnum}}
-		update := bson.M{"$set": bson.M{"vnums":populated[current.Vnum].Vnums,
-			"zone":populated[current.Vnum].Zone,"vnum":populated[current.Vnum].Vnum,
-			 "desc":populated[current.Vnum].Desc,"exits": populated[current.Vnum].Exits,
-				"mobiles": populated[current.Vnum].Mobiles, "items": populated[current.Vnum].Items,
-				 "altered": true,"zonepos":populated[current.Vnum].ZonePos, "zonemap": populated[current.Vnum].ZoneMap }}
+		filter = bson.M{"zone": bson.M{"$eq":current.Zone}}
+		update := bson.M{"$set": bson.M{"zonepos":populated[current.Vnum].ZonePos, "zonemap": populated[current.Vnum].ZoneMap }}
 
 		result, err := collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
 		if err != nil {
@@ -385,6 +391,58 @@ const (
 )
 
 
+func AssembleDescCel(room Space, row int) (string) {
+	var cel string
+	inWord := strings.Split(room.Desc, "\n")
+	for len(strings.Split(room.Desc, "\n")) < 9 {
+		room.Desc += "\n"
+		inWord = strings.Split(room.Desc, "\n")
+	}
+	for len(inWord[0]) < 148 {
+		inWord[0] += " "
+	}
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[0], "\033[48;2;100;5;100m \033[0m")
+	for len(inWord[1]) < 148 {
+		inWord[1] += " "
+	}
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[1], "\033[48;2;100;5;100m \033[0m")
+	for len(inWord[2]) < 148 {
+		inWord[2] += " "
+	}
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[2], "\033[48;2;100;5;100m \033[0m")
+	for len(inWord[3]) < 148 {
+		inWord[3] += " "
+	}
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[3], "\033[48;2;100;5;100m \033[0m")
+	for len(inWord[4]) < 148 {
+		inWord[4] += " "
+	}
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[4], "\033[48;2;100;5;100m \033[0m")
+	for len(inWord[5]) < 148 {
+		inWord[5] += " "
+	}
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[5], "\033[48;2;100;5;100m \033[0m")
+	for len(inWord[6]) < 148 {
+		inWord[6] += " "
+	}
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[6], "\033[48;2;100;5;100m \033[0m")
+	for len(inWord[7]) < 148 {
+		inWord[7] += " "
+	}
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m\033[38:2:50:0:50m@", inWord[7], "\033[48;2;100;5;100m \033[0m")
+
+	return cel
+}
+
+
 func AssembleComposeCel(chatMess Chat, row int) (string, int) {
 	var cel string
 	inWord := chatMess.Message
@@ -413,19 +471,20 @@ func AssembleComposeCel(chatMess Chat, row int) (string, int) {
 	}
 	if len(inWord) <= 28 {
 		wor = "                            "
-		word += " "
+		word += ""
 		word += inWord
 		for i := len(word); i <= 28; i++ {
 			word += " "
 		}
 		words = "                            "
 	}
+	timeString := strings.Split(chatMess.Time.String(), " ")
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", wor, "\033[48;2;10;255;20m \033[0m")
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", word, "\033[48;2;10;255;20m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", word, "\033[48;2;10;255;20m \033[0m"+timeString[1])
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", words, "\033[48;2;10;255;20m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m \033[48;2;10;10;20m", words, "\033[48;2;10;255;20m \033[0m"+timeString[0])
 	row++
 	namePlate := "                            "[len(chatMess.User.Name):]
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;255;20m\033[38:2:50:0:50m@"+chatMess.User.Name+namePlate+"\033[48;2;10;255;20m \033[0m")
@@ -436,12 +495,8 @@ func AssembleComposeCel(chatMess Chat, row int) (string, int) {
 
 
 func showDesc(room Space) {
-	fmt.Printf(descPos)
-	splitOnNewline := strings.Split(room.Desc, "\n")
-	for i := 0;i < len(splitOnNewline);i++ {
-		splitPos := fmt.Sprint("\033["+strconv.Itoa(i+1)+";51H"+splitOnNewline[i]+end)
-		fmt.Printf(splitPos)
-	}
+	splitPos := AssembleDescCel(room, 25)
+	fmt.Printf(splitPos)
 	fmt.Printf("\033[38:2:140:40:140m[[")
 	if room.Exits.North != 0 {
 		fmt.Printf("\033[38:2:180:20:180mNorth")
@@ -541,8 +596,6 @@ func drawDig(digFrame [][]int, zonePos []int) {
 func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone string, digNum int, populated []Space) (int) {
 	digVnumEnd := strings.Split(digNums, "-")[1]
 	dg, digNum := initDigRoom(digFrame, digNums, digZone, play, digNum)
-	dg.Exits.NorthEast = play.CurrentRoom.Vnum
-	play.CurrentRoom.Exits.SouthWest = digNum
 	play.CurrentRoom = dg
 	for len(populated) <= digNum {
 		populated = append(populated, dg)
@@ -572,8 +625,16 @@ func main() {
 		if os.Args[1] == "--init" {
 			//TODO testing suite - one test will be randomly generating 10,000 Spaces
 			//and seeing if the system can take it
-			InitZoneSpaces("0-5", "The Void", "The absence of light is blinding.\nThree large telephone poles illuminate a small square.")
-			InitZoneSpaces("5-15", "Midgaard", "I wonder what day is recycling day.\nEven the gods create trash.")
+			descString := "The absence of light is blinding.\nThree large telephone poles illuminate a small square."
+			for len(strings.Split(descString, "\n")) < 8 {
+				descString += "\n"
+			}
+			InitZoneSpaces("0-5", "The Void", descString)
+			descString = "I wonder what day is recycling day.\nEven the gods create trash."
+			for len(strings.Split(descString, "\n")) < 8 {
+				descString += "\n"
+			}
+			InitZoneSpaces("5-15", "Midgaard", descString)
 			populated = PopulateAreas()
 			play = InitPlayer("FSM")
 			addPfile(play)
@@ -599,7 +660,7 @@ func main() {
 			os.Exit(1)
 		}
 	} else {
-		fmt.Println("Use --init to build and launch the world, --client to just connect.")
+		fmt.Println("Use --init to build and launch the world, --user to just connect.")
 		fmt.Println("--builder for a building session")
 		os.Exit(1)
 	}
@@ -620,8 +681,7 @@ func main() {
 				digFrame = append(digFrame, Frame)
 			}
 			fmt.Println("\033[38:2:255:0:0m", len(digFrame), "\033[0m")
-	//		digFrameD := make([][]int, 50)
-	//		digFrameU := make([][]int, 50)
+
 			//Make a bar that fills with how many rooms you dig
 			pos := make([]int, 2)
 			pos[0] = 25
@@ -660,7 +720,12 @@ func main() {
 							descScanner := bufio.NewScanner(os.Stdin)
 							DESC:
 							for descScanner.Scan() {
-								if descScanner.Text() == "@" {
+								if descScanner.Text() == "@" || len(strings.Split(populated[play.CurrentRoom.Vnum].Desc, "\n")) < 8 {
+									if descScanner.Text() == "@" {
+										for len(strings.Split(populated[play.CurrentRoom.Vnum].Desc, "\n")) < 8 {
+											populated[play.CurrentRoom.Vnum].Desc += "\n"
+										}
+									}
 									populated[play.CurrentRoom.Vnum].Desc = play.CurrentRoom.Desc
 									break DESC
 								}else {
@@ -746,8 +811,7 @@ func main() {
 						//TODO, make a selector for which level is shown
 						//Down
 						dg, _ := initDigRoom(digFrame, digNums, digZone, play, digNum)
-						dg.Exits.Up = play.CurrentRoom.Vnum
-						play.CurrentRoom.Exits.Down = dg.Vnum
+
 						digNum = dg.Vnum
 						fmt.Println("dug ", dg)
 
@@ -833,7 +897,47 @@ func main() {
 
 
 
+		if input == "edit desc"{
 
+			play.CurrentRoom.Desc = ""
+			fmt.Println("Enter the room's new description, enter for a new line, @ on a new line to end.")
+			descScanner := bufio.NewScanner(os.Stdin)
+			DESCREG:
+			for descScanner.Scan() {
+				if descScanner.Text() == "@" || len(strings.Split(populated[play.CurrentRoom.Vnum].Desc, "\n")) < 8 {
+					if descScanner.Text() == "@" {
+						for len(strings.Split(populated[play.CurrentRoom.Vnum].Desc, "\n")) < 8 {
+							populated[play.CurrentRoom.Vnum].Desc += "\n"
+						}
+					}
+					populated[play.CurrentRoom.Vnum].Desc = play.CurrentRoom.Desc
+					break DESCREG
+				}else {
+					play.CurrentRoom.Desc += descScanner.Text() + "\n"
+				}
+			}
+
+			client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+			if err != nil {
+				panic(err)
+			}
+			ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+			err = client.Connect(ctx)
+			if err != nil {
+				panic(err)
+			}
+			filter := bson.M{"vnum": play.CurrentRoom.Vnum}
+			collection := client.Database("zones").Collection("Spaces")
+			update := bson.M{"$set": bson.M{"vnums":populated[play.CurrentRoom.Vnum].Vnums,
+				 "desc":populated[play.CurrentRoom.Vnum].Desc,"exits": populated[play.CurrentRoom.Vnum].Exits,
+					 "altered": true }}
+
+			result, err := collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println("\033[38:2:255:0:0m", result, "\033[0m")
+		}
 
 
 
