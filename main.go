@@ -144,7 +144,7 @@ func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 	if err != nil {
 		panic(err)
 	}
-	collection := client.Database("zone").Collection("Spaces")
+	collection := client.Database("zones").Collection("Spaces")
 	vnums := strings.Split(SpaceRange, "-")
 	vnumStart, err := strconv.Atoi(vnums[0])
 	if err != nil {
@@ -183,7 +183,7 @@ func PopulateAreas() []Space {
 		panic(err)
 	}
 	var Spaces []Space
-	collection := client.Database("zone").Collection("Spaces")
+	collection := client.Database("zones").Collection("Spaces")
 	results, err := collection.Find(context.Background(), bson.M{})
 	if err != nil {
 		panic(err)
@@ -461,10 +461,10 @@ func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone st
 	digVnumEnd := strings.Split(digNums, "-")[1]
 	dg, digNum := initDigRoom(digFrame, digNums, digZone, play, digNum)
 	dg.Exits.NorthEast = play.CurrentRoom.Vnum
-	play.CurrentRoom.Exits.SouthWest = dg.Vnum
+	play.CurrentRoom.Exits.SouthWest = digNum
 	play.CurrentRoom = dg
-	populated[dg.Vnum] = dg
-
+	populated[digNum] = dg
+	dg.Vnum = digNum
 	digFrame[pos[0]][pos[1]] = 8
 
 	fmt.Println("dug ", dg)
@@ -501,7 +501,7 @@ func main() {
 			fmt.Printf("\033[51;0H")
 		}else if os.Args[1] == "--builder" {
 			//Continue on
-			populated = PopulateAreaBuild()
+			populated = PopulateAreas()
 			play = InitPlayer("FlyingSpaghettiMonster")
 			savePfile(play)
 
@@ -784,10 +784,13 @@ func main() {
 			}
 			for i := 0;i < len(populated);i++ {
 				if inp == populated[i].Vnum {
-					fmt.Println("\033[48:2:200:0:0m",populated[i].Vnum,"\033[0m")
 					play.CurrentRoom = populated[i]
 					fmt.Print(populated[i].Vnum, populated[i].Vnums, populated[i].Zone)
 					showDesc(play.CurrentRoom)
+					fmt.Printf("\033[0;0H\033[38:2:0:255:0mPASS\033[0m")
+					break
+				}else {
+					fmt.Printf("\033[0;0H\033[38:2:255:0:0mERROR\033[0m")
 				}
 			}
 		}
