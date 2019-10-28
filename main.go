@@ -76,7 +76,8 @@ type Player struct {
 
 
 const (
-	mapPos = "\033[0;0H"
+	cmdPos = "\033[51;0H"
+	mapPos = "\033[1;51H"
 	descPos = "\033[0;50H"
 	chatStart = "\033[38:2:200:50:50m{{=\033[38:2:150:50:150m"
 	chatEnd = "\033[38:2:200:50:50m=}}"
@@ -415,13 +416,17 @@ func main() {
 			createChat(input[3:], play)
 			showChat(play)
 		}
+		if input == "count keys" {
+			countKeys()
+			showDesc(play.CurrentRoom)
+		}
 
 		if input == "look" {
 			fmt.Sprintf("Current room is ", play.CurrentRoom)
 			showDesc(play.CurrentRoom)
 		}
 		if strings.Contains(input, "gen coreboard") {
-			play, populated = genMap(play, populated)
+			play.CoreBoard = genMap(play, populated)
 		}
 		if strings.Contains(input, "open map") {
 			//// TODO:
@@ -429,8 +434,8 @@ func main() {
 		}
 
 		if strings.Contains(input, "open coreboard") {
-			fmt.Printf(mapPos)
-			fmt.Print(populated[0].CoreBoard)
+//			fmt.Printf(mapPos)
+			fmt.Println(play.CoreBoard)
 		}
 		if strings.HasPrefix(input, "view from") {
 			splitCommand := strings.Split(input, "from")

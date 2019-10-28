@@ -89,3 +89,10 @@ the goal.
 
 The tool will assume a grid of 50-50 with three layers
 to begin with.
+
+
+
+This will be fuuuuun!
+
+I will have to add a timing function eventually, why not
+make the first timed thing to be the blink of a new message!

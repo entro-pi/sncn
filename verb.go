@@ -136,8 +136,18 @@ func AssembleDescCel(room Space, row int) (string) {
 
 	return cel
 }
+func countKeys() {
+  keys := "abcdefghijklmnopqrstuvwxyz0123456789"
+  fmt.Println("\033[38:2:150:0:150m",len(keys),"in :",keys)
 
-func genMap(play Player, populated []Space) (Player, []Space) {
+  keys = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  fmt.Println("\033[38:2:175:0:150m",len(keys),"in :",keys)
+
+  keys = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
+  fmt.Println("\033[38:2:185:0:150m",len(keys),"in :",keys)
+}
+
+func genMap(play Player, populated []Space) (string) {
 	//Create a room map
 	Room := dngn.NewRoom(50, 30)
 	splits := rand.Intn(75)
@@ -146,29 +156,23 @@ func genMap(play Player, populated []Space) (Player, []Space) {
 //	if err != nil {
 //		panic(err)
 //	}
-
-	populated[0].CoreBoard = ""
-	play.CoreBoard = ""
+  newValue := ""
+  outVal := ""
 	fmt.Println("Generating and populating map")
 	for i := 0;i < len(Room.Data);i++ {
-		if i == 0 {
-			continue
-		}
+
 	//				fmt.Println(populated[0].Room.Data[populated[0].Room.Width-1][i])
 			value := string(Room.Data[i])
-			newValue := ""
+//      newValue = ""
 			for s := 0;s < len(value);s++ {
-				if s == 0 {
-					continue
-				}
 				if string(value[s]) == " " {
-					ChanceTreasure := "\033[48:2:200:150:0mT\033[0m"
+					ChanceTreasure := "T"
 					if rand.Intn(100) > 98 {
 							newValue += ChanceTreasure
 							continue
 					}
 					if rand.Intn(100) > 95 {
-						ChanceMonster := "\033[48:2:200:50:50mM\033[0m"
+						ChanceMonster := "M"
 						newValue += ChanceMonster
 						continue
 					}else {
@@ -179,15 +183,38 @@ func genMap(play Player, populated []Space) (Player, []Space) {
 				}
 
 			}
+      newValue += "\n"
+    }
+    clear()
+    fmt.Println(newValue)
+    showChat(play)
+    time.Sleep(250*time.Millisecond)
+    newValue = strings.ReplaceAll(newValue, "T", "\033[48;2;200;150;0mT\033[0m")
+    clear()
+    fmt.Println(newValue)
+    showChat(play)
+    time.Sleep(250*time.Millisecond)
+    newValue = strings.ReplaceAll(newValue, "M", "\033[48;2;200;50;50mM\033[0m")
+    clear()
+    fmt.Println(newValue)
+    showChat(play)
+    time.Sleep(250*time.Millisecond)
+		newValue = strings.ReplaceAll(newValue, "%", "\033[38;2;0;150;150m%\033[0m")
+    clear()
+    fmt.Println(newValue)
+    showChat(play)
+    time.Sleep(250*time.Millisecond)
+		newValue = strings.ReplaceAll(newValue, "D", "\033[48;2;200;150;150mD\033[0m")
+    clear()
+    fmt.Println(newValue)
+    showChat(play)
+    time.Sleep(250*time.Millisecond)
+		newValue = strings.ReplaceAll(newValue, " ", "\033[48;2;0;200;150m \033[0m")
 
-			newValue = strings.ReplaceAll(newValue, "%", "\033[48:2:0:150:150m%\033[0m")
-			newValue = strings.ReplaceAll(newValue, "D", "\033[38:2:200:150:150mD\033[0m")
-			newValue = strings.ReplaceAll(newValue, " ", "\033[48:2:0:200:150m \033[0m")
-			populated[0].CoreBoard += newValue + "\n"
-			play.CoreBoard += newValue + "\n"
+    outVal += newValue + "\n"
 
-	}
-	return play, populated
+
+	return outVal
 }
 
 
