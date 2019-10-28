@@ -371,7 +371,7 @@ func main() {
 			descScanner := bufio.NewScanner(os.Stdin)
 			DESCREG:
 			for descScanner.Scan() {
-				if descScanner.Text() == "@" || len(strings.Split(populated[play.CurrentRoom.Vnum].Desc, "\n")) < 8 {
+				if descScanner.Text() == "@" {
 					if descScanner.Text() == "@" {
 						for len(strings.Split(populated[play.CurrentRoom.Vnum].Desc, "\n")) < 8 {
 							populated[play.CurrentRoom.Vnum].Desc += "\n"
