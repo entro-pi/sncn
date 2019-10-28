@@ -95,6 +95,7 @@ func main() {
 	var play Player
 	//Make this relate to character level
 	var dug []Space
+	coreShow := false
 	if len(os.Args) > 1 {
 		if os.Args[1] == "--init" {
 			//TODO testing suite - one test will be randomly generating 10,000 Spaces
@@ -426,16 +427,21 @@ func main() {
 			showDesc(play.CurrentRoom)
 		}
 		if strings.Contains(input, "gen coreboard") {
-			play.CoreBoard = genMap(play, populated)
+			//TODO make this so one doesn't loose the
+			//old coreboard, or convert it to xp, i dunno
+			play.CoreBoard = genCoreBoard(play, populated)
 		}
 		if strings.Contains(input, "open map") {
 			//// TODO:
 			//This
 		}
-
+		if strings.Contains(input, "close coreboard") {
+			coreShow = false
+		}
 		if strings.Contains(input, "open coreboard") {
 //			fmt.Printf(mapPos)
-			fmt.Println(play.CoreBoard)
+				showCoreBoard(play)
+				coreShow = true
 		}
 		if strings.HasPrefix(input, "view from") {
 			splitCommand := strings.Split(input, "from")
@@ -471,6 +477,9 @@ func main() {
 		//Reset the input to a standardized place
 		showDesc(play.CurrentRoom)
 		showChat(play)
+		if coreShow {
+			showCoreBoard(play)
+		}
 		fmt.Printf("\033[51;0H")
 	}
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})

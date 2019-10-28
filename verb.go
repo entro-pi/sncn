@@ -93,42 +93,42 @@ func AssembleDescCel(room Space, row int) (string) {
 		room.Desc += "\n"
 		inWord = strings.Split(room.Desc, "\n")
 	}
-	for len(inWord[0]) < 148 {
+	for len(inWord[0]) < 100 {
 		inWord[0] += " "
 	}
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[0], "\033[48;2;100;5;100m \033[0m")
-	for len(inWord[1]) < 148 {
+	for len(inWord[1]) < 100 {
 		inWord[1] += " "
 	}
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[1], "\033[48;2;100;5;100m \033[0m")
-	for len(inWord[2]) < 148 {
+	for len(inWord[2]) < 100 {
 		inWord[2] += " "
 	}
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[2], "\033[48;2;100;5;100m \033[0m")
-	for len(inWord[3]) < 148 {
+	for len(inWord[3]) < 100 {
 		inWord[3] += " "
 	}
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[3], "\033[48;2;100;5;100m \033[0m")
-	for len(inWord[4]) < 148 {
+	for len(inWord[4]) < 100 {
 		inWord[4] += " "
 	}
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[4], "\033[48;2;100;5;100m \033[0m")
-	for len(inWord[5]) < 148 {
+	for len(inWord[5]) < 100 {
 		inWord[5] += " "
 	}
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[5], "\033[48;2;100;5;100m \033[0m")
-	for len(inWord[6]) < 148 {
+	for len(inWord[6]) < 100 {
 		inWord[6] += " "
 	}
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[6], "\033[48;2;100;5;100m \033[0m")
-	for len(inWord[7]) < 148 {
+	for len(inWord[7]) < 100 {
 		inWord[7] += " "
 	}
 	row++
@@ -147,9 +147,9 @@ func countKeys() {
   fmt.Println("\033[38:2:185:0:150m",len(keys),"in :",keys)
 }
 
-func genMap(play Player, populated []Space) (string) {
+func genCoreBoard(play Player, populated []Space) (string) {
 	//Create a room map
-	Room := dngn.NewRoom(50, 30)
+	Room := dngn.NewRoom(25, 30)
 	splits := rand.Intn(75)
 	Room.GenerateBSP('%', 'D', splits)
 //	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
@@ -164,7 +164,7 @@ func genMap(play Player, populated []Space) (string) {
 	//				fmt.Println(populated[0].Room.Data[populated[0].Room.Width-1][i])
 			value := string(Room.Data[i])
 //      newValue = ""
-			for s := 0;s < len(value);s++ {
+			for s := 1;s < len(value);s++ {
 				if string(value[s]) == " " {
 					ChanceTreasure := "T"
 					if rand.Intn(100) > 98 {
@@ -186,27 +186,32 @@ func genMap(play Player, populated []Space) (string) {
       newValue += "\n"
     }
     clear()
-    fmt.Println(newValue)
+    play.CoreBoard = newValue
+    showCoreBoard(play)
     showChat(play)
     time.Sleep(250*time.Millisecond)
     newValue = strings.ReplaceAll(newValue, "T", "\033[48;2;200;150;0mT\033[0m")
     clear()
-    fmt.Println(newValue)
+    play.CoreBoard = newValue
+    showCoreBoard(play)
     showChat(play)
     time.Sleep(250*time.Millisecond)
     newValue = strings.ReplaceAll(newValue, "M", "\033[48;2;200;50;50mM\033[0m")
     clear()
-    fmt.Println(newValue)
+    play.CoreBoard = newValue
+    showCoreBoard(play)
     showChat(play)
     time.Sleep(250*time.Millisecond)
 		newValue = strings.ReplaceAll(newValue, "%", "\033[38;2;0;150;150m%\033[0m")
     clear()
-    fmt.Println(newValue)
+    play.CoreBoard = newValue
+    showCoreBoard(play)
     showChat(play)
     time.Sleep(250*time.Millisecond)
 		newValue = strings.ReplaceAll(newValue, "D", "\033[48;2;200;150;150mD\033[0m")
     clear()
-    fmt.Println(newValue)
+    play.CoreBoard = newValue
+    showCoreBoard(play)
     showChat(play)
     time.Sleep(250*time.Millisecond)
 		newValue = strings.ReplaceAll(newValue, " ", "\033[48;2;0;200;150m \033[0m")

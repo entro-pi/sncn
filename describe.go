@@ -6,12 +6,19 @@ import (
 	"time"
 	"context"
   "strconv"
+  "strings"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
+func showCoreBoard(play Player) {
+  coreSplit := strings.Split(play.CoreBoard, "\n")
+  for i := 0;i < len(coreSplit);i++ {
+    core := fmt.Sprint("\033[",strconv.Itoa(i),";153H",coreSplit[i])
+    fmt.Println(core)
+  }
+}
 func DescribeSpace(vnum int, Spaces []Space) {
 	for i := 0; i < len(Spaces);i++ {
 		if Spaces[i].Vnum == vnum {
