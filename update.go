@@ -61,7 +61,8 @@ func updateZoneMap(play Player, populated []Space) {
 			panic(err)
 		}
 		filter = bson.M{"vnum": bson.M{"$eq":current.Vnum}}
-		update := bson.M{"$set": bson.M{"zonepos":populated[current.Vnum].ZonePos, "zonemap": populated[play.CurrentRoom.Vnum].ZoneMap }}
+//		update := bson.M{"$set": bson.M{"zonepos":populated[current.Vnum].ZonePos, "zonemap": populated[play.CurrentRoom.Vnum].ZoneMap }}
+    update := bson.M{"$set": bson.M{"zonepos":populated[current.Vnum].ZonePos, "zonemap": play.CurrentRoom.ZoneMap }}
 
 		result, err := collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
 		if err != nil {

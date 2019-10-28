@@ -421,7 +421,30 @@ func main() {
 			countKeys()
 			showDesc(play.CurrentRoom)
 		}
-
+		if strings.HasPrefix(input, "merge") {
+			fmt.Println("Merging area zone map data")
+			split := strings.Split(input, " ")
+			sourceName, destName := split[1], split[2]
+			var sourceDat [][]int
+			var destDat [][]int
+			for i := 0;i < len(populated);i++ {
+				if populated[i].Zone == sourceName {
+					sourceDat = populated[i].ZoneMap
+				}
+			}
+			for i := 0;i < len(populated);i++ {
+				if populated[i].Zone == destName {
+					destDat = populated[i].ZoneMap
+				}
+			}
+			zoneDat := mergeMaps(sourceDat, destDat)
+			populated[play.CurrentRoom.Vnum].ZoneMap = zoneDat
+			play.CurrentRoom.ZoneMap = zoneDat
+			play.CurrentRoom.Zone = sourceName
+			updateZoneMap(play, populated)
+			play.CurrentRoom.Zone = destName
+			updateZoneMap(play, populated)
+		}
 		if input == "look" {
 			fmt.Sprintf("Current room is ", play.CurrentRoom)
 			showDesc(play.CurrentRoom)

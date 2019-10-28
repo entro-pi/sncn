@@ -146,10 +146,20 @@ func countKeys() {
   keys = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
   fmt.Println("\033[38:2:185:0:150m",len(keys),"in :",keys)
 }
+func mergeMaps(source [][]int, dest [][]int) ([][]int) {
+  for i := 0;i < len(source);i++ {
+    for c := 0;c < len(source[i]);c++ {
+      if source[i][c] == 1 {
+        dest[i][c] = 1
+      }
+    }
+  }
+  return dest
+}
 
 func genCoreBoard(play Player, populated []Space) (string) {
 	//Create a room map
-	Room := dngn.NewRoom(25, 30)
+	Room := dngn.NewRoom(27, 30)
 	splits := rand.Intn(75)
 	Room.GenerateBSP('%', 'D', splits)
 //	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
