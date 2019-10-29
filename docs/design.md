@@ -96,3 +96,9 @@ This will be fuuuuun!
 
 I will have to add a timing function eventually, why not
 make the first timed thing to be the blink of a new message!
+
+
+map movement is going to be very atypical. Rather than running from
+one place to another, there will be a quicktravel option open to
+any and all players. The idea is maps that have a small description
+and name, that can be selected and teleported to. **this will take some work to make it sensible, just getting the idea out of my brain**
