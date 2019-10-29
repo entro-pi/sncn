@@ -1,15 +1,32 @@
 package main
+
 import (
 
   "context"
   "time"
-
+  "strings"
+  "strconv"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
-func PopulateAreaBuild() []Space {
-	areas := make([]Space, 150)
+
+func PopulateAreaBuild(rangeVnums string) []Space {
+
+  beginString := strings.Split(rangeVnums, "-")[0]
+
+  endString := strings.Split(rangeVnums, "-")[1]
+
+  begin, err := strconv.Atoi(beginString)
+  if err != nil {
+    panic(err)
+  }
+  end, err := strconv.Atoi(endString)
+  if err != nil {
+    panic(err)
+  }
+  length := end - begin
+	areas := make([]Space, length)
 	return areas
 }
 

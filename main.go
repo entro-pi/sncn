@@ -140,6 +140,7 @@ func main() {
 
 
 	//Game loop
+	firstDig := false
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
 		clearCmd()
@@ -148,17 +149,38 @@ func main() {
 		//Save pfile first
 		save := false
 		if strings.HasPrefix(input, "dig") {
+			if strings.Split(input, " ")[1] == "new" {
+				firstDig = true
+			}else {
+				firstDig = false
+			}
+			if firstDig {
+				fmt.Println("Now specify the zone name and vnums required")
+				fmt.Println("as in, \"dig zem 0 15\"")
+				scanner.Scan()
+				input = scanner.Text()
+			}
 			var digFrame [][]int
 			for i := 0;i < 50;i++ {
 				Frame := make([]int, 50)
 				digFrame = append(digFrame, Frame)
 			}
+
 			fmt.Println("\033[38:2:255:0:0m", len(digFrame), "\033[0m")
 
 			//Make a bar that fills with how many rooms you dig
+
 			pos := make([]int, 2)
-			pos[0] = 25
-			pos[1] = 25
+
+			if firstDig {
+				pos[0] = 25
+				pos[1] = 25
+			}else {
+				pos[0] = play.CurrentRoom.ZonePos[0]
+				pos[1] = play.CurrentRoom.ZonePos[1]
+
+			}
+
 			if len(strings.Split(input, " ")) == 4 {
 				digZone := strings.Split(input, " ")[1]
 				digVnumStart := strings.Split(input, " ")[2]
@@ -169,6 +191,12 @@ func main() {
 				dug = dug[:0]
 
 				digNums := digVnumStart + "-" + digVnumEnd
+				toDig := PopulateAreaBuild(digNums)
+				for i := 0;i < len(toDig);i++ {
+					populated = append(populated, toDig[i])
+
+				}
+
 				digNum, err := strconv.Atoi(digVnumStart)
 				if err != nil {
 					panic(err)
@@ -362,7 +390,14 @@ func main() {
 			}
 
 
-
+		//secondary commands
+		if input == "show room vnum" {
+			fmt.Print("\033[38;2;150;0;150mROOM VNUM :"+strconv.Itoa(play.CurrentRoom.Vnum)+"\033[0m")
+		}
+		if input == "show zone info" {
+			fmt.Println("\033[38;2;150;0;150mZONE NAME :"+play.CurrentRoom.Zone+"\033[0m")
+			fmt.Print("\033[38;2;150;0;150mZONE VNUMS :"+play.CurrentRoom.Vnums+"\033[0m")
+		}
 		if input == "edit desc"{
 
 			play.CurrentRoom.Desc = ""
@@ -441,6 +476,9 @@ func main() {
 			play.CurrentRoom.Zone = sourceName
 			updateZoneMap(play, populated)
 			play.CurrentRoom.Zone = destName
+			updateZoneMap(play, populated)
+		}
+		if input == "update zonemap" {
 			updateZoneMap(play, populated)
 		}
 		if input == "look" {
