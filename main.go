@@ -112,6 +112,8 @@ func main() {
 			play = InitPlayer("FSM")
 			addPfile(play)
 			createMobiles("Noodles")
+			fmt.Println("\033[38:2:0:250:0mAll tests passed and world has been initialzed\n\033[0mYou may now start with --login.")
+			os.Exit(1)
 		}else if os.Args[1] == "--guest" {
 			//Continue on
 			populated = PopulateAreas()
@@ -174,6 +176,53 @@ func main() {
 	firstDig := false
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
+		if os.Args[1] == "--login" {
+			for scanner.Scan() {
+				out := ""
+				topbar := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+				colPos := 0
+				col := "A"
+				sidebar := "A\nB\nC\nD\nE\nF\nG\nH\nI\nJ\nK\nL\nM\nN\nO\nP\nQ\nR\nS\nT\nU\nV\nW\nX\nY\nZ"
+				row := "A"
+				rowPos := 0
+				input := scanner.Text()
+				col = string(input[0])
+				row = string(input[1])
+				for i := 0;i < len(topbar);i++ {
+					if string(topbar[i]) == col {
+						out += fmt.Sprint("\033[48:2:200:0:0m"+string(topbar[i])+"\033[0m")
+						colPos = i
+					}else {
+						out += string(topbar[i])
+					}
+				}
+				sidebarSplit := strings.Split(sidebar, "\n")
+				for i := 0;i < len(sidebarSplit);i++ {
+					if sidebarSplit[i] == row {
+						rowPos = i
+						out += fmt.Sprint("\033[48:2:200:0:0m"+sidebarSplit[i]+"\033[0m")
+						for c := 0;c < len(sidebarSplit[i]);c++ {
+							if c == colPos {
+								out += fmt.Sprint("\033[0m ")
+							}else if c == rowPos {
+								out += fmt.Sprint("\033[48:2:200:0:0m \033[0m")
+							}
+						}
+
+					}
+					fmt.Println(out)
+					if scanner.Text() == "quit" {
+						fmt.Println("Seeyah!")
+						os.Exit(1)
+					}
+
+				}
+
+			}
+
+
+		}
 		clearCmd()
 		savePfile(play)
 		input := scanner.Text()
