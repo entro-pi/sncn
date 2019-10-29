@@ -168,7 +168,7 @@ func genCoreBoard(play Player, populated []Space) (string) {
 //	}
   newValue := ""
   outVal := ""
-	fmt.Println("Generating and populating map")
+//	fmt.Println("Generating and populating map")
 	for i := 0;i < len(Room.Data);i++ {
 
 	//				fmt.Println(populated[0].Room.Data[populated[0].Room.Width-1][i])
@@ -195,34 +195,39 @@ func genCoreBoard(play Player, populated []Space) (string) {
 			}
       newValue += "\n"
     }
-    clear()
+
     play.CoreBoard = newValue
     showCoreBoard(play)
     showChat(play)
+    showDesc(play.CurrentRoom)
     time.Sleep(250*time.Millisecond)
     newValue = strings.ReplaceAll(newValue, "T", "\033[48;2;200;150;0mT\033[0m")
-    clear()
+
     play.CoreBoard = newValue
     showCoreBoard(play)
     showChat(play)
+    showDesc(play.CurrentRoom)
     time.Sleep(250*time.Millisecond)
     newValue = strings.ReplaceAll(newValue, "M", "\033[48;2;200;50;50mM\033[0m")
-    clear()
+
     play.CoreBoard = newValue
     showCoreBoard(play)
     showChat(play)
+    showDesc(play.CurrentRoom)
     time.Sleep(250*time.Millisecond)
 		newValue = strings.ReplaceAll(newValue, "%", "\033[38;2;0;150;150m%\033[0m")
-    clear()
+
     play.CoreBoard = newValue
     showCoreBoard(play)
     showChat(play)
+    showDesc(play.CurrentRoom)
     time.Sleep(250*time.Millisecond)
 		newValue = strings.ReplaceAll(newValue, "D", "\033[48;2;200;150;150mD\033[0m")
-    clear()
+
     play.CoreBoard = newValue
     showCoreBoard(play)
     showChat(play)
+    showDesc(play.CurrentRoom)
     time.Sleep(250*time.Millisecond)
 		newValue = strings.ReplaceAll(newValue, " ", "\033[48;2;0;200;150m \033[0m")
 

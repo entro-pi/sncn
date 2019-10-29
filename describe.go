@@ -11,12 +11,31 @@ import (
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
+func clearCmd() {
+		fmt.Print(cmdPos+"                                                                                                                                                                                   ")
+		fmt.Print("\033[52;0H                                                                                                                                                                                   ")
+		fmt.Print("\033[53;0H                                                                                                                                                                                   ")
+		fmt.Print("\033[54;0H                                                                                                                                                                                   ")
+		fmt.Print("\033[55;0H                                                                                                                                                                                   ")
+		fmt.Print("\033[56;0H                                                                                                                                                                                   ")
+		fmt.Print(cmdPos)
+}
 
 func showCoreBoard(play Player) {
   coreSplit := strings.Split(play.CoreBoard, "\n")
   for i := 0;i < len(coreSplit);i++ {
     core := fmt.Sprint("\033[",strconv.Itoa(i),";153H",coreSplit[i])
     fmt.Println(core)
+  }
+}
+func clearCoreBoard(play Player) {
+  coreSplit := strings.Split(play.CoreBoard, "\n")
+  //This needs to be made dynamic for when we adjust the view. for now it's fine
+  coreSpace := "                          "
+  for i := 0;i < len(coreSplit);i++ {
+    core := fmt.Sprint("\033[",strconv.Itoa(i),";153H ")
+
+    fmt.Print(core+coreSpace)
   }
 }
 func DescribeSpace(vnum int, Spaces []Space) {

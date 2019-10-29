@@ -13,11 +13,9 @@ import (
   "go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/SolarLune/dngn"
 )
-func clear() {
-	for i := 0;i < 50;i++ {
-		fmt.Println("                                                              ")
-	}
-}
+
+
+
 type Descriptions struct {
 	BATTLESPAM int
 	ROOMDESC int
@@ -144,7 +142,7 @@ func main() {
 	//Game loop
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
-		clear()
+		clearCmd()
 		savePfile(play)
 		input := scanner.Text()
 		//Save pfile first
@@ -502,6 +500,8 @@ func main() {
 		showChat(play)
 		if coreShow {
 			showCoreBoard(play)
+		}else {
+			clearCoreBoard(play)
 		}
 		fmt.Printf("\033[51;0H")
 	}
