@@ -112,12 +112,43 @@ func main() {
 			play = InitPlayer("FSM")
 			addPfile(play)
 			createMobiles("Noodles")
-		}else if os.Args[1] == "--user" {
+		}else if os.Args[1] == "--guest" {
 			//Continue on
 			populated = PopulateAreas()
 			play = InitPlayer("Wallace")
 			savePfile(play)
 			fmt.Println("In client loop")
+			fmt.Printf("\033[51;0H")
+		}else if os.Args[1] == "--login" {
+			//Continue on
+			user, pword := LoginSC()
+
+			populated = PopulateAreas()
+			play = InitPlayer(user)
+			//just hang on to the password for now
+			fmt.Sprint(pword)
+			savePfile(play)
+			fmt.Println("In client loop")
+			input := "go to 1"
+			//this is pretty incomprehensible
+			//TODO
+			splitCommand := strings.Split(input, "to")
+			stripped := strings.TrimSpace(splitCommand[1])
+			inp, err := strconv.Atoi(stripped)
+			if err != nil {
+				fmt.Println("Error converting a stripped string")
+			}
+			for i := 0;i < len(populated);i++ {
+				if inp == populated[i].Vnum {
+					play.CurrentRoom = populated[i]
+					fmt.Print(populated[i].Vnum, populated[i].Vnums, populated[i].Zone)
+					showDesc(play.CurrentRoom)
+					fmt.Printf("\033[0;0H\033[38:2:0:255:0mPASS\033[0m")
+					break
+				}else {
+					fmt.Printf("\033[0;0H\033[38:2:255:0:0mERROR\033[0m")
+				}
+			}
 			fmt.Printf("\033[51;0H")
 		}else if os.Args[1] == "--builder" {
 			//Continue on
@@ -452,9 +483,7 @@ func main() {
 			showChat(play)
 		}
 		if input == "blit" {
-			for i := 0;i < 55;i++ {
-				fmt.Println("")
-			}
+			clearDirty()
 		}
 		if input == "count keys" {
 			countKeys()
