@@ -102,3 +102,11 @@ map movement is going to be very atypical. Rather than running from
 one place to another, there will be a quicktravel option open to
 any and all players. The idea is maps that have a small description
 and name, that can be selected and teleported to. **this will take some work to make it sensible, just getting the idea out of my brain**
+
+
+As far as asymmetric and symmetric games go, this will be a 
+start-even type game. You will basically start as a generic
+user and change to the player's will as you go. This is to help
+with balancing. Races and classes are usually unknown as you
+start anyway, this will give you some time to come up with a
+back story to your character anyways.
