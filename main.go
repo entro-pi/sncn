@@ -438,6 +438,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println("\033[38:2:255:0:0m", result, "\033[0m")
+			populated = PopulateAreas()
 		}
 
 
@@ -449,6 +450,11 @@ func main() {
 		if strings.HasPrefix(input, "ooc") {
 			createChat(input[3:], play)
 			showChat(play)
+		}
+		if input == "blit" {
+			for i := 0;i < 55;i++ {
+				fmt.Println("")
+			}
 		}
 		if input == "count keys" {
 			countKeys()
