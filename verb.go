@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-
+	"os"
+	"bufio"
   "math/rand"
 	"context"
 	"time"
@@ -156,7 +157,67 @@ func mergeMaps(source [][]int, dest [][]int) ([][]int) {
   }
   return dest
 }
+func target() error {
+  scanner := bufio.NewScanner(os.Stdin)
+  for scanner.Scan() {
+    out := ""
+    topbar := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+    colPos := 25
+    col := "Z"
+    sidebar := "A\nB\nC\nD\nE\nF\nG\nH\nI\nJ\nK\nL\nM\nN\nO\nP\nQ\nR\nS\nT\nU\nV\nW\nX"
+    row := "Z"
+    //rowPos := 0
+    input := scanner.Text()
+    col = string(input[0])
+    row = string(input[1])
+    for i := 0;i < len(topbar);i++ {
+      if string(topbar[i]) == col {
+        out += fmt.Sprint("\033[48:2:200:0:0m"+string(topbar[i])+"\033[0m")
+        colPos = i
+      }else if i == 0 {
+        out += fmt.Sprint("\033["+strconv.Itoa(i+1)+";51H"+string(topbar[i]))
+      }else {
+        out += string(topbar[i])
+      }
+    }
+//    out += "\n"
+
+    sidebarSplit := strings.Split(sidebar, "\n")
+    for i := 0;i < len(sidebarSplit);i++ {
+      out += fmt.Sprint("\033["+strconv.Itoa(i+2)+";51H\033[48:2:0:15:0m"+sidebarSplit[i])
+      if sidebarSplit[i] == row {
+      //	rowPos = i
+        toOut := ""
+        for c := 1;c < len(sidebar);c++ {
+          if c == colPos - 1 || c == colPos + 1 {
+            toOut += fmt.Sprint("\033[48:2:150:0:150m \033[0m")
+          }else {
+            toOut += fmt.Sprint("\033[48:2:0:200:0m \033[0m")
+          }
+        }
+        out += toOut + "\n"
+        continue
+      }
+      for c := 1;c < len(sidebar);c++ {
+        if c == colPos {
+          out += fmt.Sprint("\033[48:2:150:0:150m \033[0m")
+        }else {
+          out += fmt.Sprint(" ")
+        }
+      }
+      out += "\n"
+    }
+    fmt.Print(out)
+    fmt.Print("\033[51;1H")
+    if scanner.Text() == "quit" {
+      fmt.Println("Seeyah!")
+      return nil
+    }
+
+    }
+    return nil
+}
 func genCoreBoard(play Player, populated []Space) (string) {
 	//Create a room map
 	Room := dngn.NewRoom(27, 30)
