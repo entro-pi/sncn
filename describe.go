@@ -76,15 +76,15 @@ func showCoreBoard(play Player) {
   coreSplit := strings.Split(play.CoreBoard, "\n")
   for i := 0;i < len(coreSplit);i++ {
     core := ""
-    if i == 0  || i == 1{
-      for len(core) < len(coreSplit[0]) {
-        core += fmt.Sprint(" ")
-      }
-      core += "\n"
-    }else {
+//    if i == 0  || i == 1{
+//      for len(core) < len(coreSplit[0]) {
+        //core += fmt.Sprint(" ")
+//      }
+//      core += "\n"
+//    }else {
       core = fmt.Sprint("\033[",strconv.Itoa(i),";51H",coreSplit[i])
-    }
-    fmt.Println(core)
+//    }
+    fmt.Print(core)
   }
 }
 func clearCoreBoard(play Player) {

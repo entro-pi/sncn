@@ -195,7 +195,7 @@ func main() {
 				input = scanner.Text()
 			}
 			var digFrame [][]int
-			for i := 0;i < 50;i++ {
+			for i := 0;i < 30;i++ {
 				Frame := make([]int, 50)
 				digFrame = append(digFrame, Frame)
 			}
