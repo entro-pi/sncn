@@ -60,6 +60,7 @@ type Player struct {
 	Inventory []int
 	Equipment []int
 	CoreBoard string
+	PlainCoreBoard string
 	CurrentRoom Space
 
 	Str int
@@ -426,7 +427,7 @@ func main() {
 		//secondary commands
 		if input == "targeting computer" {
 			fmt.Print("Input co-ordinates in the form of AA AB AC etc..")
-			err := target()
+			err := target(play, populated)
 			if err != nil {
 				panic(err)
 			}
@@ -532,7 +533,7 @@ func main() {
 		if strings.Contains(input, "gen coreboard") {
 			//TODO make this so one doesn't loose the
 			//old coreboard, or convert it to xp, i dunno
-			play.CoreBoard = genCoreBoard(play, populated)
+			play.CoreBoard, play = genCoreBoard(play, populated)
 		}
 		if strings.Contains(input, "open map") {
 			//// TODO:
@@ -541,7 +542,7 @@ func main() {
 		if strings.Contains(input, "close coreboard") {
 			coreShow = false
 		}
-		if strings.Contains(input, "open coreboard") {
+		if strings.Contains(input, "lock coreboard") {
 //			fmt.Printf(mapPos)
 				showCoreBoard(play)
 				coreShow = true

@@ -157,12 +157,14 @@ func mergeMaps(source [][]int, dest [][]int) ([][]int) {
   }
   return dest
 }
-func target() error {
+func target(play Player, populated []Space) error {
+
   scanner := bufio.NewScanner(os.Stdin)
   for scanner.Scan() {
     out := ""
     topbar := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
+    playPos := make([]int, 2)
+    playPos[0], playPos[1] = 1, 1
     colPos := 25
     col := "Z"
     sidebar := "A\nB\nC\nD\nE\nF\nG\nH\nI\nJ\nK\nL\nM\nN\nO\nP\nQ\nR\nS\nT\nU\nV\nW\nX"
@@ -182,18 +184,18 @@ func target() error {
       }
     }
 //    out += "\n"
-
+    coreBoard := strings.Split(play.PlainCoreBoard, "\n")
     sidebarSplit := strings.Split(sidebar, "\n")
-    for i := 0;i < len(sidebarSplit);i++ {
-      out += fmt.Sprint("\033["+strconv.Itoa(i+2)+";51H\033[48:2:0:15:0m"+sidebarSplit[i])
+    for i := 2;i < len(sidebarSplit);i++ {
+      out += fmt.Sprint("\033["+strconv.Itoa(i)+";51H\033[48:2:0:15:0m"+sidebarSplit[i])
       if sidebarSplit[i] == row {
       //	rowPos = i
         toOut := ""
         for c := 1;c < len(sidebar);c++ {
           if c == colPos - 1 || c == colPos + 1 {
-            toOut += fmt.Sprint("\033[48:2:150:0:150m \033[0m")
+            toOut += fmt.Sprint("\033[48:2:150:0:150m"+string(coreBoard[i][c])+"\033[0m")
           }else {
-            toOut += fmt.Sprint("\033[48:2:0:200:0m \033[0m")
+            toOut += fmt.Sprint("\033[48:2:0:200:0m"+string(coreBoard[i][c])+"\033[0m")
           }
         }
         out += toOut + "\n"
@@ -201,16 +203,16 @@ func target() error {
       }
       for c := 1;c < len(sidebar);c++ {
         if c == colPos {
-          out += fmt.Sprint("\033[48:2:150:0:150m \033[0m")
+          out += fmt.Sprint("\033[48:2:150:0:150m"+string(coreBoard[i][c])+"\033[0m")
         }else {
-          out += fmt.Sprint(" ")
+          out += fmt.Sprint(string(coreBoard[i][c]))
         }
       }
       out += "\n"
     }
     fmt.Print(out)
     fmt.Print("\033[51;1H")
-    if scanner.Text() == "quit" {
+    if scanner.Text() == "out" {
       fmt.Println("Seeyah!")
       return nil
     }
@@ -218,9 +220,9 @@ func target() error {
     }
     return nil
 }
-func genCoreBoard(play Player, populated []Space) (string) {
+func genCoreBoard(play Player, populated []Space) (string, Player) {
 	//Create a room map
-	Room := dngn.NewRoom(27, 30)
+	Room := dngn.NewRoom(128, 24)
 	splits := rand.Intn(75)
 	Room.GenerateBSP('%', 'D', splits)
 //	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
@@ -256,7 +258,7 @@ func genCoreBoard(play Player, populated []Space) (string) {
 			}
       newValue += "\n"
     }
-
+    play.PlainCoreBoard = newValue
     play.CoreBoard = newValue
     showCoreBoard(play)
     showChat(play)
@@ -295,7 +297,7 @@ func genCoreBoard(play Player, populated []Space) (string) {
     outVal += newValue + "\n"
 
 
-	return outVal
+	return outVal, play
 }
 
 
