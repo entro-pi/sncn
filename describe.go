@@ -206,6 +206,26 @@ func drawDig(digFrame [][]int, zonePos []int) {
 }
 
 func DescribePlayer(play Player) {
+  hp := "\033[31;24H+++\n"
+  for i := 0;len(strings.Split(hp, "\n")) < 19;i++ {
+    if play.Rezz > i {
+      hp += "\033["+strconv.Itoa(i+32)+";25H\033[48:2:175:50:50m \033[0m\n"
+    }else {
+      hp += "\033["+strconv.Itoa(i+31)+";25H\033[48:2:15:50:50m \033[0m\n"
+    }
+  }
+  hp += "\033[49;24H+++"
+  tech := "\033[31;30H===\n"
+  for i := 0;len(strings.Split(tech, "\n")) < 19;i++ {
+    if play.Tech > i {
+      tech += "\033["+strconv.Itoa(i+32)+";31H\033[48:2:75:150:50m \033[0m\n"
+    }else {
+      tech += "\033["+strconv.Itoa(i+31)+";31H\033[48:2:15:50:50m \033[0m\n"
+    }
+  }
+  tech += "\033[49;30H==="
+  fmt.Print(tech)
+  fmt.Print(hp)
 	fmt.Printf("\033[40;0H")
 	fmt.Println("======================")
 	fmt.Println("\033[38:2:0:200:0mStrength     :\033[0m", play.Str)

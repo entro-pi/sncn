@@ -40,6 +40,9 @@ func InitPlayer(name string) Player {
 	play.Title = "The Unknown"
 	play.Inventory = inv
 	play.Equipment = equ
+  play.Rezz = 17
+  play.Tech = 17
+
 	play.Str = 1
 	play.Int = 1
 	play.Dex = 1

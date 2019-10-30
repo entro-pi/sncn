@@ -63,6 +63,9 @@ type Player struct {
 	PlainCoreBoard string
 	CurrentRoom Space
 
+	Rezz int
+	Tech int
+
 	Str int
 	Int int
 	Dex int
@@ -146,6 +149,7 @@ func main() {
 					play.CurrentRoom = populated[i]
 					fmt.Print(populated[i].Vnum, populated[i].Vnums, populated[i].Zone)
 					showDesc(play.CurrentRoom)
+					DescribePlayer(play)
 					fmt.Printf("\033[0;0H\033[38:2:0:255:0mPASS\033[0m")
 					break
 				}else {
@@ -435,6 +439,16 @@ func main() {
 		if input == "show room vnum" {
 			fmt.Print("\033[38;2;150;0;150mROOM VNUM :"+strconv.Itoa(play.CurrentRoom.Vnum)+"\033[0m")
 		}
+		if input == "dam rezz" {
+			play.Rezz -= 5
+		}
+		if input == "dam tech" {
+			play.Tech -= 6
+		}
+		if input == "heal" {
+			play.Rezz = 17
+			play.Tech = 17
+		}
 		if input == "show zone info" {
 			fmt.Println("\033[38;2;150;0;150mZONE NAME :"+play.CurrentRoom.Zone+"\033[0m")
 			fmt.Print("\033[38;2;150;0;150mZONE VNUMS :"+play.CurrentRoom.Vnums+"\033[0m")
@@ -529,6 +543,7 @@ func main() {
 		if input == "look" {
 			fmt.Sprintf("Current room is ", play.CurrentRoom)
 			showDesc(play.CurrentRoom)
+			DescribePlayer(play)
 		}
 		if strings.Contains(input, "gen coreboard") {
 			//TODO make this so one doesn't loose the
@@ -568,6 +583,7 @@ func main() {
 					play.CurrentRoom = populated[i]
 					fmt.Print(populated[i].Vnum, populated[i].Vnums, populated[i].Zone)
 					showDesc(play.CurrentRoom)
+					DescribePlayer(play)
 					fmt.Printf("\033[0;0H\033[38:2:0:255:0mPASS\033[0m")
 					break
 				}else {
@@ -580,6 +596,7 @@ func main() {
 		}
 		//Reset the input to a standardized place
 		showDesc(play.CurrentRoom)
+		DescribePlayer(play)
 		showChat(play)
 		if coreShow {
 			showCoreBoard(play)
