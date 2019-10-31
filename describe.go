@@ -206,25 +206,37 @@ func drawDig(digFrame [][]int, zonePos []int) {
 }
 
 func DescribePlayer(play Player) {
-  hp := "\033[31;24H+++\n"
-  for i := 0;len(strings.Split(hp, "\n")) < 19;i++ {
-    if play.Rezz > i {
-      hp += "\033["+strconv.Itoa(i+32)+";25H\033[48:2:175:50:50m \033[0m\n"
-    }else {
-      hp += "\033["+strconv.Itoa(i+31)+";25H\033[48:2:15:50:50m \033[0m\n"
-    }
+
+  ratio := ""
+  count := 18
+  for   rezz := 0;rezz < play.Rezz;rezz++ {
+
+    ratio += "\033["+strconv.Itoa(count+30)+";25H\033[48:2:175:50:50m \033[0m\n"
+    count--
   }
-  hp += "\033[49;24H+++"
-  tech := "\033[31;30H===\n"
-  for i := 0;len(strings.Split(tech, "\n")) < 19;i++ {
-    if play.Tech > i {
-      tech += "\033["+strconv.Itoa(i+32)+";31H\033[48:2:75:150:50m \033[0m\n"
-    }else {
-      tech += "\033["+strconv.Itoa(i+31)+";31H\033[48:2:15:50:50m \033[0m\n"
-    }
+  for count > 0 {
+      ratio += "\033["+strconv.Itoa(count+30)+";25H\033[48:2:15:50:50m \033[0m\n"
+
+    count--
   }
-  tech += "\033[49;30H==="
-  fmt.Print(tech)
+
+  ratio += "\033[31;24H+++\n"
+  ratio += "\033[49;24H+++"
+  hp := ratio
+  count = 18
+  ratio = ""
+  for tech := 0;tech < play.Tech;tech++ {
+    ratio += "\033["+strconv.Itoa(count+30)+";31H\033[48:2:75:150:50m \033[0m\n"
+    count--
+  }
+  for count > 0 {
+      ratio += "\033["+strconv.Itoa(count+30)+";31H\033[48:2:15:50:50m \033[0m\n"
+      count--
+  }
+  ratio += "\033[31;30H===\n"
+  ratio += "\033[49;30H==="
+  techShow := ratio
+  fmt.Print(techShow)
   fmt.Print(hp)
 	fmt.Printf("\033[40;0H")
 	fmt.Println("======================")

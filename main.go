@@ -63,6 +63,7 @@ type Player struct {
 	PlainCoreBoard string
 	CurrentRoom Space
 
+	MaxRezz int
 	Rezz int
 	Tech int
 

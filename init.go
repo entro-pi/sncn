@@ -41,6 +41,7 @@ func InitPlayer(name string) Player {
 	play.Inventory = inv
 	play.Equipment = equ
   play.Rezz = 17
+  play.MaxRezz = play.Rezz
   play.Tech = 17
 
 	play.Str = 1
