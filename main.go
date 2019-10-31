@@ -428,7 +428,9 @@ func main() {
 
 			}
 
-
+		if input == "pew" {
+			go playPew(1)
+		}
 		//secondary commands
 		if input == "targeting computer" {
 			fmt.Print("Input co-ordinates in the form of aA aB aC etc..")
@@ -549,6 +551,7 @@ func main() {
 		if strings.Contains(input, "gen coreboard") {
 			//TODO make this so one doesn't loose the
 			//old coreboard, or convert it to xp, i dunno
+			go playPew(2)
 			play.CoreBoard, play = genCoreBoard(play, populated)
 		}
 		if strings.Contains(input, "open map") {
@@ -579,6 +582,7 @@ func main() {
 			if err != nil {
 				fmt.Println("Error converting a stripped string")
 			}
+			go playPew(1)
 			play, populated = goTo(inp, play, populated)
 		}
 		if input == "score" {
