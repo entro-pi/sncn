@@ -98,42 +98,42 @@ func AssembleDescCel(room Space, row int) (string) {
 		inWord[0] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row-4)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[0], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[0], "\033[48;2;100;5;100m \033[0m")
 	for len(inWord[1]) < 100 {
 		inWord[1] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row-4)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[1], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[1], "\033[48;2;100;5;100m \033[0m")
 	for len(inWord[2]) < 100 {
 		inWord[2] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row-4)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[2], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[2], "\033[48;2;100;5;100m \033[0m")
 	for len(inWord[3]) < 100 {
 		inWord[3] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row-4)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[3], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[3], "\033[48;2;100;5;100m \033[0m")
 	for len(inWord[4]) < 100 {
 		inWord[4] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row-4)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[4], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[4], "\033[48;2;100;5;100m \033[0m")
 	for len(inWord[5]) < 100 {
 		inWord[5] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row-4)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[5], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[5], "\033[48;2;100;5;100m \033[0m")
 	for len(inWord[6]) < 100 {
 		inWord[6] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row-4)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[6], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[6], "\033[48;2;100;5;100m \033[0m")
 	for len(inWord[7]) < 100 {
 		inWord[7] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row-4)+";51H\033[48;2;100;5;100m\033[38:2:50:0:50m@", inWord[7], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m\033[38:2:50:0:50m@", inWord[7], "\033[48;2;100;5;100m \033[0m")
 
 	return cel
 }
@@ -206,7 +206,7 @@ func target(play Player, populated []Space) error {
         out += fmt.Sprint("\033[48:2:200:0:0m"+string(topbar[i])+"\033[0m")
         colPos = i
       }else if i == 0 {
-        out += fmt.Sprint("\033["+strconv.Itoa(i+30)+";51H"+string(topbar[i]))
+        out += fmt.Sprint("\033["+strconv.Itoa(i+20)+";51H"+string(topbar[i]))
       }else {
         out += string(topbar[i])
       }
@@ -215,8 +215,8 @@ func target(play Player, populated []Space) error {
 
 	 	coreBoard := strings.Split(play.PlainCoreBoard, "\n")
     sidebarSplit := strings.Split(sidebar, "\n")
-    for i := 2;i < len(sidebarSplit);i++ {
-      out += fmt.Sprint("\033["+strconv.Itoa(i+30)+";51H\033[48:2:0:15:0m"+sidebarSplit[i])
+    for i := 0;i < len(sidebarSplit);i++ {
+      out += fmt.Sprint("\033["+strconv.Itoa(i+21)+";51H\033[48:2:0:15:0m"+sidebarSplit[i])
       if sidebarSplit[i] == row {
       //	rowPos = i
         toOut := ""

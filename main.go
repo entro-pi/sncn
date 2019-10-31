@@ -75,6 +75,17 @@ type Player struct {
 	Cha int
 }
 
+type Mobile struct {
+	Name string
+	LongName string
+	ItemSpawn []int
+	Rep string
+	MaxRezz int
+	Rezz int
+	Tech int
+	Aggro int
+	Align int
+}
 
 
 
