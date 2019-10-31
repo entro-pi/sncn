@@ -147,6 +147,25 @@ func countKeys() {
   keys = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
   fmt.Println("\033[38:2:185:0:150m",len(keys),"in :",keys)
 }
+
+func goTo(dest int, play Player, populated []Space) (Player, []Space) {
+
+	for i := 0;i < len(populated);i++ {
+		if dest == populated[i].Vnum {
+			play.CurrentRoom = populated[i]
+			fmt.Print(populated[i].Vnum, populated[i].Vnums, populated[i].Zone)
+			showDesc(play.CurrentRoom)
+			DescribePlayer(play)
+			fmt.Printf("\033[0;0H\033[38:2:0:255:0mPASS\033[0m")
+			break
+		}else {
+			fmt.Printf("\033[0;0H\033[38:2:255:0:0mERROR\033[0m")
+		}
+	}
+	return play, populated
+}
+
+
 func mergeMaps(source [][]int, dest [][]int) ([][]int) {
   for i := 0;i < len(source);i++ {
     for c := 0;c < len(source[i]);c++ {

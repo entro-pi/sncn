@@ -579,18 +579,7 @@ func main() {
 			if err != nil {
 				fmt.Println("Error converting a stripped string")
 			}
-			for i := 0;i < len(populated);i++ {
-				if inp == populated[i].Vnum {
-					play.CurrentRoom = populated[i]
-					fmt.Print(populated[i].Vnum, populated[i].Vnums, populated[i].Zone)
-					showDesc(play.CurrentRoom)
-					DescribePlayer(play)
-					fmt.Printf("\033[0;0H\033[38:2:0:255:0mPASS\033[0m")
-					break
-				}else {
-					fmt.Printf("\033[0;0H\033[38:2:255:0:0mERROR\033[0m")
-				}
-			}
+			play, populated = goTo(inp, play, populated)
 		}
 		if input == "score" {
 			DescribePlayer(play)
