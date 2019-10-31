@@ -594,9 +594,10 @@ func main() {
 		showChat(play)
 		if coreShow {
 			showCoreBoard(play)
-		}else {
-			clearCoreBoard(play)
 		}
+//		}else {
+//			clearCoreBoard(play)
+//		}
 		fmt.Printf("\033[51;0H")
 	}
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
