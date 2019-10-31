@@ -431,7 +431,7 @@ func main() {
 
 		//secondary commands
 		if input == "targeting computer" {
-			fmt.Print("Input co-ordinates in the form of AA AB AC etc..")
+			fmt.Print("Input co-ordinates in the form of aA aB aC etc..")
 			err := target(play, populated)
 			if err != nil {
 				panic(err)

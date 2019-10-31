@@ -181,15 +181,24 @@ func target(play Player, populated []Space) error {
   scanner := bufio.NewScanner(os.Stdin)
   for scanner.Scan() {
     out := ""
-    topbar := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    topbar := " a b c d e f g h i j k l m n o p q r s t u v w "
     playPos := make([]int, 2)
     playPos[0], playPos[1] = 1, 1
     colPos := 25
-    col := "Z"
+    col := "z"
     sidebar := "A\nB\nC\nD\nE\nF\nG\nH\nI\nJ\nK\nL\nM\nN\nO\nP\nQ\nR\nS\nT\nU\nV\nW\nX"
     row := "Z"
     //rowPos := 0
     input := scanner.Text()
+		triggered := false
+		for len(input) < 2 {
+			input += "a"
+			triggered = true
+		}
+		if triggered {
+			input = "a"
+			input += "A"
+		}
     col = string(input[0])
     row = string(input[1])
     for i := 0;i < len(topbar);i++ {
@@ -203,7 +212,8 @@ func target(play Player, populated []Space) error {
       }
     }
 //    out += "\n"
-    coreBoard := strings.Split(play.PlainCoreBoard, "\n")
+
+	 	coreBoard := strings.Split(play.PlainCoreBoard, "\n")
     sidebarSplit := strings.Split(sidebar, "\n")
     for i := 2;i < len(sidebarSplit);i++ {
       out += fmt.Sprint("\033["+strconv.Itoa(i)+";51H\033[48:2:0:15:0m"+sidebarSplit[i])
