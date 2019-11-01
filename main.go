@@ -179,11 +179,11 @@ func main() {
 			fmt.Println("Builder log-in")
 
 			fmt.Printf("\033[51;0H")
-		}	else if os.Args[1] == "--connect-core" {
+		}	else if strings.Contains(os.Args[1], "--connect-core-ip=") {
 				//TODO move these to after authentication
-
+				ip := strings.Split(os.Args[1], "=")[1]
 				populated = PopulateAreas()
-				play = InitPlayer("FlyingSpaghettiMonster")
+				play = InitPlayer("Arthur Dent")
 				savePfile(play)
 
 				fmt.Println("Core login procedure started")
@@ -203,23 +203,21 @@ func main() {
 				err = response.Bind("tcp://*:4001")
 				err = login.Connect(hostname)
 				servepubKey := ""
-				for {
-					//important! at this stage we have to hardcode our address
-					_, err = login.Send("REQUESTPUBKEY:YOURIPADDRESS", 0)
-					if err != nil {
-						panic(err)
-					}
-
-					resp, err := response.Recv(0)
-					if err != nil {
-						panic(err)
-					}
-					servepubKey = string(resp)
-					fmt.Println(servepubKey)
+				_, err = login.Send("REQUESTPUBKEY:"+ip, 0)
+				if err != nil {
+					panic(err)
 				}
 
+				resp, err := response.Recv(0)
+				if err != nil {
+					panic(err)
+				}
+				servepubKey = string(resp)
 
 
+
+				login.Close()
+				response.Close()
 //				user, pword := LoginSC()
 				clientkey, clientseckey, err := zmq.NewCurveKeypair()
 				if err != nil {
@@ -576,6 +574,7 @@ func main() {
 
 		if input == "quit" {
 			fmt.Println("Bai!")
+			zmq.AuthStop()
 			os.Exit(1)
 		}
 		if strings.HasPrefix(input, "ooc") {
