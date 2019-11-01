@@ -229,6 +229,12 @@ func main() {
 	}
 
 
+	//Show the screen first off
+	play.CurrentRoom = populated[1]
+	showDesc(play.CurrentRoom)
+	DescribePlayer(play)
+	//showChat(play)
+
 	//Game loop
 	fmt.Println("#of mobiles:"+strconv.Itoa(len(mobiles)))
 	firstDig := false
@@ -607,8 +613,20 @@ func main() {
 			os.Exit(1)
 		}
 		if strings.HasPrefix(input, "ooc") {
-			createChat(input[3:], play)
-			showChat(play)
+			input = strings.Replace(input, "ooc ", "+=+", 1)
+			input = "Their Noodlieness"+input
+			//createChat(input[3:], play)
+			//todo
+			response.Recv(0)
+			_, err := response.Send(input, 0)
+			if err != nil {
+				panic(err)
+			}
+			chat, err := response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Printf(chat)
 		}
 		if input == "blit" {
 			clearDirty()
@@ -692,7 +710,7 @@ func main() {
 		//Reset the input to a standardized place
 		showDesc(play.CurrentRoom)
 		DescribePlayer(play)
-		showChat(play)
+		//showChat(play)
 		if coreShow {
 			showCoreBoard(play)
 		}
