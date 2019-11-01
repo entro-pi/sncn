@@ -111,7 +111,7 @@ func main() {
 	var play Player
 	var hostname string
 	var response *zmq.Socket
-	var clientSocket *zmq.Socket
+
 	//Make this relate to character level
 	var dug []Space
 	coreShow := false
@@ -192,19 +192,12 @@ func main() {
 				savePfile(play)
 
 				fmt.Println("Core login procedure started")
-				login, err := zmq.NewSocket(zmq.PUSH)
-				if err != nil {
-					panic(err)
-				}
-				defer login.Close()
-				response, err = zmq.NewSocket(zmq.REQ)
-				if err != nil {
-					panic(err)
-				}
+				response, _ = zmq.NewSocket(zmq.REQ)
+
 				defer response.Close()
 				//Preferred way to connec
 				hostname = "tcp://91.121.154.192:7777"
-				err = response.Connect(hostname)
+				err := response.Connect(hostname)
 				servepubKey := ""
 				_, err = response.Send("REQUESTPUBKEY:"+ip, 0)
 				if err != nil {
@@ -217,25 +210,6 @@ func main() {
 				}
 				servepubKey = string(resp)
 
-
-
-//				user, pword := LoginSC()
-				clientkey, clientseckey, err := zmq.NewCurveKeypair()
-				if err != nil {
-					panic(err)
-				}
-				clientSocket, err = zmq.NewSocket(zmq.PUSH)
-				if err != nil {
-					panic(err)
-				}
-				zmq.AuthSetVerbose(true)
-				zmq.AuthStart()
-				zmq.AuthAllow("snowcrash.network", "127.0.0.1/8")
-				zmq.AuthCurveAdd("snowcrash.network", clientkey )
-		    err = clientSocket.ClientAuthCurve(servepubKey, clientkey, clientseckey)
-				if err != nil {
-					panic(err)
-				}
 				fmt.Println(servepubKey)
 				fmt.Printf("\033[51;0H")
 
