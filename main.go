@@ -184,9 +184,9 @@ func main() {
 			fmt.Println("Builder log-in")
 
 			fmt.Printf("\033[51;0H")
-		}	else if strings.Contains(os.Args[1], "--connect-core-ip=") {
+		}	else if strings.Contains(os.Args[1], "--connect-core") {
 				//TODO move these to after authentication
-				ip := strings.Split(os.Args[1], "=")[1]
+
 				populated = PopulateAreas()
 				mobiles = PopulateAreaMobiles()
 				play = InitPlayer("Arthur Dent")
@@ -200,7 +200,7 @@ func main() {
 				hostname = "tcp://91.121.154.192:7777"
 				err := response.Connect(hostname)
 				servepubKey := ""
-				_, err = response.Send("REQUESTPUBKEY:"+ip, 0)
+				_, err = response.Send("REQUESTPUBKEY:AUTHINFO", 0)
 				if err != nil {
 					panic(err)
 				}
@@ -475,7 +475,7 @@ func main() {
 			}
 
 			}
-
+		//COMMAND SECTION
 		if input == "pew" {
 			go playPew(1)
 		}
