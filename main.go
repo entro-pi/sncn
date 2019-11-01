@@ -63,6 +63,7 @@ type Player struct {
 	CoreBoard string
 	PlainCoreBoard string
 	CurrentRoom Space
+	PlayerHash string
 
 	MaxRezz int
 	Rezz int
@@ -478,15 +479,45 @@ func main() {
 		if input == "pew" {
 			go playPew(1)
 		}
-		if input == "wizinit" {
-			fmt.Println("Sending init world command")
+		if strings.HasPrefix(input, "create") {
+			name, password := strings.Split(input, " ")[1], strings.Split(input, " ")[2]
 			response.Recv(0)
-			_, err := response.Send("init world", 0)
+			_, err := response.Send(name + ":-:" + password, 0)
+			if err != nil {
+				panic(err)
+			}
+			play.PlayerHash, err = response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(play.PlayerHash)
+		}
+		if strings.HasPrefix(input, "login") {
+			userPass := strings.Split(input, " ")
+			user, pass := userPass[1], userPass[2]
+			response.Recv(0)
+			_, err := response.Send(user + ":=:" + pass, 0)
+			if err != nil {
+				panic(err)
+			}
+			play.PlayerHash, err = response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(play.PlayerHash)
+		}
+		if strings.HasPrefix(input, "wizinit:") {
+			fmt.Println("Sending init world command")
+			pass := strings.Split(input, "--")[1]
+			response.Recv(0)
+			_, err := response.Send("init world:"+play.Name+"--"+pass, 0)
 			if err != nil {
 				panic(err)
 			}
 
+		if input == "login" {
 
+		}
 		}
 		if input == "shutdown server" {
 			fmt.Println("Sending shutdown signal")
