@@ -12,6 +12,7 @@ import (
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/SolarLune/dngn"
+	zmq "github.com/pebbe/zmq4"
 )
 
 
@@ -178,11 +179,72 @@ func main() {
 			fmt.Println("Builder log-in")
 
 			fmt.Printf("\033[51;0H")
-		}else {
+		}	else if os.Args[1] == "--connect-core" {
+				//TODO move these to after authentication
+
+				populated = PopulateAreas()
+				play = InitPlayer("FlyingSpaghettiMonster")
+				savePfile(play)
+
+				fmt.Println("Core login procedure started")
+				login, err := zmq.NewSocket(zmq.PUSH)
+				if err != nil {
+					panic(err)
+				}
+				defer login.Close()
+				response, err := zmq.NewSocket(zmq.PULL)
+				if err != nil {
+					panic(err)
+				}
+				defer response.Close()
+				//Preferred way to connect
+				//hostname := "tcp://snowcrashnetwork.vineyard.haus:4000"
+				hostname := "tcp://192.168.1.77:4001"
+				err = response.Bind("tcp://*:4001")
+				err = login.Connect(hostname)
+				servepubKey := ""
+				for {
+					//important! at this stage we have to hardcode our address
+					_, err = login.Send("REQUESTPUBKEY:YOURIPADDRESS", 0)
+					if err != nil {
+						panic(err)
+					}
+
+					resp, err := response.Recv(0)
+					if err != nil {
+						panic(err)
+					}
+					servepubKey = string(resp)
+					fmt.Println(servepubKey)
+				}
+
+
+
+//				user, pword := LoginSC()
+				clientkey, clientseckey, err := zmq.NewCurveKeypair()
+				if err != nil {
+					panic(err)
+				}
+				client, err := zmq.NewSocket(zmq.PUSH)
+				if err != nil {
+					panic(err)
+				}
+				zmq.AuthSetVerbose(true)
+				zmq.AuthStart()
+				zmq.AuthAllow("snowcrash.network", "127.0.0.1/8")
+				zmq.AuthCurveAdd("snowcrash.network", clientkey )
+		    err = client.ClientAuthCurve(servepubKey, clientkey, clientseckey)
+				if err != nil {
+					panic(err)
+				}
+				fmt.Println(servepubKey)
+				fmt.Printf("\033[51;0H")
+
+			}else {
 			fmt.Println("Unrecognized flag")
 			os.Exit(1)
 		}
-	} else {
+ }else {
 		fmt.Println("Use --init to build and launch the world, --user to just connect.")
 		fmt.Println("--builder for a building session")
 		os.Exit(1)
