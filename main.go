@@ -190,7 +190,6 @@ func main() {
 
 				populated = PopulateAreas()
 				mobiles = PopulateAreaMobiles()
-
 				savePfile(play)
 
 				fmt.Println("Core login procedure started")
@@ -510,7 +509,11 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			play.PlayerHash, err = response.Recv(0)
+			playBytes, err := response.RecvBytes(0)
+			if err != nil {
+				panic(err)
+			}
+			err = bson.Unmarshal(playBytes, &play)
 			if err != nil {
 				panic(err)
 			}
@@ -614,7 +617,7 @@ func main() {
 		}
 		if strings.HasPrefix(input, "ooc") {
 			input = strings.Replace(input, "ooc ", "+=+", 1)
-			input = "Their Noodlieness"+input
+			input = play.Name+input
 			//createChat(input[3:], play)
 			//todo
 			response.Recv(0)
