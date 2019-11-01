@@ -107,7 +107,11 @@ func main() {
 	//if vnum is taken
 	//Get the flags passed in
 	var populated []Space
+	var mobiles []Mobile
 	var play Player
+	var hostname string
+	var response *zmq.Socket
+	var clientSocket *zmq.Socket
 	//Make this relate to character level
 	var dug []Space
 	coreShow := false
@@ -183,6 +187,7 @@ func main() {
 				//TODO move these to after authentication
 				ip := strings.Split(os.Args[1], "=")[1]
 				populated = PopulateAreas()
+				mobiles = PopulateAreaMobiles()
 				play = InitPlayer("Arthur Dent")
 				savePfile(play)
 
@@ -192,18 +197,16 @@ func main() {
 					panic(err)
 				}
 				defer login.Close()
-				response, err := zmq.NewSocket(zmq.PULL)
+				response, err = zmq.NewSocket(zmq.REQ)
 				if err != nil {
 					panic(err)
 				}
 				defer response.Close()
-				//Preferred way to connect
-				//hostname := "tcp://snowcrashnetwork.vineyard.haus:4000"
-				hostname := "tcp://192.168.1.77:4001"
-				err = response.Bind("tcp://*:4001")
-				err = login.Connect(hostname)
+				//Preferred way to connec
+				hostname = "tcp://91.121.154.192:7777"
+				err = response.Connect(hostname)
 				servepubKey := ""
-				_, err = login.Send("REQUESTPUBKEY:"+ip, 0)
+				_, err = response.Send("REQUESTPUBKEY:"+ip, 0)
 				if err != nil {
 					panic(err)
 				}
@@ -216,14 +219,12 @@ func main() {
 
 
 
-				login.Close()
-				response.Close()
 //				user, pword := LoginSC()
 				clientkey, clientseckey, err := zmq.NewCurveKeypair()
 				if err != nil {
 					panic(err)
 				}
-				client, err := zmq.NewSocket(zmq.PUSH)
+				clientSocket, err = zmq.NewSocket(zmq.PUSH)
 				if err != nil {
 					panic(err)
 				}
@@ -231,7 +232,7 @@ func main() {
 				zmq.AuthStart()
 				zmq.AuthAllow("snowcrash.network", "127.0.0.1/8")
 				zmq.AuthCurveAdd("snowcrash.network", clientkey )
-		    err = client.ClientAuthCurve(servepubKey, clientkey, clientseckey)
+		    err = clientSocket.ClientAuthCurve(servepubKey, clientkey, clientseckey)
 				if err != nil {
 					panic(err)
 				}
@@ -250,6 +251,7 @@ func main() {
 
 
 	//Game loop
+	fmt.Println("#of mobiles:"+strconv.Itoa(len(mobiles)))
 	firstDig := false
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
@@ -501,6 +503,13 @@ func main() {
 
 		if input == "pew" {
 			go playPew(1)
+		}
+		if input == "shutdown server" {
+			fmt.Println("Sending shutdown signal")
+			_, err := response.Send("shutdown", 0)
+			if err != nil {
+				panic(err)
+			}
 		}
 		//secondary commands
 		if input == "targeting computer" {
