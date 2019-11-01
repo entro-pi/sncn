@@ -186,10 +186,11 @@ func main() {
 			fmt.Printf("\033[51;0H")
 		}	else if strings.Contains(os.Args[1], "--connect-core") {
 				//TODO move these to after authentication
+				user, pword := LoginSC()
 
 				populated = PopulateAreas()
 				mobiles = PopulateAreaMobiles()
-				play = InitPlayer("Arthur Dent")
+
 				savePfile(play)
 
 				fmt.Println("Core login procedure started")
@@ -213,7 +214,10 @@ func main() {
 
 				fmt.Println(servepubKey)
 				fmt.Printf("\033[51;0H")
-
+				_, err = response.Send(user+":=:"+pword, 0)
+				if err != nil {
+					panic(err)
+				}
 			}else {
 			fmt.Println("Unrecognized flag")
 			os.Exit(1)
