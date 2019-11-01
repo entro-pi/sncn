@@ -478,8 +478,19 @@ func main() {
 		if input == "pew" {
 			go playPew(1)
 		}
+		if input == "wizinit" {
+			fmt.Println("Sending init world command")
+			response.Recv(0)
+			_, err := response.Send("init world", 0)
+			if err != nil {
+				panic(err)
+			}
+
+
+		}
 		if input == "shutdown server" {
 			fmt.Println("Sending shutdown signal")
+			response.Recv(0)
 			_, err := response.Send("shutdown", 0)
 			if err != nil {
 				panic(err)
