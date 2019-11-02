@@ -174,6 +174,22 @@ func main() {
 					fmt.Printf("\033[0;0H\033[38:2:255:0:0mERROR\033[0m")
 				}
 			}
+			//log the character in
+
+			response.Recv(0)
+			_, err = response.Send(user + ":=:" + pword, 0)
+			if err != nil {
+				panic(err)
+			}
+			playBytes, err := response.RecvBytes(0)
+			if err != nil {
+				panic(err)
+			}
+			err = bson.Unmarshal(playBytes, &play)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(play.PlayerHash)
 			fmt.Printf("\033[51;0H")
 		}else if os.Args[1] == "--builder" {
 			//Continue on
@@ -213,10 +229,21 @@ func main() {
 
 				fmt.Println(servepubKey)
 				fmt.Printf("\033[51;0H")
+				user = strings.TrimSpace(user)
+				pword = strings.TrimSpace(pword)
 				_, err = response.Send(user+":=:"+pword, 0)
 				if err != nil {
 					panic(err)
 				}
+				playBytes, err := response.RecvBytes(0)
+				if err != nil {
+					panic(err)
+				}
+				err = bson.Unmarshal(playBytes, &play)
+				if err != nil {
+					panic(err)
+				}
+				fmt.Println(play.PlayerHash)
 			}else {
 			fmt.Println("Unrecognized flag")
 			os.Exit(1)
