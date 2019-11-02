@@ -64,6 +64,11 @@ type Player struct {
 	PlainCoreBoard string
 	CurrentRoom Space
 	PlayerHash string
+	Target string
+	TargetLong string
+	TarX int
+	TarY int
+	CPU string
 
 	MaxRezz int
 	Rezz int
@@ -569,12 +574,35 @@ func main() {
 			}
 		}
 		//secondary commands
-		if input == "targeting computer" {
-			fmt.Print("Input co-ordinates in the form of aA aB aC etc..")
-			err := target(play, populated)
-			if err != nil {
-				panic(err)
+		if strings.HasPrefix(input, "tc:") {
+			TARG:
+			for scanner.Scan() {
+				inputTarg := scanner.Text()
+				if strings.HasPrefix(input, "tc:") {
+						targString := strings.Split(input, "tc:")[1]
+						play = improvedTargeting(play, targString)
+						input = ""
+				}else if scanner.Text() == "out" {
+					break TARG
+				}else {
+					play = improvedTargeting(play, inputTarg)
+				}
+				showDesc(play.CurrentRoom)
+				//showChat(play)
+				showCoreBoard(play)
+
+		//		}else {
+		//			clearCoreBoard(play)
+		//		}
+				fmt.Printf(play.Target)
+
+				fmt.Printf("\033[31;0H\033[48;2;175;0;150m<<<"+play.TargetLong+">>>\033[0m")
+				fmt.Printf("\033[51;0H")
+
 			}
+//			fmt.Print("Input co-ordinates in the form of aA aB aC etc..")
+			//play, err := target(play, populated)
+
 		}
 		if input == "show room vnum" {
 			fmt.Print("\033[38;2;150;0;150mROOM VNUM :"+strconv.Itoa(play.CurrentRoom.Vnum)+"\033[0m")
@@ -748,6 +776,8 @@ func main() {
 //		}else {
 //			clearCoreBoard(play)
 //		}
+		fmt.Printf(play.Target)
+
 		fmt.Printf("\033[51;0H")
 	}
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})

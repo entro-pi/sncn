@@ -176,15 +176,60 @@ func mergeMaps(source [][]int, dest [][]int) ([][]int) {
   }
   return dest
 }
-func target(play Player, populated []Space) error {
+func improvedTargeting(play Player, target string) (Player) {
 
+	if strings.Contains(target, "|") {
+		tarX, err := strconv.Atoi(strings.Split(target, "|")[0])
+		if err != nil {
+			panic(err)
+		}
+		tarY, err := strconv.Atoi(strings.Split(target, "|")[1])
+		if err != nil {
+			panic(err)
+		}
+		play.TarX = tarX
+		play.TarY = tarY
+	}else {
+		switch target {
+		case "8":
+			play.TarY -= 1
+		case "2":
+			play.TarY += 1
+		case "4":
+			play.TarX -= 1
+		case "6":
+			play.TarX += 1
+		}
+	}
+	targ := ""
+//	fmt.Print(play.CPU)
+	splitCPU := strings.Split(play.CPU, "\n")
+	for i := 0;i < len(splitCPU);i++ {
+		for r := 0;r < len(splitCPU[i]);r++ {
+			if play.TarX == r && play.TarY == i {
+				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:255:0:0m"+string(splitCPU[i][r])+"\033[0m")
+				play.TargetLong = string(splitCPU[i][r])
+				targ = fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:255:0:0m"+string(splitCPU[i][r])+"\033[0m")
+			}else {
+				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H"+string(splitCPU[i][r]))
+			}
+		}
+	}
+	play.Target = targ
+	return play
+}
+
+
+func target(play Player, populated []Space) (Player, error) {
+	targ := ""
   scanner := bufio.NewScanner(os.Stdin)
   for scanner.Scan() {
     out := ""
-    topbar := " a b c d e f g h i j k l m n o p q r s t u v w "
+    topbar := "abcdefghijklmnopqrstuvwxyz"
     playPos := make([]int, 2)
     playPos[0], playPos[1] = 1, 1
     colPos := 25
+		rowPos := 25
     col := "z"
     sidebar := "A\nB\nC\nD\nE\nF\nG\nH\nI\nJ\nK\nL\nM\nN\nO\nP\nQ\nR\nS\nT\nU\nV\nW"
     row := "Z"
@@ -199,12 +244,14 @@ func target(play Player, populated []Space) error {
 			input = "a"
 			input += "A"
 		}
+
     col = string(input[0])
     row = string(input[1])
     for i := 0;i < len(topbar);i++ {
       if string(topbar[i]) == col {
         out += fmt.Sprint("\033[48:2:200:0:0m"+string(topbar[i])+"\033[0m")
         colPos = i
+				playPos[0] = i
       }else if i == 0 {
         out += fmt.Sprint("\033["+strconv.Itoa(i+20)+";54H"+string(topbar[i]))
       }else {
@@ -218,9 +265,13 @@ func target(play Player, populated []Space) error {
     for i := 0;i < len(sidebarSplit);i++ {
       out += fmt.Sprint("\033["+strconv.Itoa(i+20)+";54H\033[48:2:0:15:0m"+sidebarSplit[i])
       if sidebarSplit[i] == row {
-      //	rowPos = i
+      	rowPos = i
         toOut := ""
-        for c := 1;c < len(sidebar);c++ {
+        for c := 0;c < len(sidebar);c++ {
+					if c == colPos {
+						playPos[1] = rowPos
+
+					}
           if c == colPos - 1 || c == colPos + 1 {
             toOut += fmt.Sprint("\033[48:2:150:0:150m"+string(coreBoard[i][c])+"\033[0m")
           }else {
@@ -230,7 +281,7 @@ func target(play Player, populated []Space) error {
         out += toOut + "\n"
         continue
       }
-      for c := 1;c < len(sidebar);c++ {
+      for c := 0;c < len(sidebar);c++ {
         if c == colPos {
           out += fmt.Sprint("\033[48:2:150:0:150m"+string(coreBoard[i][c])+"\033[0m")
         }else {
@@ -239,15 +290,27 @@ func target(play Player, populated []Space) error {
       }
       out += "\n"
     }
-    fmt.Print(out)
-    fmt.Print("\033[51;1H")
+		if scanner.Text() != "out" {
+			targCPU := strings.Split(play.CPU, "\n")
+			fmt.Printf("\033[52;1H\033[48:2:0:0:175m<<< >>>\033[0m    ")
+
+			targ = string(targCPU[playPos[0]][playPos[1]])
+			play.Target = targ
+			if play.Target != " " {
+				fmt.Print("\033[52;1H\033[48:2:150:0:175m<<<"+string(play.Target)+">>>\033[0m")
+			}
+
+		}
+		fmt.Print(out)
+
+		fmt.Print("\033[51;1H")
     if scanner.Text() == "out" {
       fmt.Println("Seeyah!")
-      return nil
+      return play, nil
     }
 
     }
-    return nil
+    return play, nil
 }
 func genCoreBoard(play Player, populated []Space) (string, Player) {
 	//Create a room map
@@ -266,7 +329,7 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
 	//				fmt.Println(populated[0].Room.Data[populated[0].Room.Width-1][i])
 			value := string(Room.Data[i])
 //      newValue = ""
-			for s := 1;s < len(value);s++ {
+			for s := 0;s < len(value);s++ {
 				if string(value[s]) == " " {
 					ChanceTreasure := "T"
 					if rand.Intn(100) > 98 {
@@ -287,6 +350,8 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
 			}
       newValue += "\n"
     }
+		play.CPU = newValue + "\n"
+
     play.PlainCoreBoard = newValue
     play.CoreBoard = newValue
     showCoreBoard(play)
@@ -324,8 +389,8 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
 		newValue = strings.ReplaceAll(newValue, " ", "\033[48;2;0;200;150m \033[0m")
 
     outVal += newValue + "\n"
-
-
+		fmt.Printf("\033[48:2:150:0:175m<<<"+string(play.Target)+">>>\033[0m")
+		//fmt.Println(play.CPU)
 	return outVal, play
 }
 
