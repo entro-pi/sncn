@@ -301,6 +301,37 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
 }
 
 
+func craftMob() Mobile {
+	mob := InitMob()
+	val := ""
+  val += "\033[0;53H\033[48:2:120:120:0m                                                                              \033[0m"
+  val += "\033[32;53H\033[48:2:120:120:0m                                                                              \033[0m"
+
+  for i := 2;i < 32;i++ {
+		if i == 2 || i == 31 {
+			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m \033[0m                                                                            \033[48:2:120:120:0m \033[0m"
+		}else if i == 4 || i > 11 && i < 15 {
+			if i == 4 {
+				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m$                                                                             \033[0m")
+
+			}else if i > 11 && i < 15 {
+				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m&                                                                             \033[0m")
+
+			}else {
+				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m                                                                              \033[0m")
+
+			}
+		}else {
+			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m \033[0m                                                                            \033[48:2:120:120:0m \033[0m"
+
+		}
+
+
+  }
+  fmt.Println(val)
+	return mob
+}
+
 //TODO make this modular
 func createChat(message string, play Player) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))

@@ -752,7 +752,19 @@ func main() {
 			//// TODO:
 			//This
 		}
-		if strings.Contains(input, "close coreboard") {
+		if strings.Contains(input, "craft mobile"){
+			craftMob()
+			for scanner.Scan() {
+				if scanner.Text() != "exit" {
+					continue
+				}else {
+					break
+				}
+
+
+			}
+		}
+		if strings.Contains(input, "unlock coreboard") {
 			coreShow = false
 		}
 		if strings.Contains(input, "lock coreboard") {

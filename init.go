@@ -53,6 +53,11 @@ func InitPlayer(name string) Player {
 	return play
 }
 
+func InitMob() Mobile {
+  var mob Mobile
+  return mob
+}
+
 func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
