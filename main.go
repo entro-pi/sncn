@@ -63,6 +63,12 @@ type Player struct {
 	CoreBoard string
 	PlainCoreBoard string
 	CurrentRoom Space
+	PlayerHash string
+	Target string
+	TargetLong string
+	TarX int
+	TarY int
+	CPU string
 
 	MaxRezz int
 	Rezz int
@@ -107,7 +113,11 @@ func main() {
 	//if vnum is taken
 	//Get the flags passed in
 	var populated []Space
+	var mobiles []Mobile
 	var play Player
+	var hostname string
+	var response *zmq.Socket
+
 	//Make this relate to character level
 	var dug []Space
 	coreShow := false
@@ -169,6 +179,22 @@ func main() {
 					fmt.Printf("\033[0;0H\033[38:2:255:0:0mERROR\033[0m")
 				}
 			}
+			//log the character in
+
+			response.Recv(0)
+			_, err = response.Send(user + ":=:" + pword, 0)
+			if err != nil {
+				panic(err)
+			}
+			playBytes, err := response.RecvBytes(0)
+			if err != nil {
+				panic(err)
+			}
+			err = bson.Unmarshal(playBytes, &play)
+			if err != nil || play.PlayerHash == "2" {
+				panic(err)
+			}
+			fmt.Println(play.PlayerHash)
 			fmt.Printf("\033[51;0H")
 		}else if os.Args[1] == "--builder" {
 			//Continue on
@@ -179,67 +205,50 @@ func main() {
 			fmt.Println("Builder log-in")
 
 			fmt.Printf("\033[51;0H")
-		}	else if os.Args[1] == "--connect-core" {
+		}	else if strings.Contains(os.Args[1], "--connect-core") {
 				//TODO move these to after authentication
+				user, pword := LoginSC()
 
 				populated = PopulateAreas()
-				play = InitPlayer("FlyingSpaghettiMonster")
+				mobiles = PopulateAreaMobiles()
 				savePfile(play)
 
 				fmt.Println("Core login procedure started")
-				login, err := zmq.NewSocket(zmq.PUSH)
-				if err != nil {
-					panic(err)
-				}
-				defer login.Close()
-				response, err := zmq.NewSocket(zmq.PULL)
-				if err != nil {
-					panic(err)
-				}
+				response, _ = zmq.NewSocket(zmq.REQ)
+
 				defer response.Close()
-				//Preferred way to connect
-				//hostname := "tcp://snowcrashnetwork.vineyard.haus:4000"
-				hostname := "tcp://192.168.1.77:4001"
-				err = response.Bind("tcp://*:4001")
-				err = login.Connect(hostname)
+				//Preferred way to connec
+				hostname = "tcp://91.121.154.192:7777"
+				err := response.Connect(hostname)
 				servepubKey := ""
-				for {
-					//important! at this stage we have to hardcode our address
-					_, err = login.Send("REQUESTPUBKEY:YOURIPADDRESS", 0)
-					if err != nil {
-						panic(err)
-					}
-
-					resp, err := response.Recv(0)
-					if err != nil {
-						panic(err)
-					}
-					servepubKey = string(resp)
-					fmt.Println(servepubKey)
-				}
-
-
-
-//				user, pword := LoginSC()
-				clientkey, clientseckey, err := zmq.NewCurveKeypair()
+				_, err = response.Send("REQUESTPUBKEY:AUTHINFO", 0)
 				if err != nil {
 					panic(err)
 				}
-				client, err := zmq.NewSocket(zmq.PUSH)
+
+				resp, err := response.Recv(0)
 				if err != nil {
 					panic(err)
 				}
-				zmq.AuthSetVerbose(true)
-				zmq.AuthStart()
-				zmq.AuthAllow("snowcrash.network", "127.0.0.1/8")
-				zmq.AuthCurveAdd("snowcrash.network", clientkey )
-		    err = client.ClientAuthCurve(servepubKey, clientkey, clientseckey)
-				if err != nil {
-					panic(err)
-				}
+				servepubKey = string(resp)
+
 				fmt.Println(servepubKey)
 				fmt.Printf("\033[51;0H")
-
+				user = strings.TrimSpace(user)
+				pword = strings.TrimSpace(pword)
+				_, err = response.Send(user+":=:"+pword, 0)
+				if err != nil {
+					panic(err)
+				}
+				playBytes, err := response.RecvBytes(0)
+				if err != nil {
+					panic(err)
+				}
+				err = bson.Unmarshal(playBytes, &play)
+				if err != nil || play.PlayerHash == "2"{
+					fmt.Print("\033[38:2:150:0:150mAuthorization failed\033[0m")
+					os.Exit(1)
+				}
 			}else {
 			fmt.Println("Unrecognized flag")
 			os.Exit(1)
@@ -251,7 +260,14 @@ func main() {
 	}
 
 
+	//Show the screen first off
+	play.CurrentRoom = populated[1]
+	showDesc(play.CurrentRoom)
+	DescribePlayer(play)
+	//showChat(play)
+
 	//Game loop
+	fmt.Println("#of mobiles:"+strconv.Itoa(len(mobiles)))
 	firstDig := false
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
@@ -500,17 +516,109 @@ func main() {
 			}
 
 			}
-
+		//COMMAND SECTION
 		if input == "pew" {
 			go playPew(1)
 		}
-		//secondary commands
-		if input == "targeting computer" {
-			fmt.Print("Input co-ordinates in the form of aA aB aC etc..")
-			err := target(play, populated)
+		if strings.HasPrefix(input, "create") {
+			name, password := strings.Split(input, " ")[1], strings.Split(input, " ")[2]
+			response.Recv(0)
+			_, err := response.Send(name + ":-:" + password, 0)
 			if err != nil {
 				panic(err)
 			}
+			play.PlayerHash, err = response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(play.PlayerHash)
+		}
+		if strings.HasPrefix(input, "login") {
+			userPass := strings.Split(input, " ")
+			user, pass := userPass[1], userPass[2]
+			response.Recv(0)
+			_, err := response.Send(user + ":=:" + pass, 0)
+			if err != nil {
+				panic(err)
+			}
+			playBytes, err := response.RecvBytes(0)
+			if err != nil {
+				panic(err)
+			}
+			err = bson.Unmarshal(playBytes, &play)
+			if err != nil || play.Name == "" {
+				fmt.Print("\033[38:2:150:0:150mAuthorization failed\033[0m")
+				os.Exit(1)
+			}
+			fmt.Println(play.PlayerHash)
+		}
+		if strings.HasPrefix(input, "wizinit:") {
+			fmt.Println("Sending init world command")
+			pass := strings.Split(input, "--")[1]
+			response.Recv(0)
+			_, err := response.Send("init world:"+play.Name+"--"+pass, 0)
+			if err != nil {
+				panic(err)
+			}
+
+		if input == "login" {
+
+		}
+		}
+		if input == "shutdown server" {
+			fmt.Println("Sending shutdown signal")
+			response.Recv(0)
+			_, err := response.Send("shutdown", 0)
+			if err != nil {
+				panic(err)
+			}
+		}
+		//secondary commands
+		if strings.HasPrefix(input, "tc:") {
+			TARG:
+			for scanner.Scan() {
+				inputTarg := scanner.Text()
+				if strings.HasPrefix(input, "tc:") {
+						targString := strings.Split(input, "tc:")[1]
+						play = improvedTargeting(play, targString)
+						input = ""
+				}else if scanner.Text() == "out" {
+					fmt.Println("Seeyah!")
+					break TARG
+				}else {
+					play = improvedTargeting(play, inputTarg)
+				}
+				showDesc(play.CurrentRoom)
+				//showChat(play)
+				showCoreBoard(play)
+
+		//		}else {
+		//			clearCoreBoard(play)
+		//		}
+				TL := ""
+				fmt.Printf(play.Target)
+				switch play.TargetLong {
+				case "T":
+					TL = "A Bejewelled Tiara"
+					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+				case "M":
+					TL = "A Rabid Ferret"
+					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+				case "D":
+					TL = "A Large Steel Door"
+					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+
+				default:
+					TL = fmt.Sprint("\033[19;53H\033[48;2;5;0;150m<<<"+TL+">>>\033[0m                        ")
+
+				}
+				fmt.Print(TL)
+				fmt.Printf("\033[51;0H")
+
+			}
+//			fmt.Print("Input co-ordinates in the form of aA aB aC etc..")
+			//play, err := target(play, populated)
+
 		}
 		if input == "show room vnum" {
 			fmt.Print("\033[38;2;150;0;150mROOM VNUM :"+strconv.Itoa(play.CurrentRoom.Vnum)+"\033[0m")
@@ -576,11 +684,24 @@ func main() {
 
 		if input == "quit" {
 			fmt.Println("Bai!")
+			zmq.AuthStop()
 			os.Exit(1)
 		}
 		if strings.HasPrefix(input, "ooc") {
-			createChat(input[3:], play)
-			showChat(play)
+			input = strings.Replace(input, "ooc ", "+=+", 1)
+			input = play.Name+input
+			//createChat(input[3:], play)
+			//todo
+			response.Recv(0)
+			_, err := response.Send(input, 0)
+			if err != nil {
+				panic(err)
+			}
+			chat, err := response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Printf(chat)
 		}
 		if input == "blit" {
 			clearDirty()
@@ -664,13 +785,15 @@ func main() {
 		//Reset the input to a standardized place
 		showDesc(play.CurrentRoom)
 		DescribePlayer(play)
-		showChat(play)
+		//showChat(play)
 		if coreShow {
 			showCoreBoard(play)
 		}
 //		}else {
 //			clearCoreBoard(play)
 //		}
+		fmt.Printf(play.Target)
+
 		fmt.Printf("\033[51;0H")
 	}
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})

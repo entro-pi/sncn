@@ -11,6 +11,36 @@ import (
   "go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func PopulateAreaMobiles() []Mobile {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+	var Mobiles []Mobile
+	collection := client.Database("npcs").Collection("mobiles")
+	results, err := collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		panic(err)
+	}
+	for results.Next(context.Background()) {
+
+			var Mobile Mobile
+			err := results.Decode(&Mobile)
+			if err != nil {
+				panic(err)
+			}
+			Mobiles = append(Mobiles, Mobile)
+
+//			fmt.Println(Spaces.Vnum)
+	}
+	return Mobiles
+}
+
 func PopulateAreaBuild(rangeVnums string) []Space {
 
   beginString := strings.Split(rangeVnums, "-")[0]
