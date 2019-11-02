@@ -186,7 +186,7 @@ func main() {
 				panic(err)
 			}
 			err = bson.Unmarshal(playBytes, &play)
-			if err != nil {
+			if err != nil || play.PlayerHash == "2" {
 				panic(err)
 			}
 			fmt.Println(play.PlayerHash)
@@ -240,8 +240,9 @@ func main() {
 					panic(err)
 				}
 				err = bson.Unmarshal(playBytes, &play)
-				if err != nil {
-					panic(err)
+				if err != nil || play.PlayerHash == "2"{
+					fmt.Print("\033[38:2:150:0:150mAuthorization failed\033[0m")
+					os.Exit(1)
 				}
 				fmt.Println(play.PlayerHash)
 			}else {
@@ -541,8 +542,9 @@ func main() {
 				panic(err)
 			}
 			err = bson.Unmarshal(playBytes, &play)
-			if err != nil {
-				panic(err)
+			if err != nil || play.Name == "" {
+				fmt.Print("\033[38:2:150:0:150mAuthorization failed\033[0m")
+				os.Exit(1)
 			}
 			fmt.Println(play.PlayerHash)
 		}
