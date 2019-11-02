@@ -595,9 +595,24 @@ func main() {
 		//		}else {
 		//			clearCoreBoard(play)
 		//		}
+				TL := ""
 				fmt.Printf(play.Target)
+				switch play.TargetLong {
+				case "T":
+					TL = "A Bejewelled Tiara"
+					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+				case "M":
+					TL = "A Rabid Ferret"
+					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+				case "D":
+					TL = "A Large Steel Door"
+					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
 
-				fmt.Printf("\033[31;0H\033[48;2;175;0;150m<<<"+play.TargetLong+">>>\033[0m")
+				default:
+					TL = fmt.Sprint("\033[19;53H\033[48;2;5;0;150m<<<"+TL+">>>\033[0m                        ")
+
+				}
+				fmt.Print(TL)
 				fmt.Printf("\033[51;0H")
 
 			}

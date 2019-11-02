@@ -206,9 +206,9 @@ func improvedTargeting(play Player, target string) (Player) {
 	for i := 0;i < len(splitCPU);i++ {
 		for r := 0;r < len(splitCPU[i]);r++ {
 			if play.TarX == r && play.TarY == i {
-				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:255:0:0m"+string(splitCPU[i][r])+"\033[0m")
+				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[i][r])+"\033[0m")
 				play.TargetLong = string(splitCPU[i][r])
-				targ = fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:255:0:0m"+string(splitCPU[i][r])+"\033[0m")
+				targ = fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[i][r])+"\033[0m")
 			}else {
 				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H"+string(splitCPU[i][r]))
 			}
@@ -293,10 +293,9 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
     showChat(play)
     showDesc(play.CurrentRoom)
     time.Sleep(250*time.Millisecond)
-		newValue = strings.ReplaceAll(newValue, " ", "\033[48;2;0;200;150m \033[0m")
-
+		newValue = strings.ReplaceAll(newValue, " ", "\033[48:2:0:200:150m \033[0m")
+		play.CoreBoard = newValue
     outVal += newValue + "\n"
-		fmt.Printf("\033[48:2:150:0:175m<<<"+string(play.Target)+">>>\033[0m")
 		//fmt.Println(play.CPU)
 	return outVal, play
 }
