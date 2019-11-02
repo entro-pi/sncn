@@ -1,5 +1,33 @@
+![glitch](docs/glitch.png)
+****November 1st, 2019****
+
+Today was a productive day, and I managed to create a lynchpin part of this MUD. The interface for the roguelike section of snowcrash.network
+
+![old](docs/old.png)
+
+This will populate with randomized creatures and treasure, right now they show up as golden tiaras and rabid ferrets.
+
+![coreboard](docs/coreboard.png)
+
+You can clip through walls, but that'll be an easy fix.
+
+The battle spam design will be tomorrow, and you can bet I'm going to do something fun for that. I'm thinking a health
+bar that spans the top screen, giving an imperative feel to fighting. As well for skills and attacks, things are going
+to be tied to maybe half a dozen different attacks at any one time. I want to work stances in as well, to give that 
+extra bit of "off" to help balance.
+
+
+Also, I think I'm going to commit the heretical sin of making a MOO inside the MUD. The social aspect of this game will
+rely on crafting for dungeon runs, and crafting rooms and spaces in a pve only environment.
+
+Also I should mention, this game is going to be best played as WSAD(Q-to-win) with keypad, or straight up game pad.
+
+Because face it, we all have at least some kind of game pad lying around. Mine is a knockoff gamecube controller.
 
 ![login](docs/login.png)
+
+
+****October 30th, 2019****
 **The wonders of the year 2019**
 
 
