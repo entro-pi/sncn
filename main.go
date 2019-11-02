@@ -583,6 +583,7 @@ func main() {
 						play = improvedTargeting(play, targString)
 						input = ""
 				}else if scanner.Text() == "out" {
+					fmt.Println("Seeyah!")
 					break TARG
 				}else {
 					play = improvedTargeting(play, inputTarg)
