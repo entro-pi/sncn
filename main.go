@@ -220,19 +220,6 @@ func main() {
 				//Preferred way to connec
 				hostname = "tcp://91.121.154.192:7777"
 				err := response.Connect(hostname)
-				servepubKey := ""
-				_, err = response.Send("REQUESTPUBKEY:AUTHINFO", 0)
-				if err != nil {
-					panic(err)
-				}
-
-				resp, err := response.Recv(0)
-				if err != nil {
-					panic(err)
-				}
-				servepubKey = string(resp)
-
-				fmt.Println(servepubKey)
 				fmt.Printf("\033[51;0H")
 				user = strings.TrimSpace(user)
 				pword = strings.TrimSpace(pword)
@@ -560,15 +547,11 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-
-		if input == "login" {
-
-		}
 		}
 		if input == "shutdown server" {
 			fmt.Println("Sending shutdown signal")
 			response.Recv(0)
-			_, err := response.Send("shutdown", 0)
+			_, err := response.Send("+===shutdown===+", 0)
 			if err != nil {
 				panic(err)
 			}
