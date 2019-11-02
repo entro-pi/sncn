@@ -82,7 +82,7 @@ func showCoreBoard(play Player) {
 //      }
 //      core += "\n"
 //    }else {
-      core = fmt.Sprint("\033[",strconv.Itoa(i+20),";52H",coreSplit[i])
+      core = fmt.Sprint("\033[",strconv.Itoa(i+20),";54H",coreSplit[i])
 //    }
     fmt.Print(core)
   }
@@ -186,6 +186,7 @@ func showChat(play Player) {
 }
 func drawDig(digFrame [][]int, zonePos []int) {
 	for i := 0;i < len(digFrame);i++ {
+		fmt.Printf("\033[48:2:150:0:150m \033[0m")
 		for c := 0;c < len(digFrame[i]);c++ {
 				prn := ""
 				val := fmt.Sprint(digFrame[i][c])
@@ -197,11 +198,13 @@ func drawDig(digFrame [][]int, zonePos []int) {
 				}else if val == "1" || val == "8" {
 					val = "1"
 					fmt.Printf("\033[38:2:50:10:50m"+val+"\033[0m")
-				}else {
+				}else if c == 0 || c == len(digFrame[i])-1 || i == 0 || i == len(digFrame)-1{
+          fmt.Printf("\033[48:2:150:0:150m \033[0m")
+        }else {
 						fmt.Printf(val)
 				}
 		}
-		fmt.Println("")
+		fmt.Println("\033[48:2:150:0:150m \033[0m")
 	}
 }
 

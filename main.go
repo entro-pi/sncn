@@ -244,7 +244,6 @@ func main() {
 					fmt.Print("\033[38:2:150:0:150mAuthorization failed\033[0m")
 					os.Exit(1)
 				}
-				fmt.Println(play.PlayerHash)
 			}else {
 			fmt.Println("Unrecognized flag")
 			os.Exit(1)

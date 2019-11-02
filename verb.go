@@ -206,7 +206,7 @@ func target(play Player, populated []Space) error {
         out += fmt.Sprint("\033[48:2:200:0:0m"+string(topbar[i])+"\033[0m")
         colPos = i
       }else if i == 0 {
-        out += fmt.Sprint("\033["+strconv.Itoa(i+20)+";51H"+string(topbar[i]))
+        out += fmt.Sprint("\033["+strconv.Itoa(i+20)+";54H"+string(topbar[i]))
       }else {
         out += string(topbar[i])
       }
@@ -216,7 +216,7 @@ func target(play Player, populated []Space) error {
 	 	coreBoard := strings.Split(play.PlainCoreBoard, "\n")
     sidebarSplit := strings.Split(sidebar, "\n")
     for i := 0;i < len(sidebarSplit);i++ {
-      out += fmt.Sprint("\033["+strconv.Itoa(i+21)+";51H\033[48:2:0:15:0m"+sidebarSplit[i])
+      out += fmt.Sprint("\033["+strconv.Itoa(i+20)+";54H\033[48:2:0:15:0m"+sidebarSplit[i])
       if sidebarSplit[i] == row {
       //	rowPos = i
         toOut := ""
@@ -251,7 +251,7 @@ func target(play Player, populated []Space) error {
 }
 func genCoreBoard(play Player, populated []Space) (string, Player) {
 	//Create a room map
-	Room := dngn.NewRoom(128, 24)
+	Room := dngn.NewRoom(126, 24)
 	splits := rand.Intn(75)
 	Room.GenerateBSP('%', 'D', splits)
 //	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
