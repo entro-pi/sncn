@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"encoding/json"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
@@ -896,19 +895,7 @@ func main() {
 			DescribePlayer(play)
 		}
 		if input == "updateChat" {
-			response.Recv(0)
-			_, err := response.Send(play.Name+"=+=", 0)
-			if err != nil {
-				panic(err)
-			}
-			value, err := response.Recv(0)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Print(value)
-
-			fmt.Printf("\033[51;0H")
-			}
+			updateChat(play, response)
 		}
 
 		//Reset the input to a standardized place
@@ -922,30 +909,7 @@ func main() {
 			showChat(play)
 		}
 		if grape {
-			value, err := response.Recv(0)
-			fmt.Println(value)
-
-
-			_, err = response.Send(play.Name+"=+=", 0)
-			if err != nil {
-				panic(err)
-			}
-			BroadBytes, err := response.RecvBytes(0)
-			if err != nil {
-				panic(err)
-			}
-			var broadsideBallads []Broadcast
-			err = json.Unmarshal(BroadBytes, &broadsideBallads)
-
-			out := ""
-			count := 0
-			for i := 0;i < len(broadsideBallads);i++ {
-				out += AssembleBroadside(broadsideBallads[i], i+count)
-				count += 3
-			}
-			fmt.Print(out)
-
-			fmt.Printf("\033[51;0H")
+			updateChat(play, response)
 		}
 //		}else {
 //			clearCoreBoard(play)
@@ -957,3 +921,4 @@ func main() {
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"Verb":"+"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"ProperNoun":"y"})
+}

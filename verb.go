@@ -9,11 +9,25 @@ import (
   "math/rand"
 	"context"
 	"time"
+	zmq "github.com/pebbe/zmq4"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
+func updateChat(play Player, response *zmq.Socket) {
+	response.Recv(0)
+	_, err := response.Send(play.Name+"=+=", 0)
+	if err != nil {
+		panic(err)
+	}
+	value, err := response.Recv(0)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Print(value)
 
+	fmt.Printf("\033[51;0H")
+}
 func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone string, digNum int, populated []Space) (int, Space) {
 	digVnumEnd := strings.Split(digNums, "-")[1]
 	dg, digNum := initDigRoom(digFrame, digNums, digZone, play, digNum)
