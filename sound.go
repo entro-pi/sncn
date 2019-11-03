@@ -14,6 +14,8 @@ func playPew(sound int) {
     fileName = "dat/sounds/482273__seanporio__lazer-pluck-2-mod.wav"
   }else if sound == 2 {
     fileName = "dat/sounds/482273__seanporio__lazer-pluck-2-slow-mod.wav"
+  }else if sound == 0 {
+    fileName = "dat/sounds/49608__boilingsand__dialup-login-dec-2001-24-bit.wav"
   }
   f, err := os.Open(fileName)
   if err != nil {

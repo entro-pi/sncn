@@ -9,11 +9,27 @@ import (
   "bufio"
   "math/rand"
   "strings"
+  zmq "github.com/pebbe/zmq4"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
-
+func ShowOoc(response *zmq.Socket, play Player) {
+  input := "+++"
+  input = play.Name+input
+  //createChat(input[3:], play)
+  //todo
+  response.Recv(0)
+  _, err := response.Send(input, 0)
+  if err != nil {
+    panic(err)
+  }
+  chat, err := response.Recv(0)
+  if err != nil {
+    panic(err)
+  }
+  fmt.Printf(chat)
+}
 func JackIn(in chan bool) error {
   fmt.Printf("\033[10;28H\033[0m")
   fmt.Printf("\033[11;28H \033[48;2;10;255;20m\033[38;2;10;10;255m         LOGIN         \033[0m")

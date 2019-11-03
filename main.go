@@ -131,7 +131,7 @@ func main() {
 	var play Player
 	var hostname string
 	var response *zmq.Socket
-	chatBoxes := false
+	chatBoxes := true
 	grape := true
 	//Make this relate to character level
 	var dug []Space
@@ -230,7 +230,7 @@ func main() {
 
 				fmt.Println("Core login procedure started")
 				response, _ = zmq.NewSocket(zmq.REQ)
-
+				go playPew(0)
 				defer response.Close()
 				//Preferred way to connec
 				hostname = "tcp://91.121.154.192:7777"
@@ -929,7 +929,8 @@ func main() {
 			showCoreBoard(play)
 		}
 		if chatBoxes {
-			showChat(play)
+			ShowOoc(response, play)
+//			showChat(play)
 		}
 		if grape {
 			updateChat(play, response)
