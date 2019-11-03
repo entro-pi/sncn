@@ -896,28 +896,16 @@ func main() {
 			DescribePlayer(play)
 		}
 		if input == "updateChat" {
+			response.Recv(0)
+			_, err := response.Send(play.Name+"=+=", 0)
+			if err != nil {
+				panic(err)
+			}
 			value, err := response.Recv(0)
-			fmt.Println(value)
-
-
-			_, err = response.Send(play.Name+"=+=", 0)
 			if err != nil {
 				panic(err)
 			}
-			BroadBytes, err := response.RecvBytes(0)
-			if err != nil {
-				panic(err)
-			}
-			var broadsideBallads []Broadcast
-			err = json.Unmarshal(BroadBytes, &broadsideBallads)
-
-			out := ""
-			count := 0
-			for i := 0;i < len(broadsideBallads);i++ {
-				out += AssembleBroadside(broadsideBallads[i], i+count)
-				count += 3
-			}
-			fmt.Print(out)
+			fmt.Print(value)
 
 			fmt.Printf("\033[51;0H")
 			}
