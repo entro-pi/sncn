@@ -131,7 +131,8 @@ func main() {
 	var play Player
 	var hostname string
 	var response *zmq.Socket
-
+	chatBoxes := false
+	grape := true
 	//Make this relate to character level
 	var dug []Space
 	coreShow := false
@@ -751,6 +752,12 @@ func main() {
 		if input == "blit" {
 			clearDirty()
 		}
+		if input == "show chat" {
+			chatBoxes = true
+		}
+		if input == "hide chat" {
+				chatBoxes = false
+		}
 		if input == "count keys" {
 			countKeys()
 			showDesc(play.CurrentRoom)
@@ -781,6 +788,55 @@ func main() {
 		}
 		if input == "update zonemap" {
 			updateZoneMap(play, populated)
+		}
+		if input == "hide grape" {
+			grape = false
+			clearDirty()
+			showDesc(play.CurrentRoom)
+			DescribePlayer(play)
+			//showChat(play)
+			if coreShow {
+				showCoreBoard(play)
+			}
+			if chatBoxes {
+				showChat(play)
+			}
+
+			fmt.Printf("\033[51;0H")
+
+		}
+		if input == "show grape" {
+			grape = true
+		}
+		if input == "hide chat" {
+			chatBoxes = false
+			clearDirty()
+			showDesc(play.CurrentRoom)
+			DescribePlayer(play)
+			//showChat(play)
+			if coreShow {
+				showCoreBoard(play)
+			}
+			if chatBoxes {
+				showChat(play)
+			}
+
+			fmt.Printf("\033[51;0H")
+		}
+		if input == "show chat" {
+			chatBoxes = true
+			clearDirty()
+			showDesc(play.CurrentRoom)
+			DescribePlayer(play)
+			//showChat(play)
+			if coreShow {
+				showCoreBoard(play)
+			}
+			if chatBoxes {
+				showChat(play)
+			}
+
+			fmt.Printf("\033[51;0H")
 		}
 		if input == "look" {
 			fmt.Sprintf("Current room is ", play.CurrentRoom)
@@ -840,8 +896,11 @@ func main() {
 			DescribePlayer(play)
 		}
 		if input == "updateChat" {
-			response.Recv(0)
-			_, err := response.Send(play.Name+"|GETCHAT|", 0)
+			value, err := response.Recv(0)
+			fmt.Println(value)
+
+
+			_, err = response.Send(play.Name+"=+=", 0)
 			if err != nil {
 				panic(err)
 			}
@@ -851,26 +910,16 @@ func main() {
 			}
 			var broadsideBallads []Broadcast
 			err = json.Unmarshal(BroadBytes, &broadsideBallads)
-			fmt.Println(string(BroadBytes))
 
-//			lengthBroad := strconv.Atoi(lengthBroadString)
-//			for i := 0;i < lengthBroad;i++ {
-				//chats, err := response.RecvBytes(0)
-				//if err != nil {
-				//	panic(err)
-				//}
-				//var broadsideBallads Broadcast
-			//	err = json.Unmarshal(chats, &broadsideBallads)
-		//		if err != nil {
-	//				panic(err)
-//				}
-				out := ""
+			out := ""
+			count := 0
+			for i := 0;i < len(broadsideBallads);i++ {
+				out += AssembleBroadside(broadsideBallads[i], i+count)
+				count += 3
+			}
+			fmt.Print(out)
 
-				for i := 0;i < len(broadsideBallads);i++ {
-					out += AssembleBroadside(broadsideBallads[i], i)
-				}
-				fmt.Print(out)
-
+			fmt.Printf("\033[51;0H")
 			}
 		}
 
@@ -880,6 +929,35 @@ func main() {
 		//showChat(play)
 		if coreShow {
 			showCoreBoard(play)
+		}
+		if chatBoxes {
+			showChat(play)
+		}
+		if grape {
+			value, err := response.Recv(0)
+			fmt.Println(value)
+
+
+			_, err = response.Send(play.Name+"=+=", 0)
+			if err != nil {
+				panic(err)
+			}
+			BroadBytes, err := response.RecvBytes(0)
+			if err != nil {
+				panic(err)
+			}
+			var broadsideBallads []Broadcast
+			err = json.Unmarshal(BroadBytes, &broadsideBallads)
+
+			out := ""
+			count := 0
+			for i := 0;i < len(broadsideBallads);i++ {
+				out += AssembleBroadside(broadsideBallads[i], i+count)
+				count += 3
+			}
+			fmt.Print(out)
+
+			fmt.Printf("\033[51;0H")
 		}
 //		}else {
 //			clearCoreBoard(play)
