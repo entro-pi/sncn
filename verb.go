@@ -142,8 +142,11 @@ func AssembleBroadside(broadside Broadcast, row int) (string) {
 	row++
 	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;5;200m \033[48;2;10;10;20m", words, "\033[48;2;10;5;200m \033[0m")
 	row++
+	if broadside.Payload.Game == "" {
+		broadside.Payload.Game = "snowcrash"
+	}
 	namePlate := "                            "[len(broadside.Payload.Name+"@"+broadside.Payload.Game):]
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;5;200m\033[38:2:50:0:50m@"+broadside.Payload.Name+"@"+broadside.Payload.Game+namePlate+"\033[48;2;10;5;200m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;5;200m@"+broadside.Payload.Name+"@"+broadside.Payload.Game+namePlate+"\033[48;2;10;5;200m \033[0m")
 
 	return cel
 	//	fmt.Println(cel)

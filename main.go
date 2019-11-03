@@ -82,6 +82,7 @@ type Player struct {
 	OldX int
 	OldY int
 	CPU string
+	Channels []string
 
 	MaxRezz int
 	Rezz int
@@ -258,6 +259,25 @@ func main() {
 		fmt.Println("Use --init to build and launch the world, --user to just connect.")
 		fmt.Println("--builder for a building session")
 		os.Exit(1)
+	}
+	connected := make(chan bool)
+	go JackIn(connected)
+	play.Channels = append(play.Channels, "testing")
+	for i := 0;i < len(play.Channels);i++ {
+		response.Recv(0)
+		fmt.Println("Subscribing to "+play.Channels[i])
+		_, err := response.Send(play.Name+"+|+"+play.Channels[i], 0)
+		if err != nil {
+			panic(err)
+		}
+		_, err = response.Recv(0)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println("ok")
+		connected <- false
+		clearDirty()
 	}
 
 
@@ -750,6 +770,9 @@ func main() {
 		}
 		if input == "blit" {
 			clearDirty()
+		}
+		if input == "show channels" {
+			fmt.Print(play.Channels)
 		}
 		if input == "show chat" {
 			chatBoxes = true

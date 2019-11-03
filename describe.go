@@ -7,11 +7,59 @@ import (
 	"context"
   "strconv"
   "bufio"
+  "math/rand"
   "strings"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
+
+func JackIn(in chan bool) error {
+  fmt.Printf("\033[10;28H\033[0m")
+  fmt.Printf("\033[11;28H \033[48;2;10;255;20m\033[38;2;10;10;255m         LOGIN         \033[0m")
+  fmt.Printf("\033[12;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[13;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mUSER                \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[14;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[15;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[16;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mPASSWORD            \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[17;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[18;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[19;28H \033[48;2;10;255;20m                       \033[0m")
+  fmt.Printf("\033[17;32H")
+out := ""
+row := 0
+for i := 0;i < 52;i++ {
+  for count := 0;count < 250;count++ {
+    select {
+    case notConn := <- in:
+      clearDirty()
+      if notConn == false {
+
+        return nil
+      }
+
+    default:
+          if rand.Intn(45) > 35 {
+            randPosX := strconv.Itoa(rand.Intn(200))
+            randPosY := strconv.Itoa(rand.Intn(52))
+            out += "\033["+randPosY+";"+randPosX+"H\033[48:2:250:250:250m \033[0m"
+          }else {
+            randPosX := strconv.Itoa(rand.Intn(200))
+            randPosY := strconv.Itoa(rand.Intn(52))
+            out += "\033["+randPosY+";"+randPosX+"H\033[48:2:25:35:25m \033[0m"
+          }
+          row++
+
+          time.Sleep(10*time.Millisecond)
+          fmt.Print(out)
+
+    }
+  }
+
+  }
+  return nil
+}
+
 
 func LoginSC() (string, string){
   clearDirty()
@@ -49,7 +97,7 @@ func LoginSC() (string, string){
     fmt.Printf("\033[17;32H")
 		loginScanner.Scan()
     pword := loginScanner.Text()
-    clearDirty()
+    //clearDirty()
     //Only use clearDirty at major intersections, it will cause flicker
 		return user, pword
 
