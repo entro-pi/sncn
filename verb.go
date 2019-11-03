@@ -85,6 +85,55 @@ func AssembleComposeCel(chatMess Chat, row int) (string, int) {
 	//	fmt.Println(cel)
 }
 
+func AssembleBroadside(broadside Broadcast, row int) (string) {
+	var cel string
+	inWord := broadside.Payload.Message
+	wor := ""
+	word := ""
+	words := ""
+	if len(inWord) > 68 {
+		return "DONE COMPOSTING"
+	}
+	if len(inWord) > 28 && len(inWord) > 54 {
+		wor += inWord[:28]
+		word += inWord[28:54]
+		words += inWord[54:]
+		for i := len(words); i <= 28; i++ {
+			words += " "
+		}
+	}
+	if len(inWord) > 28 && len(inWord) < 54 {
+		wor += inWord[:28]
+		word += inWord[28:]
+		for i := len(word); i <= 28; i++ {
+			word += " "
+		}
+		words = "                            "
+
+	}
+	if len(inWord) <= 28 {
+		wor = "                            "
+		word += ""
+		word += inWord
+		for i := len(word); i <= 28; i++ {
+			word += " "
+		}
+		words = "                            "
+	}
+
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;5;200m \033[48;2;10;10;20m", wor, "\033[48;2;10;5;200m \033[0m")
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;5;200m \033[48;2;10;10;20m", word, "\033[48;2;10;5;200m \033[0m")
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;5;200m \033[48;2;10;10;20m", words, "\033[48;2;10;5;200m \033[0m")
+	row++
+	namePlate := "                            "[len(broadside.Payload.Name+"@"+broadside.Payload.Game):]
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;5;200m\033[38:2:50:0:50m@"+broadside.Payload.Name+"@"+broadside.Payload.Game+namePlate+"\033[48;2;10;5;200m \033[0m")
+
+	return cel
+	//	fmt.Println(cel)
+}
 
 func AssembleDescCel(room Space, row int) (string) {
 	var cel string

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"encoding/json"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
@@ -16,6 +17,17 @@ import (
 )
 
 
+type BroadcastPayload struct {
+  Channel string
+  Message string
+  Game string
+  Name string
+}
+type Broadcast struct {
+    Event string
+    Ref string
+    Payload BroadcastPayload
+}
 
 type Descriptions struct {
 	BATTLESPAM int
@@ -509,6 +521,16 @@ func main() {
 		if input == "pew" {
 			go playPew(1)
 		}
+		if strings.HasPrefix(input, "g ") {
+			message := strings.Split(input, " ")[2]
+			channel := strings.Split(input, " ")[1]
+			response.Recv(0)
+			fmt.Println("\033[38:2:0:150:150m[["+message+"]]\033[0m")
+			_, err := response.Send(play.Name+"||UWU||"+channel+"||}}{{||"+message, 0)
+			if err != nil {
+				panic(err)
+			}
+		}
 		if strings.Contains(input, "gvsub ") {
 
 			channel := strings.Split(input, "gvsub ")[1]
@@ -817,6 +839,41 @@ func main() {
 		if input == "score" {
 			DescribePlayer(play)
 		}
+		if input == "updateChat" {
+			response.Recv(0)
+			_, err := response.Send(play.Name+"|GETCHAT|", 0)
+			if err != nil {
+				panic(err)
+			}
+			BroadBytes, err := response.RecvBytes(0)
+			if err != nil {
+				panic(err)
+			}
+			var broadsideBallads []Broadcast
+			err = json.Unmarshal(BroadBytes, &broadsideBallads)
+			fmt.Println(string(BroadBytes))
+
+//			lengthBroad := strconv.Atoi(lengthBroadString)
+//			for i := 0;i < lengthBroad;i++ {
+				//chats, err := response.RecvBytes(0)
+				//if err != nil {
+				//	panic(err)
+				//}
+				//var broadsideBallads Broadcast
+			//	err = json.Unmarshal(chats, &broadsideBallads)
+		//		if err != nil {
+	//				panic(err)
+//				}
+				out := ""
+
+				for i := 0;i < len(broadsideBallads);i++ {
+					out += AssembleBroadside(broadsideBallads[i], i)
+				}
+				fmt.Print(out)
+
+			}
+		}
+
 		//Reset the input to a standardized place
 		showDesc(play.CurrentRoom)
 		DescribePlayer(play)
@@ -834,5 +891,3 @@ func main() {
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"Verb":"+"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"ProperNoun":"y"})
-
-}
