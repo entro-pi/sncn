@@ -186,9 +186,12 @@ func improvedTargeting(play Player, target string) (Player) {
 		if err != nil {
 			panic(err)
 		}
+
 		play.TarX = tarX
 		play.TarY = tarY
 	}else {
+		play.OldX, play.OldY = play.TarX, play.TarY
+
 		switch target {
 		case "8":
 			play.TarY -= 1
@@ -199,16 +202,26 @@ func improvedTargeting(play Player, target string) (Player) {
 		case "6":
 			play.TarX += 1
 		}
+
 	}
 	targ := ""
 //	fmt.Print(play.CPU)
 	splitCPU := strings.Split(play.CPU, "\n")
+	CPU:
 	for i := 0;i < len(splitCPU);i++ {
 		for r := 0;r < len(splitCPU[i]);r++ {
 			if play.TarX == r && play.TarY == i {
-				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[i][r])+"\033[0m")
-				play.TargetLong = string(splitCPU[i][r])
-				targ = fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[i][r])+"\033[0m")
+				if string(splitCPU[i][r]) == "%" {
+					play.TarX, play.TarY = play.OldX, play.OldY
+					targ = fmt.Sprint("\033["+strconv.Itoa(play.TarY+20)+";"+strconv.Itoa(play.TarX+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+					break CPU
+				}
+
+				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+				play.TargetLong = string(splitCPU[play.TarY][play.TarX])
+
+				targ = fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+
 			}else {
 				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H"+string(splitCPU[i][r]))
 			}

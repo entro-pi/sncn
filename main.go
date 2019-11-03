@@ -68,6 +68,8 @@ type Player struct {
 	TargetLong string
 	TarX int
 	TarY int
+	OldX int
+	OldY int
 	CPU string
 
 	MaxRezz int
