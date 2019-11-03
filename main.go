@@ -509,6 +509,17 @@ func main() {
 		if input == "pew" {
 			go playPew(1)
 		}
+		if strings.Contains(input, "gvsub ") {
+
+			channel := strings.Split(input, "gvsub ")[1]
+			response.Recv(0)
+			fmt.Println("Subscribing to "+channel)
+			_, err := response.Send(play.Name+"+|+"+channel, 0)
+			if err != nil {
+				panic(err)
+			}
+
+		}
 		if input == "logout" {
 			response.Recv(0)
 			fmt.Println(play.Name+"+==LOGOUT")
