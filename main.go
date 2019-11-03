@@ -520,6 +520,17 @@ func main() {
 			}
 
 		}
+		if strings.Contains(input, "gvunsub ") {
+
+			channel := strings.Split(input, "gvunsub ")[1]
+			response.Recv(0)
+			fmt.Println("Unsubscribing from "+channel)
+			_, err := response.Send(play.Name+"-|-"+channel, 0)
+			if err != nil {
+				panic(err)
+			}
+
+		}
 		if input == "logout" {
 			response.Recv(0)
 			fmt.Println(play.Name+"+==LOGOUT")
