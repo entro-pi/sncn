@@ -136,17 +136,17 @@ func AssembleBroadside(broadside Broadcast, row int) (string) {
 	}
 
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;5;200m \033[48;2;10;10;20m", wor, "\033[48;2;10;5;200m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", wor, "\033[48;2;20;255;50m \033[0m")
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;5;200m \033[48;2;10;10;20m", word, "\033[48;2;10;5;200m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", word, "\033[48;2;20;255;50m \033[0m")
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;5;200m \033[48;2;10;10;20m", words, "\033[48;2;10;5;200m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", words, "\033[48;2;20;255;50m \033[0m")
 	row++
 	if broadside.Payload.Game == "" {
 		broadside.Payload.Game = "snowcrash"
 	}
 	namePlate := "                            "[len(broadside.Payload.Name+"@"+broadside.Payload.Game):]
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;10;5;200m@"+broadside.Payload.Name+"@"+broadside.Payload.Game+namePlate+"\033[48;2;10;5;200m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m@"+broadside.Payload.Name+"@"+broadside.Payload.Game+namePlate+"\033[48;2;20;255;50m \033[0m")
 
 	return cel
 	//	fmt.Println(cel)
@@ -163,42 +163,42 @@ func AssembleDescCel(room Space, row int) (string) {
 		inWord[0] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[0], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[0], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[1]) < 100 {
 		inWord[1] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[1], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[1], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[2]) < 100 {
 		inWord[2] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[2], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[2], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[3]) < 100 {
 		inWord[3] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[3], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[3], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[4]) < 100 {
 		inWord[4] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[4], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[4], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[5]) < 100 {
 		inWord[5] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[5], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[5], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[6]) < 100 {
 		inWord[6] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[6], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[6], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[7]) < 100 {
 		inWord[7] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m\033[38:2:50:0:50m@", inWord[7], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m\033[38:2:50:0:50m@", inWord[7], "\033[48;2;10;255;20m \033[0m")
 
 	return cel
 }

@@ -306,7 +306,7 @@ func showChat(play Player) {
 }
 func drawDig(digFrame [][]int, zonePos []int) {
 	for i := 0;i < len(digFrame);i++ {
-		fmt.Printf("\033[48:2:150:0:150m \033[0m")
+		fmt.Printf("\033[48;2;10;255;20m \033[0m")
 		for c := 0;c < len(digFrame[i]);c++ {
 				prn := ""
 				val := fmt.Sprint(digFrame[i][c])
@@ -319,12 +319,12 @@ func drawDig(digFrame [][]int, zonePos []int) {
 					val = "1"
 					fmt.Printf("\033[38:2:50:10:50m"+val+"\033[0m")
 				}else if c == 0 || c == len(digFrame[i])-1 || i == 0 || i == len(digFrame)-1{
-          fmt.Printf("\033[48:2:200:120:0m \033[0m")
+          fmt.Printf("\033[48;2;10;255;20m \033[0m")
         }else {
 						fmt.Printf(val)
 				}
 		}
-		fmt.Println("\033[48:2:150:0:150m \033[0m")
+		fmt.Println("\033[48;2;10;255;20m \033[0m")
 	}
 }
 
