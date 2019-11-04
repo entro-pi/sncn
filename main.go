@@ -662,9 +662,20 @@ func main() {
 
 
 		if input == "quit" {
-			fmt.Println("Bai!")
+			response.Recv(0)
+			fmt.Println(play.Name+"+==LOGOUT")
+			_, err := response.Send(play.Name+"+==LOGOUT", 0)
+			if err != nil {
+				panic(err)
+			}
+			bye, err := response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(bye)
 			updateWho(play, false)
-			zmq.AuthStop()
+			fmt.Println("Have a great day!")
+			time.Sleep(1*time.Second)
 			os.Exit(1)
 		}
 		if strings.HasPrefix(input, "ooc") {
