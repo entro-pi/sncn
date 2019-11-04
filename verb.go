@@ -198,7 +198,7 @@ func AssembleDescCel(room Space, row int) (string) {
 		inWord[7] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m\033[38:2:50:0:50m@", inWord[7], "\033[48;2;10;255;20m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m\033[38:2:50:0:50m@"+room.Zone+"#"+strconv.Itoa(room.Vnum), inWord[7][len(room.Zone)+len(strconv.Itoa(room.Vnum)):], "\033[48;2;10;255;20m \033[0m")
 
 	return cel
 }

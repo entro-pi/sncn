@@ -137,7 +137,7 @@ func main() {
 
 				fmt.Println("Core login procedure started")
 				response, _ = zmq.NewSocket(zmq.REQ)
-				go playPew(0)
+
 				defer response.Close()
 				//Preferred way to connec
 				hostname = "tcp://91.121.154.192:7777"
@@ -174,6 +174,7 @@ func main() {
 	}else {
 		play.Channels = append(play.Channels, "testing")
 		go JackIn(connected)
+		go playPew(0)
 	}
 	for i := 0;i < len(play.Channels);i++ {
 		response.Recv(0)
