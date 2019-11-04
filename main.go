@@ -807,16 +807,8 @@ func main() {
 			//This
 		}
 		if strings.Contains(input, "craft mobile"){
-			craftMob()
-			for scanner.Scan() {
-				if scanner.Text() != "exit" {
-					continue
-				}else {
-					break
-				}
+			craftMob(*scanner)
 
-
-			}
 		}
 		if strings.Contains(input, "unlock coreboard") {
 			coreShow = false

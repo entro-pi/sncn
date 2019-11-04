@@ -319,7 +319,7 @@ func drawDig(digFrame [][]int, zonePos []int) {
 					val = "1"
 					fmt.Printf("\033[38:2:50:10:50m"+val+"\033[0m")
 				}else if c == 0 || c == len(digFrame[i])-1 || i == 0 || i == len(digFrame)-1{
-          fmt.Printf("\033[48:2:150:0:150m \033[0m")
+          fmt.Printf("\033[48:2:200:120:0m \033[0m")
         }else {
 						fmt.Printf(val)
 				}

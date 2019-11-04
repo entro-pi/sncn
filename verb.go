@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-
+	"bufio"
   "math/rand"
 	"context"
 	"time"
@@ -380,42 +380,72 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
 }
 
 
-func craftMob() Mobile {
+func craftMob(scanner bufio.Scanner) Mobile {
 	mob := InitMob()
+	namePos := ""
+	named := false
+	longNamePos := ""
+	longNamed := false
 	val := ""
-  val += "\033[0;53H\033[48:2:120:120:0m                                                                              \033[0m"
-  val += "\033[32;53H\033[48:2:120:120:0m                                                                              \033[0m"
+  val += "\033[0;53H\033[48:2:200:120:0m                                                                              \033[0m"
+  val += "\033[32;53H\033[48:2:200:120:0m                                                                              \033[0m"
 
+	for scanner.Scan() {
+		if scanner.Text() == "exit" {
+			return mob
+		}else {
   for i := 2;i < 32;i++ {
+
 		if i == 2{
-			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m \033[0m                                Name                                        \033[48:2:120:120:0m \033[0m"
+			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m \033[0m                                Name                                        \033[48:2:200:120:0m \033[0m"
 		}else if i == 5 {
-			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m \033[0m                             Description                                    \033[48:2:120:120:0m \033[0m"
+			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m \033[0m                             Description                                    \033[48:2:200:120:0m \033[0m"
 			}else if i == 4 || i > 11 && i <= 15 {
 			if i == 4 {
-				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m$                                                                             \033[0m")
+				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m$                                                                             \033[0m")
 
 			}else if i > 11 && i < 15 {
-				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m&                                                                             \033[0m")
+				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m&                                                                             \033[0m")
 
 			}else if i == 15 {
-				val += "\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m \033[0m                               Stats                                        \033[48:2:120:120:0m \033[0m"
+				val += "\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m \033[0m                               Stats                                        \033[48:2:200:120:0m \033[0m"
 
 				}else {
-				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m                                                                              \033[0m")
+				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m                                                                              \033[0m")
 
 			}
 		}else {
-			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m \033[0m                                                                            \033[48:2:120:120:0m \033[0m"
-
+			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m \033[0m                                                                            \033[48:2:200:120:0m \033[0m"
+			val += "\033["+strconv.Itoa(i+1)+";53H\"exit\" to end"
 		}
 
 
   }
-  fmt.Println(val)
-	return mob
-}
+	fmt.Print(val)
+	if !named {
+		namePos = fmt.Sprint("\033[3;80H")
+		fmt.Print(namePos)
+		scanner.Scan()
+		mob.Name = scanner.Text()
+		named = true
+	}
+	if !longNamed {
+		longNamePos = fmt.Sprint("\033[6;70H")
+		fmt.Print(longNamePos)
+		scanner.Scan()
+		mob.LongName = scanner.Text()
+		longNamed = true
+	}
+	val += namePos + longNamePos
+  fmt.Print(val)
 
+
+	}
+
+}
+return mob
+
+}
 //TODO make this modular
 func createChat(message string, play Player) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
