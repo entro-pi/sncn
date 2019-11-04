@@ -24,7 +24,6 @@ const (
 	chatStart = "\033[38:2:200:50:50m{{=\033[38:2:150:50:150m"
 	chatEnd = "\033[38:2:200:50:50m=}}"
 	end = "\033[0m"
-
 )
 
 
@@ -33,6 +32,11 @@ func main() {
 	//TODO Get the Spaces that are already loaded in the database and skip
 	//if vnum is taken
 	//Get the flags passed in
+	channelOne := make(chan bool)
+	channelTwo := make(chan bool)
+	channelThree := make(chan bool)
+
+	go playPew(channelOne, channelTwo, channelThree)
 	var populated []Space
 	var mobiles []Mobile
 	var play Player
@@ -169,12 +173,15 @@ func main() {
 	}
 	connected := make(chan bool)
 
-	if len(os.Args) > 2 || os.Args[2] == "--safe-mode" {
-		//noot noot
-	}else {
-		play.Channels = append(play.Channels, "testing")
-		go JackIn(connected)
-		go playPew(0)
+	if len(os.Args) >= 2 {
+		if len(os.Args) > 2 && os.Args[2] == "--safe-mode"{
+					//noot noot
+		}else {
+			play.Channels = append(play.Channels, "testing")
+			go JackIn(connected)
+			channelOne <- true
+		}
+
 	}
 	for i := 0;i < len(play.Channels);i++ {
 		response.Recv(0)
@@ -190,6 +197,7 @@ func main() {
 
 		fmt.Println("ok")
 		connected <- false
+		channelTwo <- true
 		clearDirty()
 		updateWho(play, true)
 	}
@@ -199,7 +207,9 @@ func main() {
 	play.CurrentRoom = populated[1]
 	showDesc(play.CurrentRoom)
 	DescribePlayer(play)
-	//showChat(play)
+	showChat(play)
+	updateChat(play, response)
+	ShowOoc(response, play)
 
 	//Game loop
 	fmt.Println("#of mobiles:"+strconv.Itoa(len(mobiles)))
@@ -453,7 +463,7 @@ func main() {
 			}
 		//COMMAND SECTION
 		if input == "pew" {
-			go playPew(1)
+			channelThree <- true
 		}
 		if strings.HasPrefix(input, "g ") {
 			message := strings.Split(input, " ")[2]
@@ -464,6 +474,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+			channelTwo <- true
 		}
 		if input == "who" {
 			who := fmt.Sprint(showWho(play))
@@ -699,6 +710,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Printf(chat)
+			channelTwo <- true
 		}
 		if input == "blit" {
 			clearDirty()
@@ -755,12 +767,13 @@ func main() {
 			if chatBoxes {
 				showChat(play)
 			}
-
+			channelThree <- true
 			fmt.Printf("\033[51;0H")
 
 		}
 		if input == "show grape" {
 			grape = true
+			channelTwo <- true
 		}
 		if input == "hide chat" {
 			chatBoxes = false
@@ -774,7 +787,7 @@ func main() {
 			if chatBoxes {
 				showChat(play)
 			}
-
+			channelThree <- true
 			fmt.Printf("\033[51;0H")
 		}
 		if input == "show chat" {
@@ -789,7 +802,7 @@ func main() {
 			if chatBoxes {
 				showChat(play)
 			}
-
+			channelTwo <- true
 			fmt.Printf("\033[51;0H")
 		}
 		if input == "look" {
@@ -800,7 +813,7 @@ func main() {
 		if strings.Contains(input, "gen coreboard") {
 			//TODO make this so one doesn't loose the
 			//old coreboard, or convert it to xp, i dunno
-			go playPew(2)
+
 			play.CoreBoard, play = genCoreBoard(play, populated)
 		}
 		if strings.Contains(input, "open map") {
@@ -835,7 +848,6 @@ func main() {
 			if err != nil {
 				fmt.Println("Error converting a stripped string")
 			}
-			go playPew(1)
 			play, populated = goTo(inp, play, populated)
 		}
 		if input == "score" {
