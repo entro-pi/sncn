@@ -387,16 +387,21 @@ func craftMob() Mobile {
   val += "\033[32;53H\033[48:2:120:120:0m                                                                              \033[0m"
 
   for i := 2;i < 32;i++ {
-		if i == 2 || i == 31 {
-			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m \033[0m                        Name                                                \033[48:2:120:120:0m \033[0m"
-		}else if i == 4 || i > 11 && i < 15 {
+		if i == 2{
+			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m \033[0m                                Name                                        \033[48:2:120:120:0m \033[0m"
+		}else if i == 5 {
+			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m \033[0m                             Description                                    \033[48:2:120:120:0m \033[0m"
+			}else if i == 4 || i > 11 && i <= 15 {
 			if i == 4 {
-				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m$                                 Description                                 \033[0m")
+				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m$                                                                             \033[0m")
 
 			}else if i > 11 && i < 15 {
-				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m&                                             Stats                           \033[0m")
+				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m&                                                                             \033[0m")
 
-			}else {
+			}else if i == 15 {
+				val += "\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m \033[0m                               Stats                                        \033[48:2:120:120:0m \033[0m"
+
+				}else {
 				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:120:120:0m                                                                              \033[0m")
 
 			}

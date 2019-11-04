@@ -168,8 +168,13 @@ func main() {
 		os.Exit(1)
 	}
 	connected := make(chan bool)
-	go JackIn(connected)
-	play.Channels = append(play.Channels, "testing")
+
+	if len(os.Args) > 2 || os.Args[2] == "--safe-mode" {
+		//noot noot
+	}else {
+		play.Channels = append(play.Channels, "testing")
+		go JackIn(connected)
+	}
 	for i := 0;i < len(play.Channels);i++ {
 		response.Recv(0)
 		fmt.Println("Subscribing to "+play.Channels[i])
