@@ -267,7 +267,8 @@ func updateWho(play Player, in bool) {
   }
 
 }
-func showChat(play Player) {
+func showChat(play Player) int {
+  countChat := 0
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		panic(err)
@@ -283,13 +284,14 @@ func showChat(play Player) {
 	count := 0
 	var row int
 	for mess.Next(context.Background()) {
+    count++
 		var chatMess Chat
 		err := mess.Decode(&chatMess)
 		if err != nil {
 			panic(err)
 		}
 		chatPos := fmt.Sprintf("\033["+strconv.Itoa(count+3)+";180H")
-		count++
+		countChat++
 		fmt.Printf(chatPos)
 		if row >= 51 {
 			row = 0
@@ -303,6 +305,7 @@ func showChat(play Player) {
 //  	fmt.Printf(end)
 
 	}
+  return countChat
 }
 func drawDig(digFrame [][]int, zonePos []int) {
 	for i := 0;i < len(digFrame);i++ {

@@ -5,6 +5,25 @@ import (
 	"time"
 )
 
+type Class struct {
+	Level float64
+	Name string
+	Skills []Skill
+	Spells []Spell
+}
+
+type Spell struct {
+	TechUsage int
+	Level int
+	Consumed bool
+}
+
+type Skill struct {
+	DamType string
+	Level int
+	Usage rune
+}
+
 type StatusPayload struct {
 	Game string
 	Players []string

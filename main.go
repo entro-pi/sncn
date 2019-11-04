@@ -39,6 +39,15 @@ func main() {
 	go playPew(channelOne, channelTwo, channelThree)
 	var populated []Space
 	var mobiles []Mobile
+	var chats int
+	var chatsCurrent int
+	var grapevines int
+	var grapevinesCurrent int
+	chatsCurrent = 0
+	grapevinesCurrent = 0
+
+	chats = 0
+	grapevines = 0
 	var play Player
 	var hostname string
 	var response *zmq.Socket
@@ -207,8 +216,8 @@ func main() {
 	play.CurrentRoom = populated[1]
 	showDesc(play.CurrentRoom)
 	DescribePlayer(play)
-	showChat(play)
-	updateChat(play, response)
+	chats = showChat(play)
+	grapevines = updateChat(play, response)
 	ShowOoc(response, play)
 
 	//Game loop
@@ -216,6 +225,14 @@ func main() {
 	firstDig := false
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
+		if chatsCurrent != chats {
+			channelTwo <- true
+			chatsCurrent = chats
+		}
+		if grapevinesCurrent != grapevines {
+			channelTwo <- true
+			grapevinesCurrent = grapevines
+		}
 		clearCmd()
 		savePfile(play)
 		input := scanner.Text()
@@ -585,7 +602,7 @@ func main() {
 					play = improvedTargeting(play, inputTarg)
 				}
 				showDesc(play.CurrentRoom)
-				//showChat(play)
+				//chats = showChat(play)
 				showCoreBoard(play)
 
 		//		}else {
@@ -760,12 +777,12 @@ func main() {
 			clearDirty()
 			showDesc(play.CurrentRoom)
 			DescribePlayer(play)
-			//showChat(play)
+			//chats = showChat(play)
 			if coreShow {
 				showCoreBoard(play)
 			}
 			if chatBoxes {
-				showChat(play)
+				chats = showChat(play)
 			}
 			channelThree <- true
 			fmt.Printf("\033[51;0H")
@@ -780,12 +797,12 @@ func main() {
 			clearDirty()
 			showDesc(play.CurrentRoom)
 			DescribePlayer(play)
-			//showChat(play)
+			//chats = showChat(play)
 			if coreShow {
 				showCoreBoard(play)
 			}
 			if chatBoxes {
-				showChat(play)
+				chats = showChat(play)
 			}
 			channelThree <- true
 			fmt.Printf("\033[51;0H")
@@ -795,12 +812,12 @@ func main() {
 			clearDirty()
 			showDesc(play.CurrentRoom)
 			DescribePlayer(play)
-			//showChat(play)
+			//chats = showChat(play)
 			if coreShow {
 				showCoreBoard(play)
 			}
 			if chatBoxes {
-				showChat(play)
+				chats = showChat(play)
 			}
 			channelTwo <- true
 			fmt.Printf("\033[51;0H")
@@ -854,22 +871,22 @@ func main() {
 			DescribePlayer(play)
 		}
 		if input == "updateChat" {
-			updateChat(play, response)
+			grapevines = updateChat(play, response)
 		}
 
 		//Reset the input to a standardized place
 		showDesc(play.CurrentRoom)
 		DescribePlayer(play)
-		//showChat(play)
+		//chats = showChat(play)
 		if coreShow {
 			showCoreBoard(play)
 		}
 		if chatBoxes {
 			ShowOoc(response, play)
-//			showChat(play)
+//			chats = showChat(play)
 		}
 		if grape {
-			updateChat(play, response)
+			grapevines = updateChat(play, response)
 		}
 //		}else {
 //			clearCoreBoard(play)

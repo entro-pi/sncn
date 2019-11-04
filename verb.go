@@ -14,7 +14,8 @@ import (
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
-func updateChat(play Player, response *zmq.Socket) {
+func updateChat(play Player, response *zmq.Socket) int {
+	count := 0
 	response.Recv(0)
 	_, err := response.Send(play.Name+"=+=", 0)
 	if err != nil {
@@ -25,8 +26,11 @@ func updateChat(play Player, response *zmq.Socket) {
 		panic(err)
 	}
 	fmt.Print(value)
-
+	if len(value) > 1 {
+		count++
+	}
 	fmt.Printf("\033[51;0H")
+	return count
 }
 func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone string, digNum int, populated []Space) (int, Space) {
 	digVnumEnd := strings.Split(digNums, "-")[1]
