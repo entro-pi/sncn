@@ -35,8 +35,15 @@ func main() {
 	channelOne := make(chan bool)
 	channelTwo := make(chan bool)
 	channelThree := make(chan bool)
+	channelFour := make(chan bool)
+	channelFive := make(chan bool)
+	channelSix := make(chan bool)
+	channelSeven := make(chan bool)
+	channelEight := make(chan bool)
+	channelNine := make(chan bool)
+	channelTen := make(chan bool)
 
-	go playPew(channelOne, channelTwo, channelThree)
+	go playPew(channelOne, channelTwo, channelThree, channelFour, channelFive, channelSix, channelSeven, channelEight, channelNine, channelTen)
 	var populated []Space
 	var mobiles []Mobile
 	var chats int
