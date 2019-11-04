@@ -11,7 +11,7 @@ import (
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
-	
+
 	zmq "github.com/pebbe/zmq4"
 )
 
@@ -185,6 +185,7 @@ func main() {
 		fmt.Println("ok")
 		connected <- false
 		clearDirty()
+		updateWho(play, true)
 	}
 
 
@@ -458,6 +459,10 @@ func main() {
 				panic(err)
 			}
 		}
+		if input == "who" {
+			who := fmt.Sprint(showWho(play))
+			fmt.Printf("\033[38:2:175:0:150m"+who+"\033[0m")
+		}
 		if strings.Contains(input, "gvsub ") {
 
 			channel := strings.Split(input, "gvsub ")[1]
@@ -469,6 +474,7 @@ func main() {
 			}
 
 		}
+
 		if strings.Contains(input, "gvunsub ") {
 
 			channel := strings.Split(input, "gvunsub ")[1]
@@ -492,6 +498,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(bye)
+			updateWho(play, false)
 			fmt.Println("Have a great day!")
 			time.Sleep(1*time.Second)
 			os.Exit(1)
@@ -656,6 +663,7 @@ func main() {
 
 		if input == "quit" {
 			fmt.Println("Bai!")
+			updateWho(play, false)
 			zmq.AuthStop()
 			os.Exit(1)
 		}

@@ -210,7 +210,63 @@ func showDesc(room Space) {
 		drawDig(room.ZoneMap, room.ZonePos)
 	}
 }
+func showWho(play Player) []string {
+  var whoList []string
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+  filter := bson.M{}
+  collection := client.Database("who").Collection("players")
+  findOptions := options.Find()
+  findOptions.SetLimit(1000)
+  results, err := collection.Find(context.Background(), filter, findOptions)
+  if err != nil {
+    panic(err)
+  }
+  for results.Next(context.Background()) {
+    var signedIn SignIn
+    err := results.Decode(&signedIn)
+    if err != nil {
+      panic(err)
+    }
+    whoList = append(whoList, signedIn.Payload.Name)
+  }
+  return whoList
+}
+func updateWho(play Player, in bool) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+  filter := bson.M{"event":"players/sign-in","payload":bson.M{"name":play.Name}}
+  update := bson.M{"event":"players/sign-in","ref":UIDMaker(), "payload":bson.M{"name":play.Name}}
+	collection := client.Database("who").Collection("players")
+	findOptions := options.Find()
+  findOptions.SetLimit(1000)
+  if !in {
+    _, err := collection.DeleteOne(context.Background(), filter)
+  	if err != nil {
+  		panic(err)
+  	}
+  }else {
+    _, err := collection.InsertOne(context.Background(), update)
+    if err != nil {
+      panic(err)
+    }
+  }
 
+}
 func showChat(play Player) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
