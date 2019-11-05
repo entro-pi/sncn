@@ -11,7 +11,7 @@ import (
   "github.com/faiface/beep/speaker"
 )
 
-func playPew(channelOne chan bool, channelTwo chan bool, channelThree chan bool, channelFour chan bool, channelFive chan bool, channelSix chan bool, channelSeven chan bool, channelEight chan bool, channelNine chan bool, channelTen chan bool) {
+func playPew(crashOne chan bool, channelOne chan bool, channelTwo chan bool, channelThree chan bool, channelFour chan bool, channelFive chan bool, channelSix chan bool, channelSeven chan bool, channelEight chan bool, channelNine chan bool, channelTen chan bool) {
 
   var beeps []string
   for i := 0;i < 10;i++ {
@@ -22,6 +22,8 @@ func playPew(channelOne chan bool, channelTwo chan bool, channelThree chan bool,
     }
   }
 
+  crash := "dat/sounds/crash.wav"
+
 
   fileName1 := "dat/sounds/49608__boilingsand__dialup-login-dec-2001-24-bit.wav"
 
@@ -29,6 +31,10 @@ func playPew(channelOne chan bool, channelTwo chan bool, channelThree chan bool,
 
   fileName3 := "dat/sounds/242341__ascap__metal-hit-medium-glass-bowl-8.mp3"
 
+  crashFile, err := os.Open(crash)
+  if err != nil {
+    panic(err)
+  }
   f4, err := os.Open(beeps[3])
   if err != nil {
     panic(err)
@@ -69,6 +75,12 @@ func playPew(channelOne chan bool, channelTwo chan bool, channelThree chan bool,
   if err != nil {
     panic(err)
   }
+
+  crashStream, crashForm, err := wav.Decode(crashFile)
+  if err != nil {
+    panic(err)
+  }
+
   streamer1, format1, err := wav.Decode(f1)
   if err != nil {
     panic(err)
@@ -124,6 +136,8 @@ func playPew(channelOne chan bool, channelTwo chan bool, channelThree chan bool,
   buffer1 := beep.NewBuffer(format1)
   buffer1.Append(streamer1)
 
+  crashBuf := beep.NewBuffer(crashForm)
+  crashBuf.Append(crashStream)
 
   buffer2 := beep.NewBuffer(format2)
   buffer2.Append(streamer2)
@@ -162,6 +176,9 @@ func playPew(channelOne chan bool, channelTwo chan bool, channelThree chan bool,
 
   for {
   select {
+  case <- crashOne:
+    crashNoise := crashBuf.Streamer(0, crashBuf.Len())
+    speaker.Play(crashNoise)
   case <- channelOne:
     //streamer1.Close()
     noise1 := buffer1.Streamer(0, buffer1.Len())

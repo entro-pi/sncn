@@ -60,6 +60,7 @@ func InitPlayer(name string, pass string) Player {
   play.Classes[0].Level = 1
   play.Classes[0].Name = "wildling"
   var rip Skill
+  rip.Name = "overcharge"
   rip.DamType = "slash"
   rip.Level = 0
   rip.Usage = 'e'

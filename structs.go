@@ -20,9 +20,11 @@ type Spell struct {
 }
 
 type Skill struct {
+	Name string
 	DamType string
 	Level int
 	Usage rune
+	Dam int
 }
 
 type StatusPayload struct {
@@ -131,6 +133,8 @@ type Player struct {
 	MaxRezz int
 	Rezz int
 	Tech int
+	Fights Fight
+	Won int
 
 	Str int
 	Int int
@@ -139,7 +143,10 @@ type Player struct {
 	Con int
 	Cha int
 }
-
+type Fight struct {
+	Oppose []Mobile
+	Former []Player
+}
 type Mobile struct {
 	Name string
 	LongName string

@@ -246,7 +246,7 @@ func mergeMaps(source [][]int, dest [][]int) ([][]int) {
   }
   return dest
 }
-func improvedTargeting(play Player, target string) (Player) {
+func improvedTargeting(play Player, target string, slay chan bool) (Player) {
 
 	if strings.Contains(target, "|") {
 		tarX, err := strconv.Atoi(strings.Split(target, "|")[0])
@@ -286,10 +286,11 @@ func improvedTargeting(play Player, target string) (Player) {
 					play.TarX, play.TarY = play.OldX, play.OldY
 					targ = fmt.Sprint("\033["+strconv.Itoa(play.TarY+20)+";"+strconv.Itoa(play.TarX+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
 					break CPU
-				}
+				}else {
+					fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+					play.TargetLong = string(splitCPU[play.TarY][play.TarX])
 
-				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
-				play.TargetLong = string(splitCPU[play.TarY][play.TarX])
+				}
 
 				targ = fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
 
@@ -303,7 +304,7 @@ func improvedTargeting(play Player, target string) (Player) {
 }
 
 
-func genCoreBoard(play Player, populated []Space) (string, Player) {
+func genCoreBoard(play Player, populated []Space, fight Fight) (string, Player, Fight) {
 	//Create a room map
 	Room := dngn.NewRoom(126, 24)
 	splits := rand.Intn(75)
@@ -330,6 +331,8 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
 					if rand.Intn(100) > 95 {
 						ChanceMonster := "M"
 						newValue += ChanceMonster
+						ferret := InitMob()
+						fight.Oppose = append(fight.Oppose, ferret)
 						continue
 					}else {
 						newValue += string(value[s])
@@ -381,7 +384,7 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
 		play.CoreBoard = newValue
     outVal += newValue + "\n"
 		//fmt.Println(play.CPU)
-	return outVal, play
+	return outVal, play, fight
 }
 
 
