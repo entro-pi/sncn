@@ -194,9 +194,11 @@ func main() {
 
 	if len(os.Args) >= 2 {
 		if len(os.Args) > 2 && os.Args[2] == "--safe-mode"{
+				play.Channels = play.Channels[0:]
 					//noot noot
 		}else {
-			play.Channels = append(play.Channels, "testing")
+//			play.Channels = append(play.Channels, "")
+			play.Channels = append(play.Channels, "gossip")
 			go JackIn(connected)
 			channelOne <- true
 		}
@@ -620,7 +622,7 @@ func main() {
 				}else {
 							play = improvedTargeting(play, inputTarg)
 							showCoreBoard(play)
-							showCoreMobs(play)
+							play = showCoreMobs(play)
 						}
 
 				showDesc(play.CurrentRoom)
@@ -673,6 +675,7 @@ func main() {
 		//			clearCoreBoard(play)
 		//		}
 				TL := ""
+				out := ""
 				fmt.Printf(play.Target)
 				switch play.TargetLong {
 				case "T":
@@ -680,16 +683,25 @@ func main() {
 					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
 				case "M":
 					TL = "A Rabid Ferret"
-					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+					for bat := 0;bat < len(play.Fights.Oppose);bat++ {
+						if play.Fights.Oppose[bat].X == play.TarX && play.Fights.Oppose[bat].Y == play.TarY {
+							if strings.Contains(play.Fights.Oppose[bat].Char, "C") {
+									out = fmt.Sprint("\033[19;53H\033[48;2;175;0;0m<<<DEAD\033[48;2;5;0;150m"+TL+"\033[48;2;175;0;0mDEAD>>>\033[0m                      ")
+									break
+								}
+						}else {
+								out = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+
+								}
+					}
 				case "D":
 					TL = "A Large Steel Door"
 					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
-
 				default:
 					TL = fmt.Sprint("\033[19;53H\033[48;2;5;0;150m<<<"+TL+">>>\033[0m                        ")
-
 				}
 				fmt.Print(TL)
+				fmt.Print(out)
 				fmt.Printf("\033[51;0H")
 
 			}
@@ -969,7 +981,7 @@ func main() {
 		//chats = showChat(play)
 		if coreShow {
 			showCoreBoard(play)
-			showCoreMobs(play)
+			play = showCoreMobs(play)
 		}
 		if chatBoxes {
 			ShowOoc(response, play)

@@ -136,7 +136,7 @@ func clearCmd() {
 		fmt.Print(cmdPos)
 }
 
-func showCoreMobs(play Player) {
+func showCoreMobs(play Player) Player {
   core := ""
   coreSplit := strings.Split(play.PlainCoreBoard, "\n")
   for i := 0;i < len(coreSplit);i++ {
@@ -144,9 +144,13 @@ func showCoreMobs(play Player) {
       if coreSplit[i][r] == 'M' {
           for bat := 0;bat < len(play.Fights.Oppose);bat++ {
             if play.Fights.Oppose[bat].MaxRezz <= 0 && play.Fights.Oppose[bat].X == r && play.Fights.Oppose[bat].Y == i{
-              fmt.Println("ONE DOWN AT"+strconv.Itoa(play.Fights.Oppose[bat].X)+":"+strconv.Itoa(play.Fights.Oppose[bat].Y))
-              play.Fights.Oppose[bat].Char = fmt.Sprint("\033["+strconv.Itoa(play.Fights.Oppose[bat].Y+20)+";"+strconv.Itoa(play.Fights.Oppose[bat].X+54)+"H\033[48:2:175:0:0mC\033[0m")
+              //fmt.Println("ONE DOWN AT"+strconv.Itoa(play.Fights.Oppose[bat].X)+":"+strconv.Itoa(play.Fights.Oppose[bat].Y))
+              play.Fights.Oppose[bat].Char = fmt.Sprint("\033[48;2;5;0;150m\033["+strconv.Itoa(play.Fights.Oppose[bat].Y+20)+";"+strconv.Itoa(play.Fights.Oppose[bat].X+54)+"H\033[48:2:175:0:0mC\033[0m")
+    //          core += play.Fights.Oppose[bat].Char
+  //            play.TargetLong = "C"
+              break
             }else {
+//              play.TargetLong = string(coreSplit[i][r])
               core += fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(play.Fights.Oppose[bat].Char)+"\033[0m")
 
             }
@@ -159,6 +163,7 @@ func showCoreMobs(play Player) {
     }
 
   fmt.Print(core)
+  return play
 }
 
 func showCoreBoard(play Player) {

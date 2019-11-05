@@ -83,7 +83,7 @@ func InitPlayer(name string, pass string) Player {
 	play.Wis = 1
 	play.Con = 1
 	play.Cha = 1
-  play.Channels = append(play.Channels, "testing")
+  play.Channels = append(play.Channels, "")
 	return play
 
 }

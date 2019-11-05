@@ -287,7 +287,7 @@ func improvedTargeting(play Player, target string) (Player) {
 					targ = fmt.Sprint("\033["+strconv.Itoa(play.TarY+20)+";"+strconv.Itoa(play.TarX+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
 					break CPU
 				}else {
-					fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+//					fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
 					play.TargetLong = string(splitCPU[play.TarY][play.TarX])
 
 				}
@@ -307,7 +307,7 @@ func improvedTargeting(play Player, target string) (Player) {
 
 func genCoreBoard(play Player, populated []Space) (string, Player) {
 	//Create a room map
-	Room := dngn.NewRoom(126, 24)
+	Room := dngn.NewRoom(121, 24)
 	splits := rand.Intn(75)
 	Room.GenerateBSP('%', 'D', splits)
 //	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
