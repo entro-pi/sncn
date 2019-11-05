@@ -28,7 +28,24 @@ func initDigRoom(digFrame [][]int, zoneVnums string, zoneName string, play Playe
 	return dg, vnum
 }
 
-
+func addClass(play Player) Player {
+  var class Class
+  play.Classes = append(play.Classes, class)
+  play.Classes[0].Level = 1
+  play.Classes[0].Name = "wildling"
+  var rip Skill
+  rip.DamType = "slash"
+  rip.Level = 0
+  rip.Usage = 'e'
+  play.Classes[0].Skills = append(play.Classes[0].Skills, rip)
+  var blast Spell
+  blast.Usage = 'w'
+  blast.TechUsage = 2
+  blast.Level = 1
+  blast.Consumed = false
+  play.Classes[0].Spells = append(play.Classes[0].Spells, blast)
+  return play
+}
 
 func InitPlayer(name string, pass string) Player {
 	var play Player

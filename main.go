@@ -551,11 +551,19 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			play = InitPlayer(name, password)
-			play.PlayerHash, err = response.Recv(0)
+			playerBytes, err := response.RecvBytes(0)
 			if err != nil {
 				panic(err)
 			}
+			err = bson.Unmarshal(playerBytes, &play)
+			if err != nil {
+				panic(err)
+			}
+//			play = InitPlayer(name, password)
+//			play.PlayerHash, err = response.Recv(0)
+	//		if err != nil {
+		//		panic(err)
+		//	}
 			fmt.Println(play.PlayerHash)
 		}
 		if strings.HasPrefix(input, "login") {
@@ -887,6 +895,9 @@ func main() {
 				writer.Write(marshalledBson)
 				writer.Flush()
 			}
+		}
+		if input == "addclass" {
+			play = addClass(play)
 		}
 		if strings.HasPrefix(input, "go to") {
 			splitCommand := strings.Split(input, "to")
