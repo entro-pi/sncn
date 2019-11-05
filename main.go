@@ -78,7 +78,7 @@ func main() {
 			}
 			InitZoneSpaces("5-15", "Midgaard", descString)
 			populated = PopulateAreas()
-			play = InitPlayer("FSM")
+			play = InitPlayer("FSM", "noodles")
 			addPfile(play)
 			createMobiles("Noodles")
 			fmt.Println("\033[38:2:0:250:0mAll tests passed and world has been initialzed\n\033[0mYou may now start with --login.")
@@ -86,7 +86,7 @@ func main() {
 		}else if os.Args[1] == "--guest" {
 			//Continue on
 			populated = PopulateAreas()
-			play = InitPlayer("Wallace")
+			play = InitPlayer("Wallace", "gromit")
 			savePfile(play)
 			fmt.Println("In client loop")
 			fmt.Printf("\033[51;0H")
@@ -95,7 +95,7 @@ func main() {
 			user, pword := LoginSC()
 
 			populated = PopulateAreas()
-			play = InitPlayer(user)
+			play = InitPlayer(user, pword)
 			//just hang on to the password for now
 			fmt.Sprint(pword)
 			savePfile(play)
@@ -141,7 +141,7 @@ func main() {
 		}else if os.Args[1] == "--builder" {
 			//Continue on
 			populated = PopulateAreas()
-			play = InitPlayer("FlyingSpaghettiMonster")
+			play = InitPlayer("FlyingSpaghettiMonster", "monster")
 			savePfile(play)
 
 			fmt.Println("Builder log-in")
@@ -551,6 +551,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+			play = InitPlayer(name, password)
 			play.PlayerHash, err = response.Recv(0)
 			if err != nil {
 				panic(err)
@@ -828,6 +829,9 @@ func main() {
 			}
 			channelTwo <- true
 			fmt.Printf("\033[51;0H")
+		}
+		if input == "report" {
+			fmt.Print(play.Classes)
 		}
 		if input == "look" {
 			fmt.Sprintf("Current room is ", play.CurrentRoom)

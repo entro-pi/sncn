@@ -117,6 +117,7 @@ type Player struct {
 	PlainCoreBoard string
 	CurrentRoom Space
 	PlayerHash string
+	Classes []Class
 	Target string
 	TargetLong string
 	TarX int

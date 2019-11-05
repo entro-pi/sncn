@@ -226,6 +226,7 @@ func goTo(dest int, play Player, populated []Space) (Player, []Space) {
 			showDesc(play.CurrentRoom)
 			DescribePlayer(play)
 			fmt.Printf("\033[0;0H\033[38:2:0:255:0mPASS\033[0m")
+			savePfile(play)
 			break
 		}else {
 			fmt.Printf("\033[0;0H\033[38:2:255:0:0mERROR\033[0m")
@@ -516,5 +517,5 @@ func savePfile(play Player) {
 	}
 	collection := client.Database("pfiles").Collection("Players")
 	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipment":play.Equipment,
-						"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha })
-}
+							"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha, "classes": play.Classes })
+					}
