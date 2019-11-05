@@ -44,7 +44,6 @@ func main() {
 	channelNine := make(chan bool)
 	channelTen := make(chan bool)
 	crashOne := make(chan bool)
-	slay := make(chan bool)
 
 
 	go playPew(crashOne, channelOne, channelTwo, channelThree, channelFour, channelFive, channelSix, channelSeven, channelEight, channelNine, channelTen)
@@ -491,36 +490,7 @@ func main() {
 			}
 
 		//COMMAND SECTION
-		if input == "overcharge" || input == "oc" {
-			for i := 0;i < len(play.Classes);i++ {
 
-				if play.Classes[i].Skills[i].Name == "overcharge" {
-					if play.Won <= len(play.Fights.Oppose) {
-						if strings.Contains(play.Target, "ferret") {
-							if rand.Intn(10) > 4 {
-								damage := play.Classes[i].Skills[i].Dam + rand.Intn(5)
-
-								damageString := strconv.Itoa(damage)
-								fmt.Print("\033[52;5H\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m")
-								play.Fights.Oppose[play.Won].MaxRezz -= damage
-								crashOne <- true
-
-								if play.Fights.Oppose[play.Won].MaxRezz <= 0 {
-									play.Won++
-									slay <- true
-								}
-							}else {
-								channelEight <- true
-							}
-
-						}
-
-					}
-
-				}
-
-			}
-		}
 		if strings.HasPrefix(input, "g ") {
 			message := strings.Split(input, " ")[2]
 			channel := strings.Split(input, " ")[1]
@@ -642,39 +612,55 @@ func main() {
 				inputTarg := scanner.Text()
 				if strings.HasPrefix(input, "tc:") {
 						targString := strings.Split(input, "tc:")[1]
-						play = improvedTargeting(play, targString, slay)
+						play = improvedTargeting(play, targString)
 						input = ""
 				}else if scanner.Text() == "out" {
 					fmt.Println("Seeyah!")
 					break TARG
 				}else {
-					play = improvedTargeting(play, inputTarg, slay)
-					if scanner.Text() == "overcharge" || scanner.Text() == "oc" {
-						fmt.Println("using overcharge!")
-						for i := 0;i < len(play.Classes);i++ {
+							play = improvedTargeting(play, inputTarg)
+							showCoreBoard(play)
+							showCoreMobs(play)
+						}
 
-							if play.Classes[i].Skills[i].Name == "overcharge" {
-								fmt.Println("OVERCHARGING")
-								if play.Won <= len(play.Fights.Oppose) {
-									if strings.Contains(play.Target, "M") {
-										if rand.Intn(10) > 4 {
-											damage := play.Classes[i].Skills[i].Dam + rand.Intn(5)
+				showDesc(play.CurrentRoom)
+				//chats = showChat(play)
+				//showCoreBoard(play)
+				//showCoreMobs(play)
+				if scanner.Text() == "overcharge" || scanner.Text() == "oc" {
+							for i := 0;i < len(play.Classes);i++ {
 
-											damageString := strconv.Itoa(damage)
-											fmt.Print("\033[52;5H\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m")
-											play.Fights.Oppose[play.Won].MaxRezz -= damage
-											crashOne <- true
+								if play.Classes[i].Skills[i].Name == "overcharge" {
+									fmt.Println("OVERCHARGING")
+									if play.Won <= len(play.Fights.Oppose) {
 
-											if play.Fights.Oppose[play.Won].MaxRezz <= 0 {
-												play.Fights.Oppose = play.Fights.Oppose[:len(play.Fights.Oppose)-1]
-												fmt.Println("Another one bites the dust.")
-												fmt.Println("Only \033[38:2:150:0:150m"+strconv.Itoa(len(play.Fights.Oppose))+"\033[0m left to go")
-												play.Won++
-												//slay <- true
-												//break TARG
+										if strings.Contains(play.Target, "M") {
+											x, y := play.TarX, play.TarY
+											for bat := 0;bat < len(play.Fights.Oppose);bat++ {
+												if play.Fights.Oppose[bat].X == x && play.Fights.Oppose[bat].Y == y {
+													if rand.Intn(10) > 4 {
+														damage := play.Classes[i].Skills[i].Dam + rand.Intn(5)
+
+														damageString := strconv.Itoa(damage)
+														fmt.Print("\033[52;5H\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m")
+														play.Fights.Oppose[bat].MaxRezz -= damage
+														crashOne <- true
+
+														if play.Fights.Oppose[bat].MaxRezz <= 0 {
+															play.Fights.Oppose[bat].Char = "*"
+															play.Won++
+															fmt.Println("Another one bites the dust!")
+
+														}
+													}else {
+														channelEight <- true
+													}
+
+												}
+
+
 											}
-										}else {
-											channelEight <- true
+
 										}
 
 									}
@@ -682,14 +668,7 @@ func main() {
 								}
 
 							}
-
 						}
-					}
-				}
-				showDesc(play.CurrentRoom)
-				//chats = showChat(play)
-				showCoreBoard(play)
-
 		//		}else {
 		//			clearCoreBoard(play)
 		//		}
@@ -919,7 +898,7 @@ func main() {
 			//TODO make this so one doesn't loose the
 			//old coreboard, or convert it to xp, i dunno
 
-			play.CoreBoard, play, play.Fights = genCoreBoard(play, populated, play.Fights)
+			play.CoreBoard, play = genCoreBoard(play, populated)
 		}
 		if strings.Contains(input, "open map") {
 			//// TODO:
@@ -990,6 +969,7 @@ func main() {
 		//chats = showChat(play)
 		if coreShow {
 			showCoreBoard(play)
+			showCoreMobs(play)
 		}
 		if chatBoxes {
 			ShowOoc(response, play)

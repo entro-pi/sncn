@@ -246,7 +246,7 @@ func mergeMaps(source [][]int, dest [][]int) ([][]int) {
   }
   return dest
 }
-func improvedTargeting(play Player, target string, slay chan bool) (Player) {
+func improvedTargeting(play Player, target string) (Player) {
 
 	if strings.Contains(target, "|") {
 		tarX, err := strconv.Atoi(strings.Split(target, "|")[0])
@@ -299,12 +299,13 @@ func improvedTargeting(play Player, target string, slay chan bool) (Player) {
 			}
 		}
 	}
+
 	play.Target = targ
 	return play
 }
 
 
-func genCoreBoard(play Player, populated []Space, fight Fight) (string, Player, Fight) {
+func genCoreBoard(play Player, populated []Space) (string, Player) {
 	//Create a room map
 	Room := dngn.NewRoom(126, 24)
 	splits := rand.Intn(75)
@@ -332,7 +333,10 @@ func genCoreBoard(play Player, populated []Space, fight Fight) (string, Player, 
 						ChanceMonster := "M"
 						newValue += ChanceMonster
 						ferret := InitMob()
-						fight.Oppose = append(fight.Oppose, ferret)
+						ferret.X = s
+						ferret.Y = i
+						ferret.Char = "F"
+						play.Fights.Oppose = append(play.Fights.Oppose, ferret)
 						continue
 					}else {
 						newValue += string(value[s])
@@ -384,7 +388,7 @@ func genCoreBoard(play Player, populated []Space, fight Fight) (string, Player, 
 		play.CoreBoard = newValue
     outVal += newValue + "\n"
 		//fmt.Println(play.CPU)
-	return outVal, play, fight
+	return outVal, play
 }
 
 

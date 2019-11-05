@@ -157,4 +157,7 @@ type Mobile struct {
 	Tech int
 	Aggro int
 	Align int
+	X int
+	Y int
+	Char string
 }
