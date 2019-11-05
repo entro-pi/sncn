@@ -869,6 +869,25 @@ func main() {
 			}
 			DescribeSpace(vnumLook, populated)
 		}
+		if input == "SAVE ZONES" {
+			file, err := os.Create("dat/zone.bson")
+			if err != nil {
+				panic(err)
+			}
+			defer file.Close()
+			writer := bufio.NewWriter(file)
+			fmt.Println("\033[38:2:200:50:50mUpdating the zone with final map.\033[0m")
+			updateZoneMap(play, populated)
+			fmt.Println("Dumping the area list to dat/zone.bson")
+			for i := 0;i < len(populated);i++ {
+				marshalledBson, err := bson.Marshal(populated[i])
+				if err != nil {
+					panic(err)
+				}
+				writer.Write(marshalledBson)
+				writer.Flush()
+			}
+		}
 		if strings.HasPrefix(input, "go to") {
 			splitCommand := strings.Split(input, "to")
 			stripped := strings.TrimSpace(splitCommand[1])
