@@ -163,7 +163,7 @@ func main() {
 
 				defer response.Close()
 				//Preferred way to connec
-				hostname = "tcp://91.121.154.192:7777"
+				hostname = "tcp://snowcrashnetwork.vineyard.haus:7777"
 				err := response.Connect(hostname)
 				fmt.Printf("\033[51;0H")
 				user = strings.TrimSpace(user)
@@ -493,9 +493,9 @@ func main() {
 
 		//COMMAND SECTION
 
-		if strings.HasPrefix(input, "g ") {
-			message := strings.Split(input, " ")[2]
-			channel := strings.Split(input, " ")[1]
+		if strings.HasPrefix(input, "g:") {
+			message := strings.Split(input, ":")[1]
+			channel := "gossip"
 			response.Recv(0)
 			fmt.Println("\033[38:2:0:150:150m[["+message+"]]\033[0m")
 			_, err := response.Send(play.Name+"||UWU||"+channel+"||}}{{||"+message, 0)
