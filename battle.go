@@ -35,7 +35,7 @@ import (
       // 		play.OldX, play.OldY = play.TarX, play.TarY
         }
          defer term.Close()
-
+         TL, out := "", ""
          fmt.Print("ESC button to quit")
          showCoreBoard(play)
 
@@ -92,7 +92,7 @@ import (
                                  for i := 0;i < len(play.Classes);i++ {
 
                                    if play.Classes[i].Skills[i].Name == "overcharge" {
-                                     fmt.Println("OVERCHARGING")
+                                     //fmt.Print("OVERCHARGING")
                                      if play.Won <= len(play.Fights.Oppose) {
 
                                        if strings.Contains(play.Target, "M") {
@@ -103,17 +103,20 @@ import (
                                                damage := play.Classes[i].Skills[i].Dam + rand.Intn(5)
 
                                                damageString := strconv.Itoa(damage)
-                                               fmt.Print("\033[52;5H\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m")
+                                               fmt.Print("\033[1;53H\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m")
                                                play.Fights.Oppose[bat].MaxRezz -= damage
-                                               if play.Fights.Oppose[bat].MaxRezz >= 0 {
+                                               if play.Fights.Oppose[bat].MaxRezz > 0 {
                                                  sounds[3] <- true
                                                }
 
                                                if play.Fights.Oppose[bat].MaxRezz < 0 {
                                                  play.Fights.Oppose[bat].Char = "*"
                                                  play.Won++
-                                                 fmt.Println("Another one bites the dust!")
+                                                 TL, out = determine(play)
+                                                fmt.Printf(out+play.Target+TL)
+                                      //           fmt.Println("Another one bites the dust!")
                                                 sounds[14] <- true
+          //                                      continue
                                                }
                                              }else {
                                                sounds[17] <- true
@@ -133,34 +136,9 @@ import (
                                  }
                                }
          //		}else {
-              reset()
-         			clearCoreBoard(play)
+      //        reset()
+        // 			clearCoreBoard(play)
          //		}
-             TL := ""
-             out := ""
-             switch play.TargetLong {
-             case "T":
-               TL = "A Bejewelled Tiara"
-               TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
-             case "M":
-               TL = "A Rabid Ferret"
-               for bat := 0;bat < len(play.Fights.Oppose);bat++ {
-                 if play.Fights.Oppose[bat].X == play.TarX && play.Fights.Oppose[bat].Y == play.TarY {
-                   if strings.Contains(play.Fights.Oppose[bat].Char, "C") {
-                       out = fmt.Sprint("\033[19;53H\033[48;2;175;0;0m<<<DEAD\033[48;2;5;0;150m"+TL+"\033[48;2;175;0;0mDEAD>>>\033[0m                      ")
-                       break
-                     }
-                 }else {
-                     out = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
-
-                     }
-               }
-             case "D":
-               TL = "A Large Steel Door"
-               TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
-             default:
-               TL = fmt.Sprint("\033[19;53H\033[48;2;5;0;150m<<<"+TL+">>>\033[0m                        ")
-             }
 
              showDesc(play.CurrentRoom)
          		DescribePlayer(play)
@@ -170,7 +148,7 @@ import (
 
          		//ShowOoc(response, play)
             //updateChat(play, response)
-
+            TL, out = determine(play)
          		fmt.Printf(out+play.Target+TL)
 
          		fmt.Printf("\033[51;0H")
@@ -185,3 +163,31 @@ import (
 
          }
  }
+ func determine(play Player) (string, string) {
+    TL := ""
+    out := ""
+    switch play.TargetLong {
+    case "T":
+     TL = "A Bejewelled Tiara"
+     TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+    case "M":
+     TL = "A Rabid Ferret"
+     for bat := 0;bat < len(play.Fights.Oppose);bat++ {
+       if play.Fights.Oppose[bat].X == play.TarX && play.Fights.Oppose[bat].Y == play.TarY {
+         if strings.Contains(play.Fights.Oppose[bat].Char, "C") {
+             out = fmt.Sprint("\033[19;53H\033[48;2;175;0;0m<<<DEAD\033[48;2;5;0;150m"+TL+"\033[48;2;175;0;0mDEAD>>>\033[0m                      ")
+             break
+           }
+       }else {
+           out = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+
+           }
+     }
+    case "D":
+     TL = "A Large Steel Door"
+     TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+    default:
+     TL = fmt.Sprint("\033[19;53H\033[48;2;5;0;150m<<<"+TL+">>>\033[0m                        ")
+    }
+    return TL, out
+}
