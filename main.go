@@ -611,7 +611,7 @@ func main() {
 		}
 		//secondary commands
 		if strings.HasPrefix(input, "tc:") {
-			battle(play, sounds)
+			battle(input, play, sounds)
 		}
 		if input == "show room vnum" {
 			fmt.Print("\033[38;2;150;0;150mROOM VNUM :"+strconv.Itoa(play.CurrentRoom.Vnum)+"\033[0m")

@@ -11,15 +11,33 @@ import (
          term.Sync() // cosmestic purpose
  }
 
- func battle(play Player, sounds [31]chan bool) {
+ func battle(target string, play Player, sounds [31]chan bool) {
+   tarX, tarY := 0, 0
+   sounds[12] <- true
          err := term.Init()
          if err != nil {
                  panic(err)
          }
+         targetXY := strings.Split(target, ":")[1]
+         if strings.Contains(targetXY, "|") {
+       		tarX, err = strconv.Atoi(strings.Split(targetXY, "|")[0])
+       		if err != nil {
+       			panic(err)
+       		}
+       		tarY, err = strconv.Atoi(strings.Split(targetXY, "|")[1])
+       		if err != nil {
+       			panic(err)
+       		}
 
+       		play.TarX = tarX
+       		play.TarY = tarY
+    //   	}else {
+      // 		play.OldX, play.OldY = play.TarX, play.TarY
+        }
          defer term.Close()
 
          fmt.Print("ESC button to quit")
+         showCoreBoard(play)
 
  keyPressListenerLoop:
          for {
@@ -28,94 +46,48 @@ import (
                     switch ev.Key {
                     case term.KeyEsc:
                             break keyPressListenerLoop
-                    case term.KeyF1:
-                            reset()
-                            fmt.Println("F1 pressed")
-                    case term.KeyF2:
-                            reset()
-                            fmt.Println("F2 pressed")
-                    case term.KeyF3:
-                            reset()
-                            fmt.Println("F3 pressed")
-                    case term.KeyF4:
-                            reset()
-                            fmt.Println("F4 pressed")
-                    case term.KeyF5:
-                            reset()
-                            fmt.Println("F5 pressed")
-                    case term.KeyF6:
-                            reset()
-                            fmt.Println("F6 pressed")
-                    case term.KeyF7:
-                            reset()
-                            fmt.Println("F7 pressed")
-                    case term.KeyF8:
-                            reset()
-                            fmt.Println("F8 pressed")
-                    case term.KeyF9:
-                            reset()
-                            fmt.Println("F9 pressed")
-                    case term.KeyF10:
-                            reset()
-                            fmt.Println("F10 pressed")
-                    case term.KeyF11:
-                            reset()
-                            fmt.Println("F11 pressed")
-                    case term.KeyF12:
-                            reset()
-                            fmt.Println("F12 pressed")
-                    case term.KeyInsert:
-                            reset()
-                            fmt.Println("Insert pressed")
-                    case term.KeyDelete:
-                            reset()
-                            fmt.Println("Delete pressed")
-                    case term.KeyHome:
-                            reset()
-                            fmt.Println("Home pressed")
-                    case term.KeyEnd:
-                            reset()
-                            fmt.Println("End pressed")
-                    case term.KeyPgup:
-                            reset()
-                            fmt.Println("Page Up pressed")
-                    case term.KeyPgdn:
-                            reset()
-                            fmt.Println("Page Down pressed")
-                    case term.KeyArrowUp:
-                            reset()
-                            fmt.Println("Arrow Up pressed")
-                    case term.KeyArrowDown:
-                            reset()
-                            fmt.Println("Arrow Down pressed")
-                    case term.KeyArrowLeft:
-                            reset()
-                            fmt.Println("Arrow Left pressed")
-                    case term.KeyArrowRight:
-                            reset()
-                            fmt.Println("Arrow Right pressed")
-                    case term.KeySpace:
-                            reset()
-                            fmt.Println("Space pressed")
-                    case term.KeyBackspace:
-                            reset()
-                            fmt.Println("Backspace pressed")
-                    case term.KeyEnter:
-                            reset()
-                            fmt.Println("Enter pressed")
-                    case term.KeyTab:
-                            reset()
-                            fmt.Println("Tab pressed")
-
                     default:
-                            // we only want to read a single character or one key pressed event
-                            reset()
-                            fmt.Println("ASCII : ", ev.Ch)
 
-                           showDesc(play.CurrentRoom)
-                           showChat(play)
-                           showCoreBoard(play)
-                           showCoreMobs(play)
+                          		play.OldX, play.OldY = play.TarX, play.TarY
+
+                          		switch ev.Ch {
+                          		case 'w':
+                          			play.TarY -= 1
+                          		case 's':
+                          			play.TarY += 1
+                          		case 'a':
+                          			play.TarX -= 1
+                          		case 'd':
+                          			play.TarX += 1
+                            }
+
+                           targ := ""
+                          //	fmt.Print(play.CPU)
+                           splitCPU := strings.Split(play.CPU, "\n")
+                           CPU:
+                           for i := 0;i < len(splitCPU);i++ {
+                             for r := 0;r < len(splitCPU[i]);r++ {
+                               if play.TarX == r && play.TarY == i {
+                                 if string(splitCPU[i][r]) == "%" {
+                                   play.TarX, play.TarY = play.OldX, play.OldY
+                                   targ = fmt.Sprint("\033["+strconv.Itoa(play.TarY+20)+";"+strconv.Itoa(play.TarX+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+                                   break CPU
+                                 }else {
+                          //					fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+                                   play.TargetLong = string(splitCPU[play.TarY][play.TarX])
+
+                                 }
+
+                                 targ = fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+
+                               }else {
+                                 fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H"+string(splitCPU[i][r]))
+                               }
+                             }
+                           }
+
+                           play.Target = targ
+
                            if ev.Ch == 'e' {
                                  for i := 0;i < len(play.Classes);i++ {
 
@@ -133,16 +105,18 @@ import (
                                                damageString := strconv.Itoa(damage)
                                                fmt.Print("\033[52;5H\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m")
                                                play.Fights.Oppose[bat].MaxRezz -= damage
-                                               sounds[9] <- true
+                                               if play.Fights.Oppose[bat].MaxRezz >= 0 {
+                                                 sounds[3] <- true
+                                               }
 
-                                               if play.Fights.Oppose[bat].MaxRezz <= 0 {
+                                               if play.Fights.Oppose[bat].MaxRezz < 0 {
                                                  play.Fights.Oppose[bat].Char = "*"
                                                  play.Won++
                                                  fmt.Println("Another one bites the dust!")
-
+                                                sounds[14] <- true
                                                }
                                              }else {
-                                               sounds[9] <- true
+                                               sounds[17] <- true
                                              }
 
                                            }
@@ -159,11 +133,11 @@ import (
                                  }
                                }
          //		}else {
-         //			clearCoreBoard(play)
+              reset()
+         			clearCoreBoard(play)
          //		}
              TL := ""
              out := ""
-             fmt.Printf(play.Target)
              switch play.TargetLong {
              case "T":
                TL = "A Bejewelled Tiara"
@@ -187,9 +161,19 @@ import (
              default:
                TL = fmt.Sprint("\033[19;53H\033[48;2;5;0;150m<<<"+TL+">>>\033[0m                        ")
              }
-             fmt.Print(TL)
-             fmt.Print(out)
-             fmt.Printf("\033[51;0H")
+
+             showDesc(play.CurrentRoom)
+         		DescribePlayer(play)
+         		//chats = showChat(play)
+         		showCoreBoard(play)
+         		showCoreMobs(play)
+
+         		//ShowOoc(response, play)
+            //updateChat(play, response)
+
+         		fmt.Printf(out+play.Target+TL)
+
+         		fmt.Printf("\033[51;0H")
 
 
       //			fmt.Print("Input co-ordinates in the form of aA aB aC etc..")
