@@ -1,3 +1,52 @@
+![dead](docs/dead.png)
+****November 6th, 2019****
+
+So for now I've settled on a way to handle battle.
+
+Basically there is another "mode" rather than straight text input.
+
+It's accessible by generating a coreboard with `gen coreboard`
+and `lock coreboard` then `tc:1|1` will plop you in to space 1,1
+
+![coreboard](docs/coreboard.png)
+
+As well as battle, I've settled on a way to start the game itself.
+
+Once you have sncn-core on your computer, run `sncn-core --wizinit`
+
+then `sncn-core --connect-core` for the full experience, `sncn-core --connect-core --safe-mode`
+for the fallback.
+
+As for logins, today I'm implementing a hash pattern that allows for
+more than one character to have a certain password. If that sounds
+like the most ridiculous problem to have, you would be right. However it
+is an easy fix. When I created the password hash, I only took in to
+account the accounts password, which meant that if you used the same
+password as someone else, you would be logged in to whomever showed
+up first in the database. Which was not who it was expected to be
+half the time.
+
+But! The simple but elegant solution is to calculate the hash according
+to the player's name AND password to create a unique pass/hash pair.
+
+I thought about creating a UUID and locking it behind a password, but
+I couldn't get past the fact I would have to save the password in plain
+text somewhere.
+
+So there! hash(pass) becomes hash(name+pass) and all of a sudden everyone
+is unique!
+
+The next slice of life improvement bit will be to make your login different
+from your character, so one doesn't have to advertise half their
+login credentials simply by logging in.
+
+Till next time!
+
+Entropy
+
+
+
+
 ![glitch](docs/glitch.png)
 ****November 1st, 2019****
 
