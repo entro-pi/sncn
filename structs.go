@@ -130,6 +130,7 @@ type Player struct {
 	OldY int
 	CPU string
 	Channels []string
+	Battling bool
 
 	MaxRezz int
 	Rezz int

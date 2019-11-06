@@ -179,21 +179,12 @@ func showCoreMobs(play Player) Player {
 }
 
 func showCoreBoard(play Player) {
-
+  core := ""
   coreSplit := strings.Split(play.CoreBoard, "\n")
   for i := 0;i < len(coreSplit);i++ {
-    core := ""
-//    if i == 0  || i == 1{
-//      for len(core) < len(coreSplit[0]) {
-        //core += fmt.Sprint(" ")
-//      }
-//      core += "\n"
-//    }else {
-      core = fmt.Sprint("\033[",strconv.Itoa(i+20),";54H",coreSplit[i])
-//    }
-
+      core += fmt.Sprint("\033[",strconv.Itoa(i+20),";54H",coreSplit[i])
+    }
     fmt.Print(core)
-  }
 }
 func clearCoreBoard(play Player) {
   coreSplit := strings.Split(play.CoreBoard, "\n")

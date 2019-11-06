@@ -38,7 +38,8 @@ import (
          TL, out := "", ""
          var damMsg []string
          fmt.Print("ESC button to quit")
-         showCoreBoard(play)
+         play.Battling = true
+//         showCoreBoard(play)
 
  keyPressListenerLoop:
          for {
@@ -76,7 +77,7 @@ import (
                                    break CPU
                                  }else {
                                    play.Target = string(splitCPU[i][r])
-                          					fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+                          	//				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
                                    play.TargetLong = string(splitCPU[play.TarY][play.TarX])
 
                                  }
@@ -84,7 +85,7 @@ import (
                                  targ = fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
 
                                }else {
-                                 fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H"+string(splitCPU[i][r]))
+                              //   fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H"+string(splitCPU[i][r]))
                                }
                              }
                            }
@@ -167,6 +168,7 @@ import (
          }
 
          }
+         play.Battling = false
  }
  func determine(play Player) (string, string) {
     TL := ""
