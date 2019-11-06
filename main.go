@@ -819,8 +819,10 @@ func main() {
 		if strings.Contains(input, "gen coreboard") {
 			//TODO make this so one doesn't loose the
 			//old coreboard, or convert it to xp, i dunno
-
-			play.CoreBoard, play = genCoreBoard(play, populated)
+			if len(strings.Split(input, "=")) > 1 {
+				size := strings.Split(input, "=")[1]
+				play.CoreBoard, play = genCoreBoard(size, play, populated)				
+			}
 		}
 		if strings.Contains(input, "open map") {
 			//// TODO:

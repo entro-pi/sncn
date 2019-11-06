@@ -305,9 +305,14 @@ func improvedTargeting(play Player, target string) (Player) {
 }
 
 
-func genCoreBoard(play Player, populated []Space) (string, Player) {
+func genCoreBoard(size string, play Player, populated []Space) (string, Player) {
 	//Create a room map
-	Room := dngn.NewRoom(121, 24)
+	sizeX, err := strconv.Atoi(strings.Split(size, ":")[0])
+	sizeY, err := strconv.Atoi(strings.Split(size, ":")[1])
+	if err != nil {
+		fmt.Print("Error, invalid coreboard size!")
+	}
+	Room := dngn.NewRoom(sizeX, sizeY)
 	splits := rand.Intn(75)
 	Room.GenerateBSP('%', 'D', splits)
 //	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
