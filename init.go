@@ -69,6 +69,7 @@ func InitPlayer(name string, pass string) Player {
   blast.TechUsage = 2
   blast.Level = 1
   blast.Consumed = false
+  blast.Name = "blast"
   play.Classes[0].Spells = append(play.Classes[0].Spells, blast)
 
 	play.Inventory = inv

@@ -3,7 +3,6 @@ package main
 import (
   "os"
   "time"
-  "fmt"
   "github.com/faiface/beep"
   "github.com/faiface/beep/wav"
   "github.com/faiface/beep/speaker"
@@ -16,7 +15,7 @@ func playSounds(sounds [31]chan bool){
     panic(err)
   }
   beeps, err := f.Readdirnames(31)
-  fmt.Println(beeps)
+//  fmt.Println(beeps)
   if err != nil {
     panic(err)
   }
@@ -25,7 +24,7 @@ func playSounds(sounds [31]chan bool){
   var buffers []beep.Buffer
   for i := 0;i < len(beeps);i++ {
     f, err := os.Open("dat/sounds/"+beeps[i])
-    fmt.Println(f.Name())
+  //  fmt.Println(f.Name())
     if err != nil {
       panic(err)
     }

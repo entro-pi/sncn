@@ -17,6 +17,7 @@ type Spell struct {
 	Usage rune
 	Level int
 	Consumed bool
+	Name string
 }
 
 type Skill struct {
