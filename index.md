@@ -5,17 +5,20 @@ So for now I've settled on a way to handle battle.
 
 Basically there is another "mode" rather than straight text input.
 
-It's accessible by generating a coreboard with `gen coreboard`
-and `lock coreboard` then `tc:1|1` will plop you in to space 1,1
+It's accessible by generating a coreboard with ```gen coreboard```
+and ```lock coreboard``` ```tc:1|1``` will plop you in to space 1,1
 
 ![coreboard](docs/coreboard.png)
 
 As well as battle, I've settled on a way to start the game itself.
 
-Once you have sncn-core on your computer, run `sncn-core --wizinit`
+Once you have sncn-core on your computer, run ```sncn-core --wizinit```
 
-then `sncn-core --connect-core` for the full experience, `sncn-core --connect-core --safe-mode`
+then ```sncn-core --connect-core``` for the full experience, ```sncn-core --connect-core --safe-mode```
 for the fallback.
+
+It autogenerates a default persona to be used to create other characters.
+Also to keep the entire engine from crapping out due to lack of playerfiles.
 
 As for logins, today I'm implementing a hash pattern that allows for
 more than one character to have a certain password. If that sounds
