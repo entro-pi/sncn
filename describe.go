@@ -129,14 +129,31 @@ func clearDirty() {
 
 func showBattle(damMsg []string) string {
 	out := ""
+  clear := false
+  outClear := ""
   for i := 0;i < len(damMsg);i++ {
     if len(damMsg) > 17 {
         damMsg = damMsg[17:]
-        clearDirty()
+        //clearDirty()
+        //reset()
         i = 0
+        clear = true
     }
-    out += fmt.Sprint("\033["+strconv.Itoa(i+1)+";53H"+damMsg[i])
+    if clear {
+      for c := 0;c < 17;c++ {
+        outClear += fmt.Sprint("\033["+strconv.Itoa(i)+";53H                                                                            ")
+        if c == 16 {
+            fmt.Print(outClear)
+            clear = false
+        }
+      }
+
+    }else {
+      out += fmt.Sprint("\033["+strconv.Itoa(i+1)+";53H"+damMsg[i]+"\033["+strconv.Itoa(i+2)+";53H                                                                    ")
+
+    }
   }
+  fmt.Print(outClear)
 	return out
 }
 

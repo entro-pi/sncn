@@ -159,7 +159,7 @@ import (
       //        reset()
         // 			clearCoreBoard(play)
          //		}
-
+            out = ""
             out += showBattle(damMsg)
             out += showDesc(play.CurrentRoom)
          		out += DescribePlayer(play)

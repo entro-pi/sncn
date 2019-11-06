@@ -242,6 +242,7 @@ func main() {
 	firstDig := false
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
+		out = ""
 		if chatsCurrent != chats {
 		//	sounds[9] <- true
 			chatsCurrent = chats
