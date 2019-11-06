@@ -160,17 +160,20 @@ import (
         // 			clearCoreBoard(play)
          //		}
 
-            showBattle(damMsg)
-             showDesc(play.CurrentRoom)
-         		DescribePlayer(play)
+            out += showBattle(damMsg)
+            out += showDesc(play.CurrentRoom)
+         		out += DescribePlayer(play)
          		//chats = showChat(play)
-         		showCoreBoard(play)
-         		showCoreMobs(play)
+         		out += showCoreBoard(play)
+
+         		_, outln := showCoreMobs(play)
+            out += outln
 
          		//ShowOoc(response, play)
             //updateChat(play, response)
-            TL, out = determine(play)
-         		fmt.Printf(out+play.Target+TL)
+            TL, outChar := determine(play)
+            fmt.Print(out)
+            fmt.Printf(outChar+play.Target+TL)
 
          		fmt.Printf("\033[51;0H")
 

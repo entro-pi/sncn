@@ -52,14 +52,14 @@ func main() {
 	//sounds[0] <- true
 	var populated []Space
 	var mobiles []Mobile
-	var chats int
+	//var chats int
 	var chatsCurrent int
 	var grapevines int
 	var grapevinesCurrent int
 	chatsCurrent = 0
 	grapevinesCurrent = 0
 
-	chats = 0
+//	chats = 0
 	grapevines = 0
 	var play Player
 	var hostname string
@@ -69,6 +69,7 @@ func main() {
 	//Make this relate to character level
 	var dug []Space
 	coreShow := false
+	out := ""
 	if len(os.Args) > 1 {
 		if os.Args[1] == "--init" {
 			//TODO testing suite - one test will be randomly generating 10,000 Spaces
@@ -119,8 +120,8 @@ func main() {
 				if inp == populated[i].Vnum {
 					play.CurrentRoom = populated[i]
 					fmt.Print(populated[i].Vnum, populated[i].Vnums, populated[i].Zone)
-					showDesc(play.CurrentRoom)
-					DescribePlayer(play)
+					out += showDesc(play.CurrentRoom)
+					out += DescribePlayer(play)
 					fmt.Printf("\033[0;0H\033[38:2:0:255:0mPASS\033[0m")
 					break
 				}else {
@@ -229,11 +230,12 @@ func main() {
 
 	//Show the screen first off
 	play.CurrentRoom = populated[1]
-	showDesc(play.CurrentRoom)
-	DescribePlayer(play)
-	chats = showChat(play)
-	grapevines = updateChat(play, response)
-	ShowOoc(response, play)
+	out += showDesc(play.CurrentRoom)
+	out += DescribePlayer(play)
+	chats, outln := showChat(play)
+	out += outln
+	updateChat(play, response)
+	out += ShowOoc(response, play)
 
 	//Game loop
 	fmt.Println("#of mobiles:"+strconv.Itoa(len(mobiles)))
@@ -248,7 +250,7 @@ func main() {
 		//	sounds[9] <- true
 			grapevinesCurrent = grapevines
 		}
-		clearCmd()
+		//clearCmd()
 		savePfile(play)
 		input := scanner.Text()
 		//Save pfile first
@@ -454,7 +456,7 @@ func main() {
 						}
 					default:
 						if len(play.CurrentRoom.ZonePos) >= 2 {
-							drawDig(digFrame, play.CurrentRoom.ZonePos)
+							out += drawDig(digFrame, play.CurrentRoom.ZonePos)
 						}
 						fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 					}
@@ -723,7 +725,7 @@ func main() {
 		}
 		if input == "count keys" {
 			countKeys()
-			showDesc(play.CurrentRoom)
+			out += showDesc(play.CurrentRoom)
 		}
 		if strings.HasPrefix(input, "merge") {
 			fmt.Println("Merging area zone map data")
@@ -755,14 +757,15 @@ func main() {
 		if input == "hide grape" {
 			grape = false
 			clearDirty()
-			showDesc(play.CurrentRoom)
-			DescribePlayer(play)
-			//chats = showChat(play)
+			out += showDesc(play.CurrentRoom)
+			out += DescribePlayer(play)
+			//chats, out += showChat(play)
 			if coreShow {
 				showCoreBoard(play)
 			}
 			if chatBoxes {
-				chats = showChat(play)
+				_, outln := showChat(play)
+				out += outln
 			}
 			sounds[2] <- true
 			fmt.Printf("\033[51;0H")
@@ -775,14 +778,15 @@ func main() {
 		if input == "hide chat" {
 			chatBoxes = false
 			clearDirty()
-			showDesc(play.CurrentRoom)
-			DescribePlayer(play)
-			//chats = showChat(play)
+			out += showDesc(play.CurrentRoom)
+			out += DescribePlayer(play)
+			//chats, out += showChat(play)
 			if coreShow {
 				showCoreBoard(play)
 			}
 			if chatBoxes {
-				chats = showChat(play)
+				_, outln := showChat(play)
+				out += outln
 			}
 			sounds[9] <- true
 			fmt.Printf("\033[51;0H")
@@ -790,14 +794,15 @@ func main() {
 		if input == "show chat" {
 			chatBoxes = true
 			clearDirty()
-			showDesc(play.CurrentRoom)
-			DescribePlayer(play)
-			//chats = showChat(play)
+			out += showDesc(play.CurrentRoom)
+			out += DescribePlayer(play)
+			//chats, out += showChat(play)
 			if coreShow {
-				showCoreBoard(play)
+				out += showCoreBoard(play)
 			}
 			if chatBoxes {
-				chats = showChat(play)
+				_, outln := showChat(play)
+				out += outln
 			}
 			sounds[9] <- true
 			fmt.Printf("\033[51;0H")
@@ -807,8 +812,8 @@ func main() {
 		}
 		if input == "look" {
 			fmt.Sprintf("Current room is ", play.CurrentRoom)
-			showDesc(play.CurrentRoom)
-			DescribePlayer(play)
+			out += showDesc(play.CurrentRoom)
+			out += DescribePlayer(play)
 		}
 		if strings.Contains(input, "gen coreboard") {
 			//TODO make this so one doesn't loose the
@@ -829,7 +834,7 @@ func main() {
 		}
 		if strings.Contains(input, "lock coreboard") {
 //			fmt.Printf(mapPos)
-				showCoreBoard(play)
+				out += showCoreBoard(play)
 				coreShow = true
 		}
 		if strings.HasPrefix(input, "view from") {
@@ -873,7 +878,7 @@ func main() {
 			play, populated = goTo(inp, play, populated)
 		}
 		if input == "score" {
-			DescribePlayer(play)
+			out += DescribePlayer(play)
 		}
 		if input == "updateChat" {
 			grapevines = updateChat(play, response)
@@ -891,16 +896,19 @@ func main() {
 		}
 
 		//Reset the input to a standardized place
-		showDesc(play.CurrentRoom)
-		DescribePlayer(play)
-		//chats = showChat(play)
+		out += showDesc(play.CurrentRoom)
+		out += DescribePlayer(play)
+		//chats, out += showChat(play)
 		if coreShow {
+			outln := ""
 			showCoreBoard(play)
-			play = showCoreMobs(play)
+			play, outln = showCoreMobs(play)
+			out += outln
 		}
+
 		if chatBoxes {
 			ShowOoc(response, play)
-//			chats = showChat(play)
+//			chats, out += showChat(play)
 		}
 		if grape {
 			grapevines = updateChat(play, response)
@@ -908,10 +916,12 @@ func main() {
 //		}else {
 //			clearCoreBoard(play)
 //		}
-		fmt.Printf(play.Target)
+		fmt.Print(out)
+		//fmt.Printf(play.Target)
 
 		fmt.Printf("\033[51;0H")
 	}
+		fmt.Sprint(chats)
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"Verb":"+"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"ProperNoun":"y"})
