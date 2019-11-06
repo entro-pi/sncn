@@ -36,6 +36,7 @@ import (
         }
          defer term.Close()
          TL, out := "", ""
+         var damMsg []string
          fmt.Print("ESC button to quit")
          showCoreBoard(play)
 
@@ -103,7 +104,7 @@ import (
                                                damage := play.Classes[i].Skills[i].Dam + rand.Intn(5)
 
                                                damageString := strconv.Itoa(damage)
-                                               fmt.Print("\033[1;53H\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m")
+                                               damMsg = append(damMsg, fmt.Sprint("\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m"))
                                                play.Fights.Oppose[bat].MaxRezz -= damage
                                                if play.Fights.Oppose[bat].MaxRezz > 0 {
                                                  sounds[3] <- true
@@ -119,6 +120,7 @@ import (
           //                                      continue
                                                }
                                              }else {
+                                               damMsg = append(damMsg, fmt.Sprint("\033[38:2:150:0:150mYou don't manage to do any damage.\033[0m"))
                                                sounds[17] <- true
                                              }
 
@@ -140,6 +142,7 @@ import (
         // 			clearCoreBoard(play)
          //		}
 
+            showBattle(damMsg)
              showDesc(play.CurrentRoom)
          		DescribePlayer(play)
          		//chats = showChat(play)
