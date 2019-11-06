@@ -7,11 +7,75 @@ import (
 	"context"
   "strconv"
   "bufio"
+  "math/rand"
   "strings"
+  zmq "github.com/pebbe/zmq4"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
+func ShowOoc(response *zmq.Socket, play Player) {
+  input := "+++"
+  input = play.Name+input
+  //createChat(input[3:], play)
+  //todo
+  response.Recv(0)
+  _, err := response.Send(input, 0)
+  if err != nil {
+    panic(err)
+  }
+  chat, err := response.Recv(0)
+  if err != nil {
+    panic(err)
+  }
+  fmt.Printf(chat)
+}
+func JackIn(in chan bool) error {
+  fmt.Printf("\033[10;28H\033[0m")
+  fmt.Printf("\033[11;28H \033[48;2;10;255;20m\033[38;2;10;10;255m         LOGIN         \033[0m")
+  fmt.Printf("\033[12;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[13;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mUSER                \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[14;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[15;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[16;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mPASSWORD            \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[17;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[18;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+  fmt.Printf("\033[19;28H \033[48;2;10;255;20m                       \033[0m")
+  fmt.Printf("\033[17;32H")
+out := ""
+row := 0
+for i := 0;i < 52;i++ {
+  for count := 0;count < 250;count++ {
+    select {
+    case notConn := <- in:
+      clearDirty()
+      if notConn == false {
+
+        return nil
+      }
+
+    default:
+          if rand.Intn(45) > 35 {
+            randPosX := strconv.Itoa(rand.Intn(200))
+            randPosY := strconv.Itoa(rand.Intn(52))
+            out += "\033["+randPosY+";"+randPosX+"H\033[48:2:250:250:250m \033[0m"
+          }else {
+            randPosX := strconv.Itoa(rand.Intn(200))
+            randPosY := strconv.Itoa(rand.Intn(52))
+            out += "\033["+randPosY+";"+randPosX+"H\033[48:2:25:35:25m \033[0m"
+          }
+          row++
+
+          time.Sleep(10*time.Millisecond)
+          fmt.Print(out)
+
+    }
+  }
+
+  }
+  return nil
+}
+
 
 func LoginSC() (string, string){
   clearDirty()
@@ -49,7 +113,7 @@ func LoginSC() (string, string){
     fmt.Printf("\033[17;32H")
 		loginScanner.Scan()
     pword := loginScanner.Text()
-    clearDirty()
+    //clearDirty()
     //Only use clearDirty at major intersections, it will cause flicker
 		return user, pword
 
@@ -59,6 +123,18 @@ func LoginSC() (string, string){
 func clearDirty() {
   for i := 0;i < 255;i++ {
     fmt.Println("")
+  }
+}
+
+func showBattle(damMsg []string) {
+
+  for i := 1;i < len(damMsg);i++ {
+    if len(damMsg) > 17 {
+        damMsg = damMsg[17:]
+        clearDirty()
+        i = 0
+    }
+    fmt.Print("\033["+strconv.Itoa(i)+";53H"+damMsg[i])
   }
 }
 
@@ -72,20 +148,43 @@ func clearCmd() {
 		fmt.Print(cmdPos)
 }
 
+func showCoreMobs(play Player) Player {
+  core := ""
+  coreSplit := strings.Split(play.PlainCoreBoard, "\n")
+  for i := 0;i < len(coreSplit);i++ {
+    for r := 0;r < len(coreSplit[i]);r++ {
+      if coreSplit[i][r] == 'M' {
+          for bat := 0;bat < len(play.Fights.Oppose);bat++ {
+            if play.Fights.Oppose[bat].MaxRezz <= 0 && play.Fights.Oppose[bat].X == r && play.Fights.Oppose[bat].Y == i{
+              //fmt.Println("ONE DOWN AT"+strconv.Itoa(play.Fights.Oppose[bat].X)+":"+strconv.Itoa(play.Fights.Oppose[bat].Y))
+              play.Fights.Oppose[bat].Char = fmt.Sprint("\033[48;2;5;0;150m\033["+strconv.Itoa(play.Fights.Oppose[bat].Y+20)+";"+strconv.Itoa(play.Fights.Oppose[bat].X+54)+"H\033[48:2:175:0:0mC\033[0m")
+    //          core += play.Fights.Oppose[bat].Char
+  //            play.TargetLong = "C"
+              break
+            }else {
+//              play.TargetLong = string(coreSplit[i][r])
+              core += fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(play.Fights.Oppose[bat].Char)+"\033[0m")
+
+            }
+
+        }
+
+
+        }
+      }
+    }
+
+  fmt.Print(core)
+  return play
+}
+
 func showCoreBoard(play Player) {
+  core := ""
   coreSplit := strings.Split(play.CoreBoard, "\n")
   for i := 0;i < len(coreSplit);i++ {
-    core := ""
-//    if i == 0  || i == 1{
-//      for len(core) < len(coreSplit[0]) {
-        //core += fmt.Sprint(" ")
-//      }
-//      core += "\n"
-//    }else {
-      core = fmt.Sprint("\033[",strconv.Itoa(i+20),";54H",coreSplit[i])
-//    }
+      core += fmt.Sprint("\033[",strconv.Itoa(i+20),";54H",coreSplit[i])
+    }
     fmt.Print(core)
-  }
 }
 func clearCoreBoard(play Player) {
   coreSplit := strings.Split(play.CoreBoard, "\n")
@@ -146,8 +245,65 @@ func showDesc(room Space) {
 		drawDig(room.ZoneMap, room.ZonePos)
 	}
 }
+func showWho(play Player) []string {
+  var whoList []string
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+  filter := bson.M{}
+  collection := client.Database("who").Collection("players")
+  findOptions := options.Find()
+  findOptions.SetLimit(1000)
+  results, err := collection.Find(context.Background(), filter, findOptions)
+  if err != nil {
+    panic(err)
+  }
+  for results.Next(context.Background()) {
+    var signedIn SignIn
+    err := results.Decode(&signedIn)
+    if err != nil {
+      panic(err)
+    }
+    whoList = append(whoList, signedIn.Payload.Name)
+  }
+  return whoList
+}
+func updateWho(play Player, in bool) {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+  filter := bson.M{"event":"players/sign-in","payload":bson.M{"name":play.Name}}
+  update := bson.M{"event":"players/sign-in","ref":UIDMaker(), "payload":bson.M{"name":play.Name}}
+	collection := client.Database("who").Collection("players")
+	findOptions := options.Find()
+  findOptions.SetLimit(1000)
+  if !in {
+    _, err := collection.DeleteOne(context.Background(), filter)
+  	if err != nil {
+  		panic(err)
+  	}
+  }else {
+    _, err := collection.InsertOne(context.Background(), update)
+    if err != nil {
+      panic(err)
+    }
+  }
 
-func showChat(play Player) {
+}
+func showChat(play Player) int {
+  countChat := 0
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		panic(err)
@@ -163,13 +319,14 @@ func showChat(play Player) {
 	count := 0
 	var row int
 	for mess.Next(context.Background()) {
+    count++
 		var chatMess Chat
 		err := mess.Decode(&chatMess)
 		if err != nil {
 			panic(err)
 		}
 		chatPos := fmt.Sprintf("\033["+strconv.Itoa(count+3)+";180H")
-		count++
+		countChat++
 		fmt.Printf(chatPos)
 		if row >= 51 {
 			row = 0
@@ -183,10 +340,11 @@ func showChat(play Player) {
 //  	fmt.Printf(end)
 
 	}
+  return countChat
 }
 func drawDig(digFrame [][]int, zonePos []int) {
 	for i := 0;i < len(digFrame);i++ {
-		fmt.Printf("\033[48:2:150:0:150m \033[0m")
+		fmt.Printf("\033[48;2;10;255;20m \033[0m")
 		for c := 0;c < len(digFrame[i]);c++ {
 				prn := ""
 				val := fmt.Sprint(digFrame[i][c])
@@ -199,12 +357,12 @@ func drawDig(digFrame [][]int, zonePos []int) {
 					val = "1"
 					fmt.Printf("\033[38:2:50:10:50m"+val+"\033[0m")
 				}else if c == 0 || c == len(digFrame[i])-1 || i == 0 || i == len(digFrame)-1{
-          fmt.Printf("\033[48:2:150:0:150m \033[0m")
+          fmt.Printf("\033[48;2;10;255;20m \033[0m")
         }else {
 						fmt.Printf(val)
 				}
 		}
-		fmt.Println("\033[48:2:150:0:150m \033[0m")
+		fmt.Println("\033[48;2;10;255;20m \033[0m")
 	}
 }
 

@@ -5,15 +5,33 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-
+	"bufio"
   "math/rand"
 	"context"
 	"time"
+	zmq "github.com/pebbe/zmq4"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
-
+func updateChat(play Player, response *zmq.Socket) int {
+	count := 0
+	response.Recv(0)
+	_, err := response.Send(play.Name+"=+=", 0)
+	if err != nil {
+		panic(err)
+	}
+	value, err := response.Recv(0)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Print(value)
+	if len(value) > 1 {
+		count++
+	}
+	fmt.Printf("\033[51;0H")
+	return count
+}
 func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone string, digNum int, populated []Space) (int, Space) {
 	digVnumEnd := strings.Split(digNums, "-")[1]
 	dg, digNum := initDigRoom(digFrame, digNums, digZone, play, digNum)
@@ -85,6 +103,58 @@ func AssembleComposeCel(chatMess Chat, row int) (string, int) {
 	//	fmt.Println(cel)
 }
 
+func AssembleBroadside(broadside Broadcast, row int) (string) {
+	var cel string
+	inWord := broadside.Payload.Message
+	wor := ""
+	word := ""
+	words := ""
+	if len(inWord) > 68 {
+		return "DONE COMPOSTING"
+	}
+	if len(inWord) > 28 && len(inWord) > 54 {
+		wor += inWord[:28]
+		word += inWord[28:54]
+		words += inWord[54:]
+		for i := len(words); i <= 28; i++ {
+			words += " "
+		}
+	}
+	if len(inWord) > 28 && len(inWord) < 54 {
+		wor += inWord[:28]
+		word += inWord[28:]
+		for i := len(word); i <= 28; i++ {
+			word += " "
+		}
+		words = "                            "
+
+	}
+	if len(inWord) <= 28 {
+		wor = "                            "
+		word += ""
+		word += inWord
+		for i := len(word); i <= 28; i++ {
+			word += " "
+		}
+		words = "                            "
+	}
+
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", wor, "\033[48;2;20;255;50m \033[0m")
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", word, "\033[48;2;20;255;50m \033[0m")
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", words, "\033[48;2;20;255;50m \033[0m")
+	row++
+	if broadside.Payload.Game == "" {
+		broadside.Payload.Game = "snowcrash"
+	}
+	namePlate := "                            "[len(broadside.Payload.Name+"@"+broadside.Payload.Game):]
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m@"+broadside.Payload.Name+"@"+broadside.Payload.Game+namePlate+"\033[48;2;20;255;50m \033[0m")
+
+	return cel
+	//	fmt.Println(cel)
+}
 
 func AssembleDescCel(room Space, row int) (string) {
 	var cel string
@@ -97,42 +167,42 @@ func AssembleDescCel(room Space, row int) (string) {
 		inWord[0] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[0], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[0], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[1]) < 100 {
 		inWord[1] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[1], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[1], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[2]) < 100 {
 		inWord[2] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[2], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[2], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[3]) < 100 {
 		inWord[3] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[3], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[3], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[4]) < 100 {
 		inWord[4] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[4], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[4], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[5]) < 100 {
 		inWord[5] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[5], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[5], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[6]) < 100 {
 		inWord[6] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m \033[48;2;10;10;20m", inWord[6], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m \033[48;2;10;10;20m", inWord[6], "\033[48;2;10;255;20m \033[0m")
 	for len(inWord[7]) < 100 {
 		inWord[7] += " "
 	}
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;100;5;100m\033[38:2:50:0:50m@", inWord[7], "\033[48;2;100;5;100m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row+20)+";51H\033[48;2;10;255;20m\033[38:2:50:0:50m@"+room.Zone+"#"+strconv.Itoa(room.Vnum), inWord[7][len(room.Zone)+len(strconv.Itoa(room.Vnum)):], "\033[48;2;10;255;20m \033[0m")
 
 	return cel
 }
@@ -156,6 +226,7 @@ func goTo(dest int, play Player, populated []Space) (Player, []Space) {
 			showDesc(play.CurrentRoom)
 			DescribePlayer(play)
 			fmt.Printf("\033[0;0H\033[38:2:0:255:0mPASS\033[0m")
+			savePfile(play)
 			break
 		}else {
 			fmt.Printf("\033[0;0H\033[38:2:255:0:0mERROR\033[0m")
@@ -186,9 +257,12 @@ func improvedTargeting(play Player, target string) (Player) {
 		if err != nil {
 			panic(err)
 		}
+
 		play.TarX = tarX
 		play.TarY = tarY
 	}else {
+		play.OldX, play.OldY = play.TarX, play.TarY
+
 		switch target {
 		case "8":
 			play.TarY -= 1
@@ -199,21 +273,33 @@ func improvedTargeting(play Player, target string) (Player) {
 		case "6":
 			play.TarX += 1
 		}
+
 	}
 	targ := ""
 //	fmt.Print(play.CPU)
 	splitCPU := strings.Split(play.CPU, "\n")
+	CPU:
 	for i := 0;i < len(splitCPU);i++ {
 		for r := 0;r < len(splitCPU[i]);r++ {
 			if play.TarX == r && play.TarY == i {
-				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[i][r])+"\033[0m")
-				play.TargetLong = string(splitCPU[i][r])
-				targ = fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[i][r])+"\033[0m")
+				if string(splitCPU[i][r]) == "%" {
+					play.TarX, play.TarY = play.OldX, play.OldY
+					targ = fmt.Sprint("\033["+strconv.Itoa(play.TarY+20)+";"+strconv.Itoa(play.TarX+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+					break CPU
+				}else {
+//					fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+					play.TargetLong = string(splitCPU[play.TarY][play.TarX])
+
+				}
+
+				targ = fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(splitCPU[play.TarY][play.TarX])+"\033[0m")
+
 			}else {
 				fmt.Print("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H"+string(splitCPU[i][r]))
 			}
 		}
 	}
+
 	play.Target = targ
 	return play
 }
@@ -221,7 +307,7 @@ func improvedTargeting(play Player, target string) (Player) {
 
 func genCoreBoard(play Player, populated []Space) (string, Player) {
 	//Create a room map
-	Room := dngn.NewRoom(126, 24)
+	Room := dngn.NewRoom(121, 24)
 	splits := rand.Intn(75)
 	Room.GenerateBSP('%', 'D', splits)
 //	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
@@ -246,6 +332,11 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
 					if rand.Intn(100) > 95 {
 						ChanceMonster := "M"
 						newValue += ChanceMonster
+						ferret := InitMob()
+						ferret.X = s
+						ferret.Y = i
+						ferret.Char = "F"
+						play.Fights.Oppose = append(play.Fights.Oppose, ferret)
 						continue
 					}else {
 						newValue += string(value[s])
@@ -301,6 +392,72 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
 }
 
 
+func craftMob(scanner bufio.Scanner) Mobile {
+	mob := InitMob()
+	namePos := ""
+	named := false
+	longNamePos := ""
+	longNamed := false
+	val := ""
+  val += "\033[0;53H\033[48:2:200:120:0m                                                                              \033[0m"
+  val += "\033[32;53H\033[48:2:200:120:0m                                                                              \033[0m"
+
+	for scanner.Scan() {
+		if scanner.Text() == "exit" {
+			return mob
+		}else {
+  for i := 2;i < 32;i++ {
+
+		if i == 2{
+			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m \033[0m                                Name                                        \033[48:2:200:120:0m \033[0m"
+		}else if i == 5 {
+			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m \033[0m                             Description                                    \033[48:2:200:120:0m \033[0m"
+			}else if i == 4 || i > 11 && i <= 15 {
+			if i == 4 {
+				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m$                                                                             \033[0m")
+
+			}else if i > 11 && i < 15 {
+				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m&                                                                             \033[0m")
+
+			}else if i == 15 {
+				val += "\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m \033[0m                               Stats                                        \033[48:2:200:120:0m \033[0m"
+
+				}else {
+				val += fmt.Sprint("\033[38:2:225:0:225m\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m                                                                              \033[0m")
+
+			}
+		}else {
+			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m \033[0m                                                                            \033[48:2:200:120:0m \033[0m"
+			val += "\033["+strconv.Itoa(i+1)+";53H\"exit\" to end"
+		}
+
+
+  }
+	fmt.Print(val)
+	if !named {
+		namePos = fmt.Sprint("\033[3;80H")
+		fmt.Print(namePos)
+		scanner.Scan()
+		mob.Name = scanner.Text()
+		named = true
+	}
+	if !longNamed {
+		longNamePos = fmt.Sprint("\033[6;70H")
+		fmt.Print(longNamePos)
+		scanner.Scan()
+		mob.LongName = scanner.Text()
+		longNamed = true
+	}
+	val += namePos + longNamePos
+  fmt.Print(val)
+
+
+	}
+
+}
+return mob
+
+}
 //TODO make this modular
 func createChat(message string, play Player) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
@@ -367,5 +524,5 @@ func savePfile(play Player) {
 	}
 	collection := client.Database("pfiles").Collection("Players")
 	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipment":play.Equipment,
-						"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha })
-}
+							"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha, "classes": play.Classes })
+					}

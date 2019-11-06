@@ -11,88 +11,9 @@ import (
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/SolarLune/dngn"
+
 	zmq "github.com/pebbe/zmq4"
 )
-
-
-
-type Descriptions struct {
-	BATTLESPAM int
-	ROOMDESC int
-	PLAYERDESC int
-	ROOMTITLE int
-}
-type Chat struct {
-	User Player
-	Message string
-	Time time.Time
-}
-type Space struct{
-	Room dngn.Room
-	Vnums string
-	Zone string
-	ZonePos []int
-	ZoneMap [][]int
-	Vnum int
-	Desc string
-	Mobiles []int
-	Items []int
-	CoreBoard string
-	Exits Exit
-	Altered bool
-}
-type Exit struct {
-	North int
-	South int
-	East int
-	West int
-	NorthWest int
-	NorthEast int
-	SouthWest int
-	SouthEast int
-	Up int
-	Down int
-}
-
-type Player struct {
-	Name string
-	Title string
-	Inventory []int
-	Equipment []int
-	CoreBoard string
-	PlainCoreBoard string
-	CurrentRoom Space
-	PlayerHash string
-	Target string
-	TargetLong string
-	TarX int
-	TarY int
-	CPU string
-
-	MaxRezz int
-	Rezz int
-	Tech int
-
-	Str int
-	Int int
-	Dex int
-	Wis int
-	Con int
-	Cha int
-}
-
-type Mobile struct {
-	Name string
-	LongName string
-	ItemSpawn []int
-	Rep string
-	MaxRezz int
-	Rezz int
-	Tech int
-	Aggro int
-	Align int
-}
 
 
 
@@ -103,21 +24,48 @@ const (
 	chatStart = "\033[38:2:200:50:50m{{=\033[38:2:150:50:150m"
 	chatEnd = "\033[38:2:200:50:50m=}}"
 	end = "\033[0m"
-
 )
 
 
 
 func main() {
+	numSoundsnames, err := os.Open("dat/sounds")
+	if err != nil {
+		panic(err)
+	}
+	defer numSoundsnames.Close()
+	soundFiles, err := numSoundsnames.Readdirnames(100)
+	if err != nil {
+		panic(err)
+	}
+
+	_ = len(soundFiles)
 	//TODO Get the Spaces that are already loaded in the database and skip
 	//if vnum is taken
 	//Get the flags passed in
+	var sounds [31]chan bool
+	for i := 0;i < 30;i++ {
+		sound := make(chan bool)
+		sounds[i] = sound
+	}
+	go playSounds(sounds)
+	//sounds[0] <- true
 	var populated []Space
 	var mobiles []Mobile
+	var chats int
+	var chatsCurrent int
+	var grapevines int
+	var grapevinesCurrent int
+	chatsCurrent = 0
+	grapevinesCurrent = 0
+
+	chats = 0
+	grapevines = 0
 	var play Player
 	var hostname string
 	var response *zmq.Socket
-
+	chatBoxes := true
+	grape := true
 	//Make this relate to character level
 	var dug []Space
 	coreShow := false
@@ -136,7 +84,7 @@ func main() {
 			}
 			InitZoneSpaces("5-15", "Midgaard", descString)
 			populated = PopulateAreas()
-			play = InitPlayer("FSM")
+			play = InitPlayer("FSM", "noodles")
 			addPfile(play)
 			createMobiles("Noodles")
 			fmt.Println("\033[38:2:0:250:0mAll tests passed and world has been initialzed\n\033[0mYou may now start with --login.")
@@ -144,7 +92,7 @@ func main() {
 		}else if os.Args[1] == "--guest" {
 			//Continue on
 			populated = PopulateAreas()
-			play = InitPlayer("Wallace")
+			play = InitPlayer("Wallace", "gromit")
 			savePfile(play)
 			fmt.Println("In client loop")
 			fmt.Printf("\033[51;0H")
@@ -153,7 +101,7 @@ func main() {
 			user, pword := LoginSC()
 
 			populated = PopulateAreas()
-			play = InitPlayer(user)
+			play = InitPlayer(user, pword)
 			//just hang on to the password for now
 			fmt.Sprint(pword)
 			savePfile(play)
@@ -199,7 +147,7 @@ func main() {
 		}else if os.Args[1] == "--builder" {
 			//Continue on
 			populated = PopulateAreas()
-			play = InitPlayer("FlyingSpaghettiMonster")
+			play = InitPlayer("FlyingSpaghettiMonster", "monster")
 			savePfile(play)
 
 			fmt.Println("Builder log-in")
@@ -218,21 +166,8 @@ func main() {
 
 				defer response.Close()
 				//Preferred way to connec
-				hostname = "tcp://91.121.154.192:7777"
+				hostname = "tcp://snowcrashnetwork.vineyard.haus:7777"
 				err := response.Connect(hostname)
-				servepubKey := ""
-				_, err = response.Send("REQUESTPUBKEY:AUTHINFO", 0)
-				if err != nil {
-					panic(err)
-				}
-
-				resp, err := response.Recv(0)
-				if err != nil {
-					panic(err)
-				}
-				servepubKey = string(resp)
-
-				fmt.Println(servepubKey)
 				fmt.Printf("\033[51;0H")
 				user = strings.TrimSpace(user)
 				pword = strings.TrimSpace(pword)
@@ -258,19 +193,61 @@ func main() {
 		fmt.Println("--builder for a building session")
 		os.Exit(1)
 	}
+	connected := make(chan bool)
+
+	if len(os.Args) >= 2 {
+		if len(os.Args) > 2 && os.Args[2] == "--safe-mode"{
+				play.Channels = play.Channels[0:]
+					//noot noot
+		}else {
+//			play.Channels = append(play.Channels, "")
+			play.Channels = append(play.Channels, "gossip")
+			go JackIn(connected)
+			sounds[29] <- true
+		}
+
+	}
+	for i := 0;i < len(play.Channels);i++ {
+		response.Recv(0)
+		fmt.Println("Subscribing to "+play.Channels[i])
+		_, err := response.Send(play.Name+"+|+"+play.Channels[i], 0)
+		if err != nil {
+			panic(err)
+		}
+		_, err = response.Recv(0)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println("ok")
+		connected <- false
+		sounds[9] <- true
+		clearDirty()
+		updateWho(play, true)
+	}
 
 
 	//Show the screen first off
 	play.CurrentRoom = populated[1]
 	showDesc(play.CurrentRoom)
 	DescribePlayer(play)
-	//showChat(play)
+	chats = showChat(play)
+	grapevines = updateChat(play, response)
+	ShowOoc(response, play)
 
 	//Game loop
 	fmt.Println("#of mobiles:"+strconv.Itoa(len(mobiles)))
 	firstDig := false
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
+		if chatsCurrent != chats {
+		//	sounds[9] <- true
+			chatsCurrent = chats
+		}
+		if grapevinesCurrent != grapevines {
+		//	sounds[9] <- true
+			grapevinesCurrent = grapevines
+		}
 		clearCmd()
 		savePfile(play)
 		input := scanner.Text()
@@ -516,9 +493,63 @@ func main() {
 			}
 
 			}
+
 		//COMMAND SECTION
-		if input == "pew" {
-			go playPew(1)
+
+		if strings.HasPrefix(input, "g:") {
+			message := strings.Split(input, ":")[1]
+			channel := "gossip"
+			response.Recv(0)
+			fmt.Println("\033[38:2:0:150:150m[["+message+"]]\033[0m")
+			_, err := response.Send(play.Name+"||UWU||"+channel+"||}}{{||"+message, 0)
+			if err != nil {
+				panic(err)
+			}
+			sounds[9] <- true
+		}
+		if input == "who" {
+			who := fmt.Sprint(showWho(play))
+			fmt.Printf("\033[38:2:175:0:150m"+who+"\033[0m")
+		}
+		if strings.Contains(input, "gvsub ") {
+
+			channel := strings.Split(input, "gvsub ")[1]
+			response.Recv(0)
+			fmt.Println("Subscribing to "+channel)
+			_, err := response.Send(play.Name+"+|+"+channel, 0)
+			if err != nil {
+				panic(err)
+			}
+
+		}
+
+		if strings.Contains(input, "gvunsub ") {
+
+			channel := strings.Split(input, "gvunsub ")[1]
+			response.Recv(0)
+			fmt.Println("Unsubscribing from "+channel)
+			_, err := response.Send(play.Name+"-|-"+channel, 0)
+			if err != nil {
+				panic(err)
+			}
+
+		}
+		if input == "logout" {
+			response.Recv(0)
+			fmt.Println(play.Name+"+==LOGOUT")
+			_, err := response.Send(play.Name+"+==LOGOUT", 0)
+			if err != nil {
+				panic(err)
+			}
+			bye, err := response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(bye)
+			updateWho(play, false)
+			fmt.Println("Have a great day!")
+			time.Sleep(1*time.Second)
+			os.Exit(1)
 		}
 		if strings.HasPrefix(input, "create") {
 			name, password := strings.Split(input, " ")[1], strings.Split(input, " ")[2]
@@ -527,10 +558,19 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			play.PlayerHash, err = response.Recv(0)
+			playerBytes, err := response.RecvBytes(0)
 			if err != nil {
 				panic(err)
 			}
+			err = bson.Unmarshal(playerBytes, &play)
+			if err != nil {
+				panic(err)
+			}
+//			play = InitPlayer(name, password)
+//			play.PlayerHash, err = response.Recv(0)
+	//		if err != nil {
+		//		panic(err)
+		//	}
 			fmt.Println(play.PlayerHash)
 		}
 		if strings.HasPrefix(input, "login") {
@@ -560,65 +600,18 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-
-		if input == "login" {
-
-		}
 		}
 		if input == "shutdown server" {
 			fmt.Println("Sending shutdown signal")
 			response.Recv(0)
-			_, err := response.Send("shutdown", 0)
+			_, err := response.Send("+===shutdown===+", 0)
 			if err != nil {
 				panic(err)
 			}
 		}
 		//secondary commands
 		if strings.HasPrefix(input, "tc:") {
-			TARG:
-			for scanner.Scan() {
-				inputTarg := scanner.Text()
-				if strings.HasPrefix(input, "tc:") {
-						targString := strings.Split(input, "tc:")[1]
-						play = improvedTargeting(play, targString)
-						input = ""
-				}else if scanner.Text() == "out" {
-					fmt.Println("Seeyah!")
-					break TARG
-				}else {
-					play = improvedTargeting(play, inputTarg)
-				}
-				showDesc(play.CurrentRoom)
-				//showChat(play)
-				showCoreBoard(play)
-
-		//		}else {
-		//			clearCoreBoard(play)
-		//		}
-				TL := ""
-				fmt.Printf(play.Target)
-				switch play.TargetLong {
-				case "T":
-					TL = "A Bejewelled Tiara"
-					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
-				case "M":
-					TL = "A Rabid Ferret"
-					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
-				case "D":
-					TL = "A Large Steel Door"
-					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
-
-				default:
-					TL = fmt.Sprint("\033[19;53H\033[48;2;5;0;150m<<<"+TL+">>>\033[0m                        ")
-
-				}
-				fmt.Print(TL)
-				fmt.Printf("\033[51;0H")
-
-			}
-//			fmt.Print("Input co-ordinates in the form of aA aB aC etc..")
-			//play, err := target(play, populated)
-
+			battle(input, play, sounds)
 		}
 		if input == "show room vnum" {
 			fmt.Print("\033[38;2;150;0;150mROOM VNUM :"+strconv.Itoa(play.CurrentRoom.Vnum)+"\033[0m")
@@ -683,8 +676,20 @@ func main() {
 
 
 		if input == "quit" {
-			fmt.Println("Bai!")
-			zmq.AuthStop()
+			response.Recv(0)
+			fmt.Println(play.Name+"+==LOGOUT")
+			_, err := response.Send(play.Name+"+==LOGOUT", 0)
+			if err != nil {
+				panic(err)
+			}
+			bye, err := response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(bye)
+			updateWho(play, false)
+			fmt.Println("Have a great day!")
+			time.Sleep(1*time.Second)
 			os.Exit(1)
 		}
 		if strings.HasPrefix(input, "ooc") {
@@ -702,9 +707,19 @@ func main() {
 				panic(err)
 			}
 			fmt.Printf(chat)
+			sounds[9] <- true
 		}
 		if input == "blit" {
 			clearDirty()
+		}
+		if input == "show channels" {
+			fmt.Print(play.Channels)
+		}
+		if input == "show chat" {
+			chatBoxes = true
+		}
+		if input == "hide chat" {
+				chatBoxes = false
 		}
 		if input == "count keys" {
 			countKeys()
@@ -737,6 +752,59 @@ func main() {
 		if input == "update zonemap" {
 			updateZoneMap(play, populated)
 		}
+		if input == "hide grape" {
+			grape = false
+			clearDirty()
+			showDesc(play.CurrentRoom)
+			DescribePlayer(play)
+			//chats = showChat(play)
+			if coreShow {
+				showCoreBoard(play)
+			}
+			if chatBoxes {
+				chats = showChat(play)
+			}
+			sounds[2] <- true
+			fmt.Printf("\033[51;0H")
+
+		}
+		if input == "show grape" {
+			grape = true
+			sounds[9] <- true
+		}
+		if input == "hide chat" {
+			chatBoxes = false
+			clearDirty()
+			showDesc(play.CurrentRoom)
+			DescribePlayer(play)
+			//chats = showChat(play)
+			if coreShow {
+				showCoreBoard(play)
+			}
+			if chatBoxes {
+				chats = showChat(play)
+			}
+			sounds[9] <- true
+			fmt.Printf("\033[51;0H")
+		}
+		if input == "show chat" {
+			chatBoxes = true
+			clearDirty()
+			showDesc(play.CurrentRoom)
+			DescribePlayer(play)
+			//chats = showChat(play)
+			if coreShow {
+				showCoreBoard(play)
+			}
+			if chatBoxes {
+				chats = showChat(play)
+			}
+			sounds[9] <- true
+			fmt.Printf("\033[51;0H")
+		}
+		if input == "report" {
+			fmt.Print(play.Classes)
+		}
 		if input == "look" {
 			fmt.Sprintf("Current room is ", play.CurrentRoom)
 			showDesc(play.CurrentRoom)
@@ -745,14 +813,18 @@ func main() {
 		if strings.Contains(input, "gen coreboard") {
 			//TODO make this so one doesn't loose the
 			//old coreboard, or convert it to xp, i dunno
-			go playPew(2)
+
 			play.CoreBoard, play = genCoreBoard(play, populated)
 		}
 		if strings.Contains(input, "open map") {
 			//// TODO:
 			//This
 		}
-		if strings.Contains(input, "close coreboard") {
+		if strings.Contains(input, "craft mobile"){
+			craftMob(*scanner)
+
+		}
+		if strings.Contains(input, "unlock coreboard") {
 			coreShow = false
 		}
 		if strings.Contains(input, "lock coreboard") {
@@ -769,6 +841,28 @@ func main() {
 			}
 			DescribeSpace(vnumLook, populated)
 		}
+		if input == "SAVE ZONES" {
+			file, err := os.Create("dat/zone.bson")
+			if err != nil {
+				panic(err)
+			}
+			defer file.Close()
+			writer := bufio.NewWriter(file)
+			fmt.Println("\033[38:2:200:50:50mUpdating the zone with final map.\033[0m")
+			updateZoneMap(play, populated)
+			fmt.Println("Dumping the area list to dat/zone.bson")
+			for i := 0;i < len(populated);i++ {
+				marshalledBson, err := bson.Marshal(populated[i])
+				if err != nil {
+					panic(err)
+				}
+				writer.Write(marshalledBson)
+				writer.Flush()
+			}
+		}
+		if input == "addclass" {
+			play = addClass(play)
+		}
 		if strings.HasPrefix(input, "go to") {
 			splitCommand := strings.Split(input, "to")
 			stripped := strings.TrimSpace(splitCommand[1])
@@ -776,18 +870,40 @@ func main() {
 			if err != nil {
 				fmt.Println("Error converting a stripped string")
 			}
-			go playPew(1)
 			play, populated = goTo(inp, play, populated)
 		}
 		if input == "score" {
 			DescribePlayer(play)
 		}
+		if input == "updateChat" {
+			grapevines = updateChat(play, response)
+		}
+		if strings.Contains(input, "pewpew") {
+			if len(strings.Split(input, "pewpew ")) > 1 {
+				numString := strings.Split(input, "pewpew ")[1]
+				num, err := strconv.Atoi(numString)
+				if err != nil {
+					fmt.Println("Valid pews are 0-30")
+					fmt.Println("Interesting sounds, 9, 17, 29")
+				}
+				sounds[num] <- true
+			}
+		}
+
 		//Reset the input to a standardized place
 		showDesc(play.CurrentRoom)
 		DescribePlayer(play)
-		//showChat(play)
+		//chats = showChat(play)
 		if coreShow {
 			showCoreBoard(play)
+			play = showCoreMobs(play)
+		}
+		if chatBoxes {
+			ShowOoc(response, play)
+//			chats = showChat(play)
+		}
+		if grape {
+			grapevines = updateChat(play, response)
 		}
 //		}else {
 //			clearCoreBoard(play)
@@ -799,5 +915,4 @@ func main() {
 //	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"Verb":"+"})
 //	res, err = collection.InsertOne(context.Background(), bson.M{"ProperNoun":"y"})
-
 }

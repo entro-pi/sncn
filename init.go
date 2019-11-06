@@ -28,16 +28,50 @@ func initDigRoom(digFrame [][]int, zoneVnums string, zoneName string, play Playe
 	return dg, vnum
 }
 
+func addClass(play Player) Player {
+  var class Class
+  play.Classes = append(play.Classes, class)
+  play.Classes[0].Level = 1
+  play.Classes[0].Name = "wildling"
+  var rip Skill
+  rip.DamType = "slash"
+  rip.Level = 0
+  rip.Usage = 'e'
+  play.Classes[0].Skills = append(play.Classes[0].Skills, rip)
+  var blast Spell
+  blast.Usage = 'w'
+  blast.TechUsage = 2
+  blast.Level = 1
+  blast.Consumed = false
+  play.Classes[0].Spells = append(play.Classes[0].Spells, blast)
+  return play
+}
 
-
-func InitPlayer(name string) Player {
+func InitPlayer(name string, pass string) Player {
 	var play Player
 	var inv []int
 	var equ []int
+  var class Class
 	inv = append(inv, 1)
 	equ = append(equ, 1)
 	play.Name = name
 	play.Title = "The Unknown"
+  play.Classes = append(play.Classes, class)
+  play.Classes[0].Level = 1
+  play.Classes[0].Name = "wildling"
+  var rip Skill
+  rip.Name = "overcharge"
+  rip.DamType = "slash"
+  rip.Level = 0
+  rip.Usage = 'e'
+  play.Classes[0].Skills = append(play.Classes[0].Skills, rip)
+  var blast Spell
+  blast.TechUsage = 2
+  blast.Level = 1
+  blast.Consumed = false
+  blast.Name = "blast"
+  play.Classes[0].Spells = append(play.Classes[0].Spells, blast)
+
 	play.Inventory = inv
 	play.Equipment = equ
   play.Rezz = 17
@@ -50,7 +84,20 @@ func InitPlayer(name string) Player {
 	play.Wis = 1
 	play.Con = 1
 	play.Cha = 1
+  play.Channels = append(play.Channels, "")
 	return play
+
+}
+func InitMob() Mobile {
+  var mob Mobile
+  mob.Name = "rabid ferret"
+  mob.LongName = "A rabid ferret charges towards you!"
+  mob.MaxRezz = 3
+  mob.Rezz = 3
+  mob.Tech = 2
+  mob.Aggro = 1
+  mob.Align = -1
+  return mob
 }
 
 func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
