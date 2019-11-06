@@ -7,7 +7,6 @@ import (
 	"time"
 	"fmt"
 	"strconv"
-	"math/rand"
 	"strings"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
@@ -30,23 +29,27 @@ const (
 
 
 func main() {
+	numSoundsnames, err := os.Open("dat/sounds")
+	if err != nil {
+		panic(err)
+	}
+	defer numSoundsnames.Close()
+	soundFiles, err := numSoundsnames.Readdirnames(100)
+	if err != nil {
+		panic(err)
+	}
+
+	_ = len(soundFiles)
 	//TODO Get the Spaces that are already loaded in the database and skip
 	//if vnum is taken
 	//Get the flags passed in
-	channelOne := make(chan bool)
-	channelTwo := make(chan bool)
-	channelThree := make(chan bool)
-	channelFour := make(chan bool)
-	channelFive := make(chan bool)
-	channelSix := make(chan bool)
-	channelSeven := make(chan bool)
-	channelEight := make(chan bool)
-	channelNine := make(chan bool)
-	channelTen := make(chan bool)
-	crashOne := make(chan bool)
-
-
-	go playPew(crashOne, channelOne, channelTwo, channelThree, channelFour, channelFive, channelSix, channelSeven, channelEight, channelNine, channelTen)
+	var sounds [31]chan bool
+	for i := 0;i < 30;i++ {
+		sound := make(chan bool)
+		sounds[i] = sound
+	}
+	go playSounds(sounds)
+	//sounds[0] <- true
 	var populated []Space
 	var mobiles []Mobile
 	var chats int
@@ -200,7 +203,7 @@ func main() {
 //			play.Channels = append(play.Channels, "")
 			play.Channels = append(play.Channels, "gossip")
 			go JackIn(connected)
-			channelOne <- true
+			sounds[29] <- true
 		}
 
 	}
@@ -218,7 +221,7 @@ func main() {
 
 		fmt.Println("ok")
 		connected <- false
-		channelTwo <- true
+		sounds[9] <- true
 		clearDirty()
 		updateWho(play, true)
 	}
@@ -238,11 +241,11 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
 		if chatsCurrent != chats {
-			channelTwo <- true
+		//	sounds[9] <- true
 			chatsCurrent = chats
 		}
 		if grapevinesCurrent != grapevines {
-			channelTwo <- true
+		//	sounds[9] <- true
 			grapevinesCurrent = grapevines
 		}
 		clearCmd()
@@ -502,7 +505,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			channelTwo <- true
+			sounds[9] <- true
 		}
 		if input == "who" {
 			who := fmt.Sprint(showWho(play))
@@ -608,106 +611,7 @@ func main() {
 		}
 		//secondary commands
 		if strings.HasPrefix(input, "tc:") {
-			TARG:
-			for scanner.Scan() {
-
-				inputTarg := scanner.Text()
-				if strings.HasPrefix(input, "tc:") {
-						targString := strings.Split(input, "tc:")[1]
-						play = improvedTargeting(play, targString)
-						input = ""
-				}else if scanner.Text() == "out" {
-					fmt.Println("Seeyah!")
-					break TARG
-				}else {
-							play = improvedTargeting(play, inputTarg)
-							showCoreBoard(play)
-							play = showCoreMobs(play)
-						}
-
-				showDesc(play.CurrentRoom)
-				//chats = showChat(play)
-				//showCoreBoard(play)
-				//showCoreMobs(play)
-				if scanner.Text() == "overcharge" || scanner.Text() == "oc" {
-							for i := 0;i < len(play.Classes);i++ {
-
-								if play.Classes[i].Skills[i].Name == "overcharge" {
-									fmt.Println("OVERCHARGING")
-									if play.Won <= len(play.Fights.Oppose) {
-
-										if strings.Contains(play.Target, "M") {
-											x, y := play.TarX, play.TarY
-											for bat := 0;bat < len(play.Fights.Oppose);bat++ {
-												if play.Fights.Oppose[bat].X == x && play.Fights.Oppose[bat].Y == y {
-													if rand.Intn(10) > 4 {
-														damage := play.Classes[i].Skills[i].Dam + rand.Intn(5)
-
-														damageString := strconv.Itoa(damage)
-														fmt.Print("\033[52;5H\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m")
-														play.Fights.Oppose[bat].MaxRezz -= damage
-														crashOne <- true
-
-														if play.Fights.Oppose[bat].MaxRezz <= 0 {
-															play.Fights.Oppose[bat].Char = "*"
-															play.Won++
-															fmt.Println("Another one bites the dust!")
-
-														}
-													}else {
-														channelEight <- true
-													}
-
-												}
-
-
-											}
-
-										}
-
-									}
-
-								}
-
-							}
-						}
-		//		}else {
-		//			clearCoreBoard(play)
-		//		}
-				TL := ""
-				out := ""
-				fmt.Printf(play.Target)
-				switch play.TargetLong {
-				case "T":
-					TL = "A Bejewelled Tiara"
-					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
-				case "M":
-					TL = "A Rabid Ferret"
-					for bat := 0;bat < len(play.Fights.Oppose);bat++ {
-						if play.Fights.Oppose[bat].X == play.TarX && play.Fights.Oppose[bat].Y == play.TarY {
-							if strings.Contains(play.Fights.Oppose[bat].Char, "C") {
-									out = fmt.Sprint("\033[19;53H\033[48;2;175;0;0m<<<DEAD\033[48;2;5;0;150m"+TL+"\033[48;2;175;0;0mDEAD>>>\033[0m                      ")
-									break
-								}
-						}else {
-								out = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
-
-								}
-					}
-				case "D":
-					TL = "A Large Steel Door"
-					TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
-				default:
-					TL = fmt.Sprint("\033[19;53H\033[48;2;5;0;150m<<<"+TL+">>>\033[0m                        ")
-				}
-				fmt.Print(TL)
-				fmt.Print(out)
-				fmt.Printf("\033[51;0H")
-
-			}
-//			fmt.Print("Input co-ordinates in the form of aA aB aC etc..")
-			//play, err := target(play, populated)
-
+			battle(play, sounds)
 		}
 		if input == "show room vnum" {
 			fmt.Print("\033[38;2;150;0;150mROOM VNUM :"+strconv.Itoa(play.CurrentRoom.Vnum)+"\033[0m")
@@ -803,7 +707,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Printf(chat)
-			channelTwo <- true
+			sounds[9] <- true
 		}
 		if input == "blit" {
 			clearDirty()
@@ -860,13 +764,13 @@ func main() {
 			if chatBoxes {
 				chats = showChat(play)
 			}
-			channelThree <- true
+			sounds[2] <- true
 			fmt.Printf("\033[51;0H")
 
 		}
 		if input == "show grape" {
 			grape = true
-			channelTwo <- true
+			sounds[9] <- true
 		}
 		if input == "hide chat" {
 			chatBoxes = false
@@ -880,7 +784,7 @@ func main() {
 			if chatBoxes {
 				chats = showChat(play)
 			}
-			channelThree <- true
+			sounds[9] <- true
 			fmt.Printf("\033[51;0H")
 		}
 		if input == "show chat" {
@@ -895,7 +799,7 @@ func main() {
 			if chatBoxes {
 				chats = showChat(play)
 			}
-			channelTwo <- true
+			sounds[9] <- true
 			fmt.Printf("\033[51;0H")
 		}
 		if input == "report" {
@@ -973,6 +877,17 @@ func main() {
 		}
 		if input == "updateChat" {
 			grapevines = updateChat(play, response)
+		}
+		if strings.Contains(input, "pewpew") {
+			if len(strings.Split(input, "pewpew ")) > 1 {
+				numString := strings.Split(input, "pewpew ")[1]
+				num, err := strconv.Atoi(numString)
+				if err != nil {
+					fmt.Println("Valid pews are 0-30")
+					fmt.Println("Interesting sounds, 9, 17, 29")
+				}
+				sounds[num] <- true
+			}
 		}
 
 		//Reset the input to a standardized place
