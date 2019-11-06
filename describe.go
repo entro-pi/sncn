@@ -128,13 +128,13 @@ func clearDirty() {
 
 func showBattle(damMsg []string) {
 
-  for i := 1;i < len(damMsg);i++ {
+  for i := 0;i < len(damMsg);i++ {
     if len(damMsg) > 17 {
         damMsg = damMsg[17:]
         clearDirty()
         i = 0
     }
-    fmt.Print("\033["+strconv.Itoa(i)+";53H"+damMsg[i])
+    fmt.Print("\033["+strconv.Itoa(i+1)+";53H"+damMsg[i])
   }
 }
 

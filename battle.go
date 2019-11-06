@@ -96,21 +96,34 @@ import (
                                  for i := 0;i < len(play.Classes);i++ {
 
                                    if play.Classes[i].Skills[i].Name == "overcharge" {
-                                     fmt.Print("\033[1;53HOVERCHARGING")
+                                     //fmt.Print("\033[1;53HOVERCHARGING")
                                      if play.Won <= len(play.Fights.Oppose) {
 
                                        if strings.Contains(play.Target, "M") {
                                          x, y := play.TarX, play.TarY
+                                         hit := false
                                          for bat := 0;bat < len(play.Fights.Oppose);bat++ {
                                            if play.Fights.Oppose[bat].X == x && play.Fights.Oppose[bat].Y == y {
+                                             if play.Fights.Oppose[bat].MaxRezz <= 0 {
+                                               damMsg = append(damMsg, fmt.Sprint("No use beating a dead corpse"))
+                                               hit = false
+                                               continue
+                                             }
+
                                              if rand.Intn(10) > 4 {
+                                               hit = true
+                                             }else {
+                                               hit = false
+                                             }
+                                             if hit {
                                                damage := play.Classes[i].Skills[i].Dam + rand.Intn(5)
 
                                                damageString := strconv.Itoa(damage)
-                                               damMsg = append(damMsg, fmt.Sprint("\033[1;53H\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m"))
+                                               damMsg = append(damMsg, fmt.Sprint("\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m"))
                                                play.Fights.Oppose[bat].MaxRezz -= damage
                                                if play.Fights.Oppose[bat].MaxRezz >= 0 {
-                                                 sounds[3] <- true
+                                                 sounds[17] <- true
+                                                 continue
                                                }
 
                                                if play.Fights.Oppose[bat].MaxRezz < 0 {
@@ -118,13 +131,15 @@ import (
                                                  play.Won++
                                                  TL, out = determine(play)
                                                 fmt.Printf(out+play.Target+TL)
-                                      //           fmt.Println("Another one bites the dust!")
+                                                damMsg = append(damMsg, fmt.Sprintf("You slay %v!",TL))
                                                 sounds[14] <- true
-          //                                      continue
+                                                continue
                                                }
+
                                              }else {
                                                damMsg = append(damMsg, fmt.Sprint("\033[38:2:150:0:150mYou don't manage to do any damage.\033[0m"))
-                                               sounds[17] <- true
+                                               sounds[3] <- true
+                                               continue
                                              }
 
                                            }
@@ -182,7 +197,8 @@ import (
      for bat := 0;bat < len(play.Fights.Oppose);bat++ {
        if play.Fights.Oppose[bat].X == play.TarX && play.Fights.Oppose[bat].Y == play.TarY {
          if strings.Contains(play.Fights.Oppose[bat].Char, "C") {
-             out = fmt.Sprint("\033[19;53H\033[48;2;175;0;0m<<<DEAD\033[48;2;5;0;150m"+TL+"\033[48;2;175;0;0mDEAD>>>\033[0m                      ")
+            out = fmt.Sprint("\033[19;53H\033[48;2;175;0;0m<<<DEAD\033[48;2;5;0;150m"+TL+"\033[48;2;175;0;0mDEAD>>>\033[0m                      ")
+             TL = "The twisted remains of a rabid ferret"
              break
            }
        }else {
