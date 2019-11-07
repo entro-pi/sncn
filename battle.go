@@ -163,10 +163,11 @@ import (
             out += showBattle(damMsg)
             out += showDesc(play.CurrentRoom)
          		out += DescribePlayer(play)
-         		//chats = showChat(play)
+         		_, outln := showChat(play)
+            out += outln
          		out += showCoreBoard(play)
-
-         		_, outln := showCoreMobs(play)
+            outln = ""
+         		_, outln = showCoreMobs(play)
             out += outln
 
          		//ShowOoc(response, play)

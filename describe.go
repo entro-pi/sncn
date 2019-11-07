@@ -153,10 +153,18 @@ func showBattle(damMsg []string) string {
 
     }
   }
+  clearCore()
   fmt.Print(outClear)
 	return out
 }
 
+func clearCore() {
+  for i := 0;i < 42;i++ {
+    Y := strconv.Itoa(i)
+    
+    fmt.Print("\033["+Y+";0H                                                                                                                                                                                   ")
+  }
+}
 func clearCmd() {
 		fmt.Print(cmdPos+"                                                                                                                                                                                   ")
 		fmt.Print("\033[52;0H                                                                                                                                                                                   ")
