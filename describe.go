@@ -161,7 +161,7 @@ func showBattle(damMsg []string) string {
 func clearCore() {
   for i := 0;i < 42;i++ {
     Y := strconv.Itoa(i)
-    
+
     fmt.Print("\033["+Y+";0H                                                                                                                                                                                   ")
   }
 }
@@ -366,8 +366,8 @@ func showChat(play Player) (int, string) {
 		if row >= 51 {
 			row = 0
 		}
-		message, position := AssembleComposeCel(chatMess, row)
-		row = position
+		message, _ := AssembleComposeCel(chatMess, row)
+		row += len(strings.Split(message, "\n"))
 		out += fmt.Sprint(message)
 //		fmt.Printf(chatStart)
 //		fmt.Printf(chatMess.Message + " ")

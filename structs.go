@@ -129,6 +129,7 @@ type Player struct {
 	OldX int
 	OldY int
 	CPU string
+	CoreShow bool
 	Channels []string
 	Battling bool
 

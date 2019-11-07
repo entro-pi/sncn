@@ -68,7 +68,7 @@ func main() {
 	grape := true
 	//Make this relate to character level
 	var dug []Space
-	coreShow := false
+	play.CoreShow = false
 	out := ""
 	if len(os.Args) > 1 {
 		if os.Args[1] == "--init" {
@@ -614,7 +614,7 @@ func main() {
 		}
 		//secondary commands
 		if strings.HasPrefix(input, "tc:") {
-			battle(input, play, sounds)
+			play = battle(input, play, sounds)
 		}
 		if input == "show room vnum" {
 			fmt.Print("\033[38;2;150;0;150mROOM VNUM :"+strconv.Itoa(play.CurrentRoom.Vnum)+"\033[0m")
@@ -761,7 +761,7 @@ func main() {
 			out += showDesc(play.CurrentRoom)
 			out += DescribePlayer(play)
 			//chats, out += showChat(play)
-			if coreShow {
+			if play.CoreShow {
 				showCoreBoard(play)
 			}
 			if chatBoxes {
@@ -782,7 +782,7 @@ func main() {
 			out += showDesc(play.CurrentRoom)
 			out += DescribePlayer(play)
 			//chats, out += showChat(play)
-			if coreShow {
+			if play.CoreShow {
 				showCoreBoard(play)
 			}
 			if chatBoxes {
@@ -798,7 +798,7 @@ func main() {
 			out += showDesc(play.CurrentRoom)
 			out += DescribePlayer(play)
 			//chats, out += showChat(play)
-			if coreShow {
+			if play.CoreShow {
 				out += showCoreBoard(play)
 			}
 			if chatBoxes {
@@ -821,7 +821,9 @@ func main() {
 			//old coreboard, or convert it to xp, i dunno
 			if len(strings.Split(input, "=")) > 1 {
 				size := strings.Split(input, "=")[1]
-				play.CoreBoard, play = genCoreBoard(size, play, populated)				
+				play.CoreBoard, play = genCoreBoard(size, play, populated)
+				out += showCoreBoard(play)
+				play.CoreShow = true
 			}
 		}
 		if strings.Contains(input, "open map") {
@@ -831,14 +833,6 @@ func main() {
 		if strings.Contains(input, "craft mobile"){
 			craftMob(*scanner)
 
-		}
-		if strings.Contains(input, "unlock coreboard") {
-			coreShow = false
-		}
-		if strings.Contains(input, "lock coreboard") {
-//			fmt.Printf(mapPos)
-				out += showCoreBoard(play)
-				coreShow = true
 		}
 		if strings.HasPrefix(input, "view from") {
 			splitCommand := strings.Split(input, "from")
@@ -883,8 +877,32 @@ func main() {
 		if input == "score" {
 			out += DescribePlayer(play)
 		}
-		if input == "updateChat" {
+		if input == "soc" {
+			response.Recv(0)
+			fmt.Println("Sending --+--")
+			_, err := response.Send(play.Name+"--+--", 0)
+			result, err := response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
+			out += string(result)
 			grapevines = updateChat(play, response)
+		}
+		if strings.Contains(input, "broadside=") {
+			rowCol := strings.Split(input, "=")[1]
+			row, err := strconv.Atoi(strings.Split(rowCol, ":")[0])
+			col, err := strconv.Atoi(strings.Split(rowCol, ":")[1])
+			if err != nil {
+				panic(err)
+			}
+			var bs Broadcast
+			bs.Payload.Message = "Kaboom!"
+			bs.Payload.Channel = "BS"
+			bs.Payload.Name = play.Name
+			bs.Payload.Game = "snowcrash"
+
+			broad := AssembleBroadside(bs, row, col)
+			fmt.Printf(broad)
 		}
 		if strings.Contains(input, "pewpew") {
 			if len(strings.Split(input, "pewpew ")) > 1 {
@@ -902,7 +920,7 @@ func main() {
 		out += showDesc(play.CurrentRoom)
 		out += DescribePlayer(play)
 		//chats, out += showChat(play)
-		if coreShow {
+		if play.CoreShow {
 			outln := ""
 			showCoreBoard(play)
 			play, outln = showCoreMobs(play)

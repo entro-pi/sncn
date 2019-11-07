@@ -103,8 +103,9 @@ func AssembleComposeCel(chatMess Chat, row int) (string, int) {
 	//	fmt.Println(cel)
 }
 
-func AssembleBroadside(broadside Broadcast, row int) (string) {
+func AssembleBroadside(broadside Broadcast, row int, col int) (string) {
 	var cel string
+	colString := strconv.Itoa(col)
 	inWord := broadside.Payload.Message
 	wor := ""
 	word := ""
@@ -140,17 +141,17 @@ func AssembleBroadside(broadside Broadcast, row int) (string) {
 	}
 
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", wor, "\033[48;2;20;255;50m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m \033[48;2;10;10;20m", wor, "\033[48;2;20;255;50m \033[0m")
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", word, "\033[48;2;20;255;50m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m \033[48;2;10;10;20m", word, "\033[48;2;20;255;50m \033[0m")
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", words, "\033[48;2;20;255;50m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m \033[48;2;10;10;20m", words, "\033[48;2;20;255;50m \033[0m")
 	row++
 	if broadside.Payload.Game == "" {
 		broadside.Payload.Game = "snowcrash"
 	}
 	namePlate := "                            "[len(broadside.Payload.Name+"@"+broadside.Payload.Game):]
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m@"+broadside.Payload.Name+"@"+broadside.Payload.Game+namePlate+"\033[48;2;20;255;50m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m@"+broadside.Payload.Name+"@"+broadside.Payload.Game+namePlate+"\033[48;2;20;255;50m \033[0m")
 
 	return cel
 	//	fmt.Println(cel)

@@ -4,6 +4,7 @@ import (
   "fmt"
   "strings"
   "math/rand"
+  "time"
   "strconv"
   term "github.com/nsf/termbox-go"
 )
@@ -11,7 +12,7 @@ import (
          term.Sync() // cosmestic purpose
  }
 
- func battle(target string, play Player, sounds [31]chan bool) {
+ func battle(target string, play Player, sounds [31]chan bool) Player {
    tarX, tarY := 0, 0
    sounds[12] <- true
          err := term.Init()
@@ -47,6 +48,7 @@ import (
             case term.EventKey:
                     switch ev.Key {
                     case term.KeyEsc:
+                            play.Won = 0
                             break keyPressListenerLoop
                     default:
 
@@ -61,6 +63,17 @@ import (
                           			play.TarX -= 1
                           		case 'd':
                           			play.TarX += 1
+                              case 'c':
+                                if play.Won >= len(play.Fights.Oppose) {
+                                  fmt.Printf("\033[38:2:175:150:0mSlew %v monsters, clearing the core.\033[0m", play.Won)
+                                  play.Won = 0
+                                  fmt.Printf("\n\033[38:2:175:150:0mRe-joining social space.\033[0m")
+                                  time.Sleep(5*time.Second)
+                                  break keyPressListenerLoop
+                                }else {
+                                  fmt.Printf("Slew \033[38:2:200:0:0m%v\033[0m monsters.", play.Won)
+                                }
+
                             }
 
                            targ := ""
@@ -121,12 +134,11 @@ import (
                                                damageString := strconv.Itoa(damage)
                                                damMsg = append(damMsg, fmt.Sprint("\033[38:2:200:0:0mDid "+damageString+" damage to "+play.Fights.Oppose[play.Won].Name+"\033[0m"))
                                                play.Fights.Oppose[bat].MaxRezz -= damage
-                                               if play.Fights.Oppose[bat].MaxRezz >= 0 {
+                                               if play.Fights.Oppose[bat].MaxRezz > 0 {
                                                  sounds[17] <- true
-                                                 continue
                                                }
 
-                                               if play.Fights.Oppose[bat].MaxRezz < 0 {
+                                               if play.Fights.Oppose[bat].MaxRezz <= 0 {
                                                  play.Fights.Oppose[bat].Char = "*"
                                                  play.Won++
                                                  TL, out = determine(play)
@@ -187,7 +199,9 @@ import (
          }
 
          }
+         play.CoreShow = false
          play.Battling = false
+         return play
  }
  func determine(play Player) (string, string) {
     TL := ""
