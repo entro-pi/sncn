@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"os"
 	"context"
 	"time"
@@ -887,6 +888,21 @@ func main() {
 			}
 			out += string(result)
 			grapevines = updateChat(play, response)
+			fmt.Println("Sending ok")
+			_, err = response.Send("--ok--", 0)
+			if err != nil {
+				panic(err)
+			}
+			var socBroadcasts []Broadcast
+			socBytes, err := response.RecvBytes(0)
+			if err != nil {
+				panic(err)
+			}
+			err = json.Unmarshal(socBytes, &socBroadcasts)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(string(socBytes))
 		}
 		if strings.Contains(input, "broadside=") {
 			rowCol := strings.Split(input, "=")[1]
