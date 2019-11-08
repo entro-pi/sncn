@@ -1,5 +1,7 @@
 ![sunshot](docs/sunshot.png)
 
+****November 8th, 2019****
+
 I'm in the middle of adding the social aspects of the game.
 
 Currently it will be an interface like the above, with
