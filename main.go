@@ -880,6 +880,35 @@ func main() {
 		if input == "score" {
 			out += DescribePlayer(play)
 		}
+		if input == "capture profile picture" {
+			in := make(chan bool)
+			out := make(chan string)
+			frame := ""
+			go clientLoops(in, out)
+			newScan := bufio.NewScanner(os.Stdin)
+			PHOTO:
+			for newScan.Scan() {
+				in <- true
+				fmt.Printf("Press Enter to freeze frame\n@ on a newline to use.\nout on a newline to exit without saving.")
+				select {
+				case frame = <- out:
+					fmt.Printf(frame)
+					if newScan.Text() == "out" {
+						fmt.Print("Quitting without saving!")
+						in <- false
+						break PHOTO
+					}
+					if newScan.Text() == "@" {
+						play.Profile = frame
+						in <- false
+						break PHOTO
+					}
+					//nothing
+				}
+
+
+			}
+		}
 		if input == "soc" {
 			response.Recv(0)
 			fmt.Println("Sending --+--")

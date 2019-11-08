@@ -135,6 +135,7 @@ type Player struct {
 	PlayerHash string
 	Classes []Class
 	Target string
+	Profile string
 	TargetLong string
 	TarX int
 	TarY int

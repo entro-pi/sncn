@@ -175,6 +175,16 @@ func clearCmd() {
 		fmt.Print(cmdPos)
 }
 
+func showProfile(play Player) (string) {
+  profile := ""
+  splitProfile := strings.Split(play.Profile, "\n")
+  for row := 0;row < len(splitProfile);row++ {
+    profile += "\033["+strconv.Itoa(row)+";0H"+splitProfile[row]+"\033[0m"
+  }
+  return profile
+}
+
+
 func showCoreMobs(play Player) (Player, string) {
   core := ""
 	out := ""
