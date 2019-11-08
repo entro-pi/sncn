@@ -942,6 +942,18 @@ func main() {
 		}else if input == "hide soc" {
 			ShowSoc = false
 		}
+		if strings.HasPrefix(input, "bs=") {
+			numBS, err := strconv.Atoi(strings.Split(input, "=")[1])
+			if err != nil {
+				fmt.Println("Error, was that a number?")
+			}
+			for i := 0;i < len(socBroadcasts);i++ {
+				socBroadcasts[i].Payload.Selected = false
+				if i == numBS {
+					socBroadcasts[i].Payload.Selected = true
+				}
+			}
+		}
 		if strings.Contains(input, "broadside=") {
 			rowCol := strings.Split(input, "=")[1]
 			row, err := strconv.Atoi(strings.Split(rowCol, ":")[0])
@@ -993,7 +1005,15 @@ func main() {
 //		}
 		if ShowSoc {
 			for i := 0;i < len(socBroadcasts);i++ {
+	//			if socBroadcasts[i].Payload.Selected {
+//					fmt.Println("\033[38:2:200:0:0mDOOOT\033[0m")
+	//			}
 				out += AssembleBroadside(socBroadcasts[i], socBroadcasts[i].Payload.Row, socBroadcasts[i].Payload.Col)
+			}
+			for i := 0;i < len(socBroadcasts);i++ {
+				if socBroadcasts[i].Payload.Selected {
+					out += AssembleBroadside(socBroadcasts[i], socBroadcasts[i].Payload.Row, socBroadcasts[i].Payload.Col)
+				}
 			}
 			out += play.Profile
 		}
