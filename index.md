@@ -1,3 +1,37 @@
+![sunshot](docs/sunshot.png)
+
+I'm in the middle of adding the social aspects of the game.
+
+Currently it will be an interface like the above, with
+the left hand side holding your profile photo, as well
+as your stats. Below in the empty space I will put
+contents of the cels in the center top. So the short
+messages will act more like a subject line if marked so.
+If a "subject" cel has more content to it, it will show
+up as different colour with a "...Read More" tag.
+
+You will be able to switch through each messaage using
+the arrow keys thanks to termbox-go. To start with each
+message will hold a "core seed" which will allow a player
+to generate a "corrupted coreboard" which is basically
+a fun way of saying spawn a dungeon to be run.
+
+Other functionality added would be the ability to either
+capture a picture from your webcamera for use as a profile
+picture, or using a pre-taken image and rasterizing it
+to be used as a profile picture.
+
+I think one thing I'm going to add right now is a "HELP"
+option that spams all the available commands, as there
+is getting to be a lot of them.
+
+As well as generate some splash screens for the starting
+coreboard set.
+
+That's all for now!
+
+
+
 ![dead](docs/dead.png)
 ****November 6th, 2019****
 
