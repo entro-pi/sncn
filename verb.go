@@ -103,8 +103,9 @@ func AssembleComposeCel(chatMess Chat, row int) (string, int) {
 	//	fmt.Println(cel)
 }
 
-func AssembleBroadside(broadside Broadcast, row int) (string) {
+func AssembleBroadside(broadside Broadcast, row int, col int) (string) {
 	var cel string
+	colString := strconv.Itoa(col)
 	inWord := broadside.Payload.Message
 	wor := ""
 	word := ""
@@ -140,17 +141,17 @@ func AssembleBroadside(broadside Broadcast, row int) (string) {
 	}
 
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", wor, "\033[48;2;20;255;50m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m \033[48;2;10;10;20m", wor, "\033[48;2;20;255;50m \033[0m")
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", word, "\033[48;2;20;255;50m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m \033[48;2;10;10;20m", word, "\033[48;2;20;255;50m \033[0m")
 	row++
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m \033[48;2;10;10;20m", words, "\033[48;2;20;255;50m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m \033[48;2;10;10;20m", words, "\033[48;2;20;255;50m \033[0m")
 	row++
 	if broadside.Payload.Game == "" {
 		broadside.Payload.Game = "snowcrash"
 	}
 	namePlate := "                            "[len(broadside.Payload.Name+"@"+broadside.Payload.Game):]
-	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";180H\033[48;2;20;255;50m@"+broadside.Payload.Name+"@"+broadside.Payload.Game+namePlate+"\033[48;2;20;255;50m \033[0m")
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m@"+broadside.Payload.Name+"@"+broadside.Payload.Game+namePlate+"\033[48;2;20;255;50m \033[0m")
 
 	return cel
 	//	fmt.Println(cel)
@@ -305,9 +306,14 @@ func improvedTargeting(play Player, target string) (Player) {
 }
 
 
-func genCoreBoard(play Player, populated []Space) (string, Player) {
+func genCoreBoard(size string, play Player, populated []Space) (string, Player) {
 	//Create a room map
-	Room := dngn.NewRoom(121, 24)
+	sizeX, err := strconv.Atoi(strings.Split(size, ":")[0])
+	sizeY, err := strconv.Atoi(strings.Split(size, ":")[1])
+	if err != nil {
+		fmt.Print("Error, invalid coreboard size!")
+	}
+	Room := dngn.NewRoom(sizeX, sizeY)
 	splits := rand.Intn(75)
 	Room.GenerateBSP('%', 'D', splits)
 //	_, err = collection.InsertOne(context.Background(), bson.M{"room":Room})
@@ -327,6 +333,10 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
 					ChanceTreasure := "T"
 					if rand.Intn(100) > 98 {
 							newValue += ChanceTreasure
+							tiara := InitObject(play)
+							tiara.X = s
+							tiara.Y = i
+							play.Fights.Treasure = append(play.Fights.Treasure, tiara)
 							continue
 					}
 					if rand.Intn(100) > 95 {
@@ -349,44 +359,54 @@ func genCoreBoard(play Player, populated []Space) (string, Player) {
       newValue += "\n"
     }
 		play.CPU = newValue + "\n"
-
+		out := ""
     play.PlainCoreBoard = newValue
     play.CoreBoard = newValue
-    showCoreBoard(play)
-    showChat(play)
-    showDesc(play.CurrentRoom)
-    time.Sleep(250*time.Millisecond)
+    out += showCoreBoard(play)
+    _, outln := showChat(play)
+		out += outln
+    out += showDesc(play.CurrentRoom)
+		time.Sleep(250*time.Millisecond)
     newValue = strings.ReplaceAll(newValue, "T", "\033[48;2;200;150;0mT\033[0m")
+		fmt.Print(out)
 
     play.CoreBoard = newValue
-    showCoreBoard(play)
-    showChat(play)
-    showDesc(play.CurrentRoom)
-    time.Sleep(250*time.Millisecond)
+		out += showCoreBoard(play)
+    _, outln = showChat(play)
+		out += outln
+    out += showDesc(play.CurrentRoom)
+		time.Sleep(250*time.Millisecond)
     newValue = strings.ReplaceAll(newValue, "M", "\033[48;2;200;50;50mM\033[0m")
+		fmt.Print(out)
 
     play.CoreBoard = newValue
-    showCoreBoard(play)
-    showChat(play)
-    showDesc(play.CurrentRoom)
-    time.Sleep(250*time.Millisecond)
+		out += showCoreBoard(play)
+    _, outln = showChat(play)
+		out += outln
+    out += showDesc(play.CurrentRoom)
+		time.Sleep(250*time.Millisecond)
 		newValue = strings.ReplaceAll(newValue, "%", "\033[38;2;0;150;150m%\033[0m")
+		fmt.Print(out)
 
     play.CoreBoard = newValue
-    showCoreBoard(play)
-    showChat(play)
-    showDesc(play.CurrentRoom)
-    time.Sleep(250*time.Millisecond)
+		out += showCoreBoard(play)
+    _, outln = showChat(play)
+		out += outln
+    out += showDesc(play.CurrentRoom)
+		time.Sleep(250*time.Millisecond)
 		newValue = strings.ReplaceAll(newValue, "D", "\033[48;2;200;150;150mD\033[0m")
+		fmt.Print(out)
 
     play.CoreBoard = newValue
-    showCoreBoard(play)
-    showChat(play)
-    showDesc(play.CurrentRoom)
-    time.Sleep(250*time.Millisecond)
+		out += showCoreBoard(play)
+    _, outln = showChat(play)
+		out += outln
+    out += showDesc(play.CurrentRoom)
+		time.Sleep(250*time.Millisecond)
 		newValue = strings.ReplaceAll(newValue, " ", "\033[48:2:0:200:150m \033[0m")
 		play.CoreBoard = newValue
     outVal += newValue + "\n"
+		fmt.Print(out)
 		//fmt.Println(play.CPU)
 	return outVal, play
 }

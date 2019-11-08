@@ -14,7 +14,7 @@ import (
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
-func ShowOoc(response *zmq.Socket, play Player) {
+func ShowOoc(response *zmq.Socket, play Player) string {
   input := "+++"
   input = play.Name+input
   //createChat(input[3:], play)
@@ -28,7 +28,8 @@ func ShowOoc(response *zmq.Socket, play Player) {
   if err != nil {
     panic(err)
   }
-  fmt.Printf(chat)
+  out := fmt.Sprint(chat)
+	return out
 }
 func JackIn(in chan bool) error {
   fmt.Printf("\033[10;28H\033[0m")
@@ -126,18 +127,44 @@ func clearDirty() {
   }
 }
 
-func showBattle(damMsg []string) {
-
-  for i := 1;i < len(damMsg);i++ {
+func showBattle(damMsg []string) string {
+	out := ""
+  clear := false
+  outClear := ""
+  for i := 0;i < len(damMsg);i++ {
     if len(damMsg) > 17 {
         damMsg = damMsg[17:]
-        clearDirty()
+        //clearDirty()
+        //reset()
         i = 0
+        clear = true
     }
-    fmt.Print("\033["+strconv.Itoa(i)+";53H"+damMsg[i])
+    if clear {
+      for c := 0;c < 17;c++ {
+        outClear += fmt.Sprint("\033["+strconv.Itoa(i)+";53H                                                                            ")
+        if c == 16 {
+            fmt.Print(outClear)
+            clear = false
+        }
+      }
+
+    }else {
+      out += fmt.Sprint("\033["+strconv.Itoa(i+1)+";53H"+damMsg[i]+"\033["+strconv.Itoa(i+2)+";53H                                                                    ")
+
+    }
   }
+  clearCore()
+  fmt.Print(outClear)
+	return out
 }
 
+func clearCore() {
+  for i := 0;i < 42;i++ {
+    Y := strconv.Itoa(i)
+
+    fmt.Print("\033["+Y+";0H                                                                                                                                                                                   ")
+  }
+}
 func clearCmd() {
 		fmt.Print(cmdPos+"                                                                                                                                                                                   ")
 		fmt.Print("\033[52;0H                                                                                                                                                                                   ")
@@ -148,11 +175,31 @@ func clearCmd() {
 		fmt.Print(cmdPos)
 }
 
-func showCoreMobs(play Player) Player {
+func showProfile(play Player) (string) {
+  profile := ""
+  splitProfile := strings.Split(play.Profile, "\n")
+  for row := 0;row < len(splitProfile);row++ {
+    profile += "\033["+strconv.Itoa(row)+";0H"+splitProfile[row]+"\033[0m"
+  }
+  return profile
+}
+
+
+func showCoreMobs(play Player) (Player, string) {
   core := ""
+	out := ""
   coreSplit := strings.Split(play.PlainCoreBoard, "\n")
   for i := 0;i < len(coreSplit);i++ {
     for r := 0;r < len(coreSplit[i]);r++ {
+      if coreSplit[i][r] == 'T' {
+        for tres := 0;tres < len(play.Fights.Treasure);tres++ {
+          if play.Fights.Treasure[tres].X == r && play.Fights.Treasure[tres].Y == i {
+            if play.Fights.Treasure[tres].Owned {
+              core += fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H \033[0m")
+            }
+          }
+        }
+      }
       if coreSplit[i][r] == 'M' {
           for bat := 0;bat < len(play.Fights.Oppose);bat++ {
             if play.Fights.Oppose[bat].MaxRezz <= 0 && play.Fights.Oppose[bat].X == r && play.Fights.Oppose[bat].Y == i{
@@ -174,17 +221,19 @@ func showCoreMobs(play Player) Player {
       }
     }
 
-  fmt.Print(core)
-  return play
+  out += fmt.Sprint(core)
+  return play, out
 }
 
-func showCoreBoard(play Player) {
+func showCoreBoard(play Player) string {
   core := ""
+	out := ""
   coreSplit := strings.Split(play.CoreBoard, "\n")
   for i := 0;i < len(coreSplit);i++ {
       core += fmt.Sprint("\033[",strconv.Itoa(i+20),";54H",coreSplit[i])
     }
-    fmt.Print(core)
+    out = fmt.Sprint(core)
+		return out
 }
 func clearCoreBoard(play Player) {
   coreSplit := strings.Split(play.CoreBoard, "\n")
@@ -196,54 +245,58 @@ func clearCoreBoard(play Player) {
     fmt.Print(core+coreSpace)
   }
 }
-func DescribeSpace(vnum int, Spaces []Space) {
+func DescribeSpace(vnum int, Spaces []Space) string {
+	out := ""
 	for i := 0; i < len(Spaces);i++ {
 		if Spaces[i].Vnum == vnum {
-			fmt.Println(Spaces[i].Zone)
-			fmt.Println(Spaces[i].Desc)
+			out += fmt.Sprint(Spaces[i].Zone)
+			out += fmt.Sprint(Spaces[i].Desc)
 		}
 	}
+	return out
 }
 
-func showDesc(room Space) {
+func showDesc(room Space) string {
+	out := ""
 	splitPos := AssembleDescCel(room, 25)
-	fmt.Printf(splitPos)
-	fmt.Printf("\033[38:2:140:40:140m[[")
+	out += fmt.Sprint(splitPos)
+	out += fmt.Sprint("\033[38:2:140:40:140m[[")
 	if room.Exits.North != 0 {
-		fmt.Printf("\033[38:2:180:20:180mNorth")
+		out += fmt.Sprint("\033[38:2:180:20:180mNorth")
 	}
 	if room.Exits.South != 0 {
-		fmt.Printf("\033[38:2:180:20:180mSouth")
+		out += fmt.Sprint("\033[38:2:180:20:180mSouth")
 	}
 	if room.Exits.East != 0 {
-		fmt.Printf("\033[38:2:180:20:180mEast")
+		out += fmt.Sprint("\033[38:2:180:20:180mEast")
 	}
 	if room.Exits.West != 0 {
-		fmt.Printf("\033[38:2:180:20:180mWest")
+		out += fmt.Sprint("\033[38:2:180:20:180mWest")
 	}
 	if room.Exits.NorthWest != 0 {
-		fmt.Printf("\033[38:2:180:20:180mNorthWest")
+		out += fmt.Sprint("\033[38:2:180:20:180mNorthWest")
 	}
 	if room.Exits.NorthEast != 0 {
-		fmt.Printf("\033[38:2:180:20:180mNorthEast")
+		out += fmt.Sprint("\033[38:2:180:20:180mNorthEast")
 	}
 	if room.Exits.SouthWest != 0 {
-		fmt.Printf("\033[38:2:180:20:180mSouthWest")
+		out += fmt.Sprint("\033[38:2:180:20:180mSouthWest")
 	}
 	if room.Exits.SouthEast != 0 {
-		fmt.Printf("\033[38:2:180:20:180mSouthEast")
+		out += fmt.Sprint("\033[38:2:180:20:180mSouthEast")
 	}
 	if room.Exits.Up != 0 {
-		fmt.Printf("\033[38:2:180:20:180mUp")
+		out += fmt.Sprint("\033[38:2:180:20:180mUp")
 	}
 	if room.Exits.Down != 0 {
-		fmt.Printf("\033[38:2:180:20:180mDown")
+		out += fmt.Sprint("\033[38:2:180:20:180mDown")
 	}
 
-	fmt.Printf("\033[38:2:140:40:140m]]\033[0m\033[0;0H")
+	out += fmt.Sprint("\033[38:2:140:40:140m]]\033[0m\033[0;0H")
 	if len(room.ZonePos) >= 2 {
-		drawDig(room.ZoneMap, room.ZonePos)
+		out += drawDig(room.ZoneMap, room.ZonePos)
 	}
+	return out
 }
 func showWho(play Player) []string {
   var whoList []string
@@ -302,7 +355,8 @@ func updateWho(play Player, in bool) {
   }
 
 }
-func showChat(play Player) int {
+func showChat(play Player) (int, string) {
+	out := ""
   countChat := 0
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
@@ -331,20 +385,21 @@ func showChat(play Player) int {
 		if row >= 51 {
 			row = 0
 		}
-		message, position := AssembleComposeCel(chatMess, row)
-		row = position
-		fmt.Printf(message)
+		message, _ := AssembleComposeCel(chatMess, row)
+		row += len(strings.Split(message, "\n"))
+		out += fmt.Sprint(message)
 //		fmt.Printf(chatStart)
 //		fmt.Printf(chatMess.Message + " ")
 //		fmt.Printf(chatEnd)
 //  	fmt.Printf(end)
 
 	}
-  return countChat
+	return countChat, out
 }
-func drawDig(digFrame [][]int, zonePos []int) {
+func drawDig(digFrame [][]int, zonePos []int) string {
+	out := ""
 	for i := 0;i < len(digFrame);i++ {
-		fmt.Printf("\033[48;2;10;255;20m \033[0m")
+		out += fmt.Sprint("\033[48;2;10;255;20m \033[0m")
 		for c := 0;c < len(digFrame[i]);c++ {
 				prn := ""
 				val := fmt.Sprint(digFrame[i][c])
@@ -352,22 +407,23 @@ func drawDig(digFrame [][]int, zonePos []int) {
 					prn = "8"
 				}
 				if prn == "8" {
-					fmt.Printf("\033[38:2:150:10:50m"+val+"\033[0m")
+					out += fmt.Sprint("\033[38:2:150:10:50m"+val+"\033[0m")
 				}else if val == "1" || val == "8" {
 					val = "1"
-					fmt.Printf("\033[38:2:50:10:50m"+val+"\033[0m")
+					out += fmt.Sprint("\033[38:2:50:10:50m"+val+"\033[0m")
 				}else if c == 0 || c == len(digFrame[i])-1 || i == 0 || i == len(digFrame)-1{
-          fmt.Printf("\033[48;2;10;255;20m \033[0m")
+          out += fmt.Sprint("\033[48;2;10;255;20m \033[0m")
         }else {
-						fmt.Printf(val)
+						out += fmt.Sprint(val)
 				}
 		}
-		fmt.Println("\033[48;2;10;255;20m \033[0m")
+		out += fmt.Sprintln("\033[48;2;10;255;20m \033[0m")
 	}
+	return out
 }
 
-func DescribePlayer(play Player) {
-
+func DescribePlayer(play Player) string {
+	out := ""
   ratio := ""
   count := 18
   for   rezz := 0;rezz < play.Rezz;rezz++ {
@@ -396,16 +452,20 @@ func DescribePlayer(play Player) {
   }
   ratio += "\033[31;30H===\n"
   ratio += "\033[49;30H==="
+
   techShow := ratio
-  fmt.Print(techShow)
-  fmt.Print(hp)
-	fmt.Printf("\033[40;0H")
-	fmt.Println("======================")
-	fmt.Println("\033[38:2:0:200:0mStrength     :\033[0m", play.Str)
-	fmt.Println("\033[38:2:0:200:0mIntelligence :\033[0m", play.Int)
-	fmt.Println("\033[38:2:0:200:0mDexterity    :\033[0m", play.Dex)
-	fmt.Println("\033[38:2:0:200:0mWisdom       :\033[0m", play.Wis)
-	fmt.Println("\033[38:2:0:200:0mConstitution :\033[0m", play.Con)
-	fmt.Println("\033[38:2:0:200:0mCharisma     :\033[0m", play.Cha)
-	fmt.Println("======================")
+  out += fmt.Sprint(techShow)
+  out += fmt.Sprint(hp)
+	out += fmt.Sprint("\033[38;0H")
+  out += fmt.Sprintln("\033[38:2:200:0:0mHas slain "+strconv.Itoa(play.Won)+" monsters\033[0m")
+  out += fmt.Sprintln("\033[38:2:150:150:0mHas found "+strconv.Itoa(play.Found)+" treasures\033[0m")
+	out += fmt.Sprintln("======================")
+	out += fmt.Sprintln("\033[38:2:0:200:0mStrength     :\033[0m", play.Str)
+	out += fmt.Sprintln("\033[38:2:0:200:0mIntelligence :\033[0m", play.Int)
+	out += fmt.Sprintln("\033[38:2:0:200:0mDexterity    :\033[0m", play.Dex)
+	out += fmt.Sprintln("\033[38:2:0:200:0mWisdom       :\033[0m", play.Wis)
+	out += fmt.Sprintln("\033[38:2:0:200:0mConstitution :\033[0m", play.Con)
+	out += fmt.Sprintln("\033[38:2:0:200:0mCharisma     :\033[0m", play.Cha)
+	out += fmt.Sprintln("======================")
+	return out
 }

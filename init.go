@@ -88,6 +88,17 @@ func InitPlayer(name string, pass string) Player {
 	return play
 
 }
+func InitObject(play Player) Object {
+  var obj Object
+  obj.Name = "a golden tiara"
+  obj.LongName = "A golden tiara lies here."
+  obj.Vnum = 1
+  obj.Zone = play.CurrentRoom.Zone
+  obj.Owner = play
+  obj.Value = 1
+  obj.Owned = false
+  return obj
+}
 func InitMob() Mobile {
   var mob Mobile
   mob.Name = "rabid ferret"
