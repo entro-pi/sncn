@@ -880,6 +880,9 @@ func main() {
 		if input == "score" {
 			out += DescribePlayer(play)
 		}
+		if input == "load profile photo" {
+			play = importPhoto(play)
+		}
 		if input == "capture profile picture" {
 			in := make(chan bool)
 			out := make(chan string)
@@ -992,6 +995,7 @@ func main() {
 			for i := 0;i < len(socBroadcasts);i++ {
 				out += AssembleBroadside(socBroadcasts[i], socBroadcasts[i].Payload.Row, socBroadcasts[i].Payload.Col)
 			}
+			out += play.Profile
 		}
 		fmt.Print(out)
 		//fmt.Printf(play.Target)

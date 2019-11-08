@@ -2,8 +2,56 @@ package main
 
 import (
   "fmt"
+  "bufio"
+  "os"
   "gocv.io/x/gocv"
 )
+
+func importPhoto(play Player) Player {
+  scanner := bufio.NewScanner(os.Stdin)
+  fmt.Print("Enter a full pathname in the type, \"/home/weasel/photo.png\"")
+    for scanner.Scan() {
+      if scanner.Text() == "done" {
+        return play
+      }
+
+    		var frame string
+    		img := gocv.IMRead(scanner.Text(), -1)
+
+    		if img.Empty() {
+    			fmt.Println("EMPTY FRAME")
+    			img.Close()
+    		}else {
+          p := gocv.Split(img)
+                var wordFinal []string
+          var wordSecondary []string
+                for row := 24; row > 0; row-- {
+                        for column := 32; column > 0; column-- {
+                                rS := p[2].GetUCharAt((row*10)-1, (column*10)-1)
+                                gS := p[1].GetUCharAt((row*10)-1, (column*10)-1)
+                                bS := p[0].GetUCharAt((row*10)-1, (column*10)-1)
+
+              position := fmt.Sprint("\033[",row+2,";",column+2+75,"H")
+                                word := fmt.Sprint(position,"\033[48;2;", rS, ";", gS, ";", bS, "m", "==", "\033[0m")
+                                wordSecondary = append(wordSecondary, word)
+
+              position = fmt.Sprint("\033[",row+2,";",column+2,"H")
+                                word = fmt.Sprint(position,"\033[48;2;", rS, ";", gS, ";", bS, "m", "==", "\033[0m")
+                                wordFinal = append(wordFinal, word)
+                        }
+                }
+          var frameSecond string
+          for i := len(wordFinal)-1;i > 0;i-- {
+            frame += fmt.Sprintf(wordFinal[i])
+            frameSecond += fmt.Sprintf(wordSecondary[i])
+          }
+          play.Profile = frame
+          fmt.Print(play.Profile)
+          img.Close()
+      }
+}
+  return play
+}
 
 
 func clientLoops(in chan bool, out chan string) {
