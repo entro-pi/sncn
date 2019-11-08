@@ -937,9 +937,9 @@ func main() {
 			}
 //			fmt.Println(string(socBytes))
 		}
-		if strings.Contains(input, "showSoc") {
+		if input == "show soc" {
 			ShowSoc = true
-		}else {
+		}else if input == "hide soc" {
 			ShowSoc = false
 		}
 		if strings.Contains(input, "broadside=") {

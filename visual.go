@@ -33,11 +33,11 @@ func importPhoto(play Player) Player {
                                 bS := p[0].GetUCharAt((row*10)-1, (column*10)-1)
 
               position := fmt.Sprint("\033[",row+2,";",column+2+75,"H")
-                                word := fmt.Sprint(position,"\033[48;2;", rS, ";", gS, ";", bS, "m", "==", "\033[0m")
+                                word := fmt.Sprint(position,"\033[48;2;", rS, ";", gS, ";", bS, "m", "  ", "\033[0m")
                                 wordSecondary = append(wordSecondary, word)
 
               position = fmt.Sprint("\033[",row+2,";",column+2,"H")
-                                word = fmt.Sprint(position,"\033[48;2;", rS, ";", gS, ";", bS, "m", "==", "\033[0m")
+                                word = fmt.Sprint(position,"\033[48;2;", rS, ";", gS, ";", bS, "m", "  ", "\033[0m")
                                 wordFinal = append(wordFinal, word)
                         }
                 }
