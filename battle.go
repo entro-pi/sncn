@@ -41,6 +41,8 @@ import (
          fmt.Print("ESC button to quit")
          play.Battling = true
 //         showCoreBoard(play)
+         play.Won = 0
+         play.Found = 0
 
  keyPressListenerLoop:
          for {
@@ -49,6 +51,7 @@ import (
                     switch ev.Key {
                     case term.KeyEsc:
                             play.Won = 0
+                            play.Found = 0
                             break keyPressListenerLoop
                     default:
 
@@ -111,6 +114,7 @@ import (
                                   for i := 0;i < len(play.Fights.Treasure);i++ {
                                     if play.Fights.Treasure[i].X == play.TarX && play.Fights.Treasure[i].Y == play.TarY && play.Fights.Treasure[i].Owned == false {
                                       play.Found++
+                                      play.Hoarded++
                                       play.Fights.Treasure[i].Owned = true
                                       damMsg = append(damMsg, fmt.Sprint("\033[38:2:175:150:0mPicked up a tiara!\033[0m"))
                                       sounds[16] <- true
@@ -152,6 +156,7 @@ import (
                                                if play.Fights.Oppose[bat].MaxRezz <= 0 {
                                                  play.Fights.Oppose[bat].Char = "*"
                                                  play.Won++
+                                                 play.Slain++
                                                  TL, out = determine(play)
                                                 fmt.Printf(out+play.Target+TL)
                                                 damMsg = append(damMsg, fmt.Sprintf("You slay %v!",TL))

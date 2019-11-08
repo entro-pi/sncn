@@ -111,6 +111,12 @@ func InitMob() Mobile {
   return mob
 }
 
+func InitFight() Fight {
+  var newFight Fight
+  return newFight
+}
+
+
 func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {

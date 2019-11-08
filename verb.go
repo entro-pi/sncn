@@ -322,6 +322,7 @@ func genCoreBoard(size string, play Player, populated []Space) (string, Player) 
 //	}
   newValue := ""
   outVal := ""
+	play.Fights = InitFight()
 //	fmt.Println("Generating and populating map")
 	for i := 0;i < len(Room.Data);i++ {
 

@@ -145,6 +145,8 @@ type Player struct {
 	CoreShow bool
 	Channels []string
 	Battling bool
+	Slain int
+	Hoarded int
 
 	MaxRezz int
 	Rezz int
