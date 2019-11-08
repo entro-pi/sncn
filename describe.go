@@ -181,6 +181,15 @@ func showCoreMobs(play Player) (Player, string) {
   coreSplit := strings.Split(play.PlainCoreBoard, "\n")
   for i := 0;i < len(coreSplit);i++ {
     for r := 0;r < len(coreSplit[i]);r++ {
+      if coreSplit[i][r] == 'T' {
+        for tres := 0;tres < len(play.Fights.Treasure);tres++ {
+          if play.Fights.Treasure[tres].X == r && play.Fights.Treasure[tres].Y == i {
+            if play.Fights.Treasure[tres].Owned {
+              core += fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H \033[0m")
+            }
+          }
+        }
+      }
       if coreSplit[i][r] == 'M' {
           for bat := 0;bat < len(play.Fights.Oppose);bat++ {
             if play.Fights.Oppose[bat].MaxRezz <= 0 && play.Fights.Oppose[bat].X == r && play.Fights.Oppose[bat].Y == i{

@@ -237,6 +237,7 @@ func main() {
 	out += outln
 	updateChat(play, response)
 	out += ShowOoc(response, play)
+	var ShowSoc bool
 
 	var socBroadcasts []Broadcast
 	//Game loop
@@ -905,11 +906,9 @@ func main() {
 //			fmt.Println(string(socBytes))
 		}
 		if strings.Contains(input, "showSoc") {
-			for i := 0;i < len(socBroadcasts);i++ {
-				out += AssembleBroadside(socBroadcasts[i], socBroadcasts[i].Payload.Row, socBroadcasts[i].Payload.Col)
-				fmt.Print(socBroadcasts[i].Payload.Row)
-			}
-			fmt.Print(out)
+			ShowSoc = true
+		}else {
+			ShowSoc = false
 		}
 		if strings.Contains(input, "broadside=") {
 			rowCol := strings.Split(input, "=")[1]
@@ -945,7 +944,7 @@ func main() {
 		//chats, out += showChat(play)
 		if play.CoreShow {
 			outln := ""
-			showCoreBoard(play)
+			out += showCoreBoard(play)
 			play, outln = showCoreMobs(play)
 			out += outln
 		}
@@ -960,6 +959,11 @@ func main() {
 //		}else {
 //			clearCoreBoard(play)
 //		}
+		if ShowSoc {
+			for i := 0;i < len(socBroadcasts);i++ {
+				out += AssembleBroadside(socBroadcasts[i], socBroadcasts[i].Payload.Row, socBroadcasts[i].Payload.Col)
+			}
+		}
 		fmt.Print(out)
 		//fmt.Printf(play.Target)
 

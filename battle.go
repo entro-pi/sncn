@@ -72,6 +72,7 @@ import (
                                   break keyPressListenerLoop
                                 }else {
                                   fmt.Printf("Slew \033[38:2:200:0:0m%v\033[0m monsters.", play.Won)
+                                  fmt.Printf("Gathered \033[38:2:175:150:0m%v\033[0m tiaras", play.Found)
                                 }
 
                             }
@@ -106,6 +107,16 @@ import (
                            play.Target = targ
 
                            if ev.Ch == 'e' {
+                                if strings.Contains(play.Target, "T") {
+                                  for i := 0;i < len(play.Fights.Treasure);i++ {
+                                    if play.Fights.Treasure[i].X == play.TarX && play.Fights.Treasure[i].Y == play.TarY && play.Fights.Treasure[i].Owned == false {
+                                      play.Found++
+                                      play.Fights.Treasure[i].Owned = true
+                                      damMsg = append(damMsg, fmt.Sprint("\033[38:2:175:150:0mPicked up a tiara!\033[0m"))
+                                      sounds[16] <- true
+                                    }
+                                  }
+                                }
                                  for i := 0;i < len(play.Classes);i++ {
 
                                    if play.Classes[i].Skills[i].Name == "overcharge" {
@@ -209,7 +220,13 @@ import (
     switch play.TargetLong {
     case "T":
      TL = "A Bejewelled Tiara"
-     TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+     for i := 0;i < len(play.Fights.Treasure);i++ {
+       if play.Fights.Treasure[i].X == play.TarX && play.Fights.Treasure[i].Y == play.TarY && play.Fights.Treasure[i].Owned == true {
+         TL = ""
+         }else {
+           TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
+           }
+     }
     case "M":
      TL = "A Rabid Ferret"
      for bat := 0;bat < len(play.Fights.Oppose);bat++ {

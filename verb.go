@@ -333,6 +333,10 @@ func genCoreBoard(size string, play Player, populated []Space) (string, Player) 
 					ChanceTreasure := "T"
 					if rand.Intn(100) > 98 {
 							newValue += ChanceTreasure
+							tiara := InitObject(play)
+							tiara.X = s
+							tiara.Y = i
+							play.Fights.Treasure = append(play.Fights.Treasure, tiara)
 							continue
 					}
 					if rand.Intn(100) > 95 {

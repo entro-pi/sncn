@@ -61,7 +61,17 @@ type SignInPayload struct {
 	Name string
 	Game string
 }
-
+type Object struct {
+	Name string
+	LongName string
+	Vnum int
+	Zone string
+	Owner Player
+	Value int
+	X int
+	Y int
+	Owned bool
+}
 type BroadcastPayload struct {
   Channel string
   Message string
@@ -140,6 +150,7 @@ type Player struct {
 	Tech int
 	Fights Fight
 	Won int
+	Found int
 
 	Str int
 	Int int
@@ -151,6 +162,7 @@ type Player struct {
 type Fight struct {
 	Oppose []Mobile
 	Former []Player
+	Treasure []Object
 }
 type Mobile struct {
 	Name string
