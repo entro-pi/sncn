@@ -1,4 +1,4 @@
-![sunshot](docs/sunshot.png)
+![sunshot](docs/Screenshot from 2019-11-07 21-40-15.png)
 
 ****November 8th, 2019****
 
