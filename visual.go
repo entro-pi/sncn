@@ -9,7 +9,8 @@ import (
 
 func importPhoto(play Player) Player {
   scanner := bufio.NewScanner(os.Stdin)
-  fmt.Print("Enter a full pathname in the type, \"/home/weasel/photo.png\"")
+  fmt.Println("Enter a full pathname in the type, \"/home/weasel/photo.png\"")
+  fmt.Println("320x240 resolution works best")
     for scanner.Scan() {
       if scanner.Text() == "done" {
         return play
