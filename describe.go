@@ -452,10 +452,13 @@ func DescribePlayer(play Player) string {
   }
   ratio += "\033[31;30H===\n"
   ratio += "\033[49;30H==="
+
   techShow := ratio
   out += fmt.Sprint(techShow)
   out += fmt.Sprint(hp)
-	out += fmt.Sprint("\033[40;0H")
+	out += fmt.Sprint("\033[38;0H")
+  out += fmt.Sprintln("\033[38:2:200:0:0mHas slain "+strconv.Itoa(play.Won)+" monsters\033[0m")
+  out += fmt.Sprintln("\033[38:2:150:150:0mHas found "+strconv.Itoa(play.Found)+" treasures\033[0m")
 	out += fmt.Sprintln("======================")
 	out += fmt.Sprintln("\033[38:2:0:200:0mStrength     :\033[0m", play.Str)
 	out += fmt.Sprintln("\033[38:2:0:200:0mIntelligence :\033[0m", play.Int)
