@@ -238,6 +238,7 @@ func main() {
 	updateChat(play, response)
 	out += ShowOoc(response, play)
 
+	var socBroadcasts []Broadcast
 	//Game loop
 	fmt.Println("#of mobiles:"+strconv.Itoa(len(mobiles)))
 	firstDig := false
@@ -882,18 +883,17 @@ func main() {
 			response.Recv(0)
 			fmt.Println("Sending --+--")
 			_, err := response.Send(play.Name+"--+--", 0)
-			result, err := response.Recv(0)
+			_, err = response.Recv(0)
 			if err != nil {
 				panic(err)
 			}
-			out += string(result)
+	//		out += string(result)
 			grapevines = updateChat(play, response)
 			fmt.Println("Sending ok")
 			_, err = response.Send("--ok--", 0)
 			if err != nil {
 				panic(err)
 			}
-			var socBroadcasts []Broadcast
 			socBytes, err := response.RecvBytes(0)
 			if err != nil {
 				panic(err)
@@ -902,7 +902,14 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			fmt.Println(string(socBytes))
+//			fmt.Println(string(socBytes))
+		}
+		if strings.Contains(input, "showSoc") {
+			for i := 0;i < len(socBroadcasts);i++ {
+				out += AssembleBroadside(socBroadcasts[i], socBroadcasts[i].Payload.Row, socBroadcasts[i].Payload.Col)
+				fmt.Print(socBroadcasts[i].Payload.Row)
+			}
+			fmt.Print(out)
 		}
 		if strings.Contains(input, "broadside=") {
 			rowCol := strings.Split(input, "=")[1]
