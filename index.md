@@ -1,3 +1,7 @@
+
+
+
+
 ![sunshot](docs/Screenshot from 2019-11-07 21-40-15.png)
 
 ****November 8th, 2019****
@@ -31,6 +35,88 @@ As well as generate some splash screens for the starting
 coreboard set.
 
 That's all for now!
+
+**UPDATE**
+Here's a list of the current commands and what they do
+
+HELP
+
+pewpew <num> = play a sound
+broadside=<num>:<num> = show a broadcast at a position
+bs=<num> = select broadcast numbered
+show soc = show social broadcasts
+soc = generate social broadcasts
+hide soc = hide social broadcasts
+
+capture profile picture = get a picture from the camera
+load profile picture = use an existing photo
+
+score = show player info
+addclass = adds a class type from a template
+
+SAVE ZONES = dumps the zone files to dat/zone.bson
+
+view from <num> = shows the view at a certain vnum
+
+craft mobile = UNFINISHED create a mobile
+
+open map = does nothing right now
+
+gen coreboard=<num>:<num> = create a coreboard dungeon of size numXnum
+tc:<num>|<num> = enter said coreboard at position num, num
+
+look = look at the current room
+
+report = show current players classes
+
+show chat = show the out of character chats
+hide chat = hides said chat
+
+show grape = shows the grapevine broadcasts
+hide grape = hides the grapevine broadcasts
+
+gvsub <channelname> = subscribe to a grapevine channel
+gvunsub <channelname> = unsubscribe from a grapevine channel
+g:<words> = compose a grapevine chat
+
+
+update zonemap = copies update zone maps to rooms
+
+merge <zonesource> <zonedest> = merges cross zone map positions
+
+count keys = counts a number of characters
+
+show channels = shows grapevine channels currently subscribed to
+
+edit desc = edit the room Description
+
+show zone info = get information about the current zone
+
+heal = gain Rezz and Tech
+
+dam rezz = damage your rezz
+
+dam tech = damage your tech
+
+show room vnum = shows the room virtual number
+
+shutdown server = shut the server down
+
+login <player> <pass> = login with the supplied credentials
+
+create <player> <pass> = create a player with the supplied credentials
+                          most useful when using the dorp:norp initilizer characters
+
+blit = update the output with a clean copy of your view
+
+ooc <words> = out of character chat
+
+dig new = create rooms
+
+save = save your character
+
+quit = exit game
+logout = another way to exit
 
 
 
