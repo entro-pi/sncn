@@ -912,7 +912,7 @@ func main() {
 		if input == "score" {
 			out += DescribePlayer(play)
 		}
-		if input == "load profile photo" {
+		if input == "load profile picture" {
 			play = importPhoto(play)
 		}
 		if input == "capture profile picture" {
