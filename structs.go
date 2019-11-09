@@ -81,6 +81,7 @@ type BroadcastPayload struct {
 	Col int
 	Selected bool
 	BigMessage string
+	ID int
 }
 type Broadcast struct {
     Event string
