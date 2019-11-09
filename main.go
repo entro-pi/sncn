@@ -1056,6 +1056,8 @@ func main() {
 							if err != nil {
 								panic(err)
 							}
+							//clear the description section
+							clearBigBroad()
 //							count := 0
 
 				}
@@ -1068,21 +1070,21 @@ func main() {
 		if strings.HasPrefix(input, "gc: "){
 			var bs Broadcast
 			count := 0
+			header := strings.Split(input, "gc: ")[1]
+			fmt.Print("\033[33;53HComposing message, "+header+"\033[35;53H")
+			fmt.Print("\033[34;53H@ on a newline to finish\033[37;53H")
+
 			for scanner.Scan() {
 				count++
 				lineCount := strconv.Itoa(count+36)
-				fmt.Print("\033[34;53HEDITING A NEW BROADCAST, @ on a newline to finish\033["+lineCount+";53H")
+				fmt.Print("\033[34;53H@ on a newline to finish\033["+lineCount+";53H")
 				if scanner.Text() == "@" {
-					lineCount := strconv.Itoa(count+35)
-					nextLineCount := strconv.Itoa(count+36)
-					fmt.Print("\033["+lineCount+";53HNow enter your header, newline to finish\033["+nextLineCount+";53H")
 					break
 				}else {
 					bs.Payload.BigMessage += scanner.Text() + "\n"
 				}
 			}
-			scanner.Scan()
-			bs.Payload.Message = scanner.Text()
+			bs.Payload.Message = header
 			bs.Payload.Channel = "snow"
 			bs.Payload.Game = "snowcrash.network"
 			bs.Payload.Name = play.Name
@@ -1152,22 +1154,26 @@ func main() {
 		}
 		column := 0
 		row := 0
+		count := 0
 		for i := 0;i < len(socBroadcasts);i++ {
-			if i < 5 {
+			if count < 5 {
 				column = 0
-				row = i
-			}else if i < 10 && i > 4 {
-				rowPos := i - 5
+				row = count
+			}else if count < 10 && count > 4 {
+				rowPos := count - 5
 				row = rowPos
 				column = 1
-			}else if i < 15 && i > 9 {
-				rowPos := i - 10
+			}else if count < 15 && count > 9 {
+				rowPos := count - 10
 				row = rowPos
 				column = 2
-			}else if i < 20 && i > 14 {
-				rowPos := i - 15
+			}else if count < 20 && count > 14 {
+				rowPos := count - 15
 				row = rowPos
 				column = 3
+			}else {
+				count = 0
+				row = count
 			}
 			switch column {
 			case 0:
@@ -1196,7 +1202,7 @@ func main() {
 				socBroadcasts[i].Payload.Row = 16
 			default:
 			}
-
+			count++
 		}
 
 		//Reset the input to a standardized place
