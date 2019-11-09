@@ -501,13 +501,45 @@ func main() {
 			}
 
 		//COMMAND SECTION
+		if input == "save" {
+				message := fmt.Sprint("++SAVE++"+play.PlayerHash)
+				response.Recv(0)
+				_, err = response.Send(message, 0)
+				if err != nil {
+					panic(err)
+				}
+				_, err = response.Recv(0)
+				if err != nil {
+					panic(err)
+				}
+				playerBytes, err := bson.Marshal(play)
+				if err != nil {
+					panic(err)
+				}
+				_, err = response.SendBytes(playerBytes, 0)
+				if err != nil {
+					panic(err)
+				}
 
+		}
 		if strings.HasPrefix(input, "g:") {
 			message := strings.Split(input, ":")[1]
+			longMessage := ""
 			channel := "gossip"
+			fmt.Print("\033[35;53HComposing |+"+message+"+|\033[36;53H@ on a newline to end.\033[37;53H")
+			count := 1
+			for scanner.Scan() {
+				if scanner.Text() == "@" {
+					fmt.Print("Done composing!")
+					break
+				}
+				longMessage += scanner.Text()
+				fmt.Print("\033["+strconv.Itoa(35+count)+";53H")
+			}
+
 			response.Recv(0)
 			fmt.Println("\033[38:2:0:150:150m[["+message+"]]\033[0m")
-			_, err := response.Send(play.Name+"||UWU||"+channel+"||}}{{||"+message, 0)
+			_, err := response.Send(play.Name+"||UWU||"+channel+"||}}{{||"+message+"+++"+longMessage, 0)
 			if err != nil {
 				panic(err)
 			}
