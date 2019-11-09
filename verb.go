@@ -25,7 +25,7 @@ func updateChat(play Player, response *zmq.Socket) int {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Print(value)
+//	fmt.Print(value)
 	if len(value) > 1 {
 		count++
 	}

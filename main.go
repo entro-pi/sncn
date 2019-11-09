@@ -241,9 +241,11 @@ func main() {
 	var ShowSoc bool
 
 	var socBroadcasts []Broadcast
+
 	//Game loop
 	fmt.Println("#of mobiles:"+strconv.Itoa(len(mobiles)))
 	firstDig := false
+	ShowSoc = true
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
 		out = ""
@@ -976,7 +978,7 @@ func main() {
 
 			}
 		}
-		if strings.HasPrefix(input, "soc") {
+		if strings.HasPrefix(input, "sel") {
 			if len(strings.Split(input, " ")) > 1 {
 				response.Recv(0)
 				//clear the selection
@@ -1014,27 +1016,55 @@ func main() {
 							if err != nil {
 								panic(err)
 							}
+//							count := 0
 
 				}
 
 			}
 //			fmt.Println(string(socBytes))
 		}
+
+
 		if strings.HasPrefix(input, "gc: "){
 			var bs Broadcast
+			count := 0
 			for scanner.Scan() {
-				fmt.Print("EDITING A NEW BROADCAST, @ on a newline to finish")
+				count++
+				lineCount := strconv.Itoa(count+36)
+				fmt.Print("\033[34;53HEDITING A NEW BROADCAST, @ on a newline to finish\033["+lineCount+";53H")
 				if scanner.Text() == "@" {
-					fmt.Print("Now enter your header, newline to finish")
+					lineCount := strconv.Itoa(count+35)
+					nextLineCount := strconv.Itoa(count+36)
+					fmt.Print("\033["+lineCount+";53HNow enter your header, newline to finish\033["+nextLineCount+";53H")
 					break
 				}else {
-					bs.Payload.BigMessage += scanner.Text()
+					bs.Payload.BigMessage += scanner.Text() + "\n"
 				}
 			}
 			scanner.Scan()
 			bs.Payload.Message = scanner.Text()
-
+			bs.Payload.Channel = "snow"
+			bs.Payload.Game = "snowcrash.network"
+			bs.Payload.Name = play.Name
+			bs.Payload.Row = 0
+			bs.Payload.Col = 0
+			bs.Payload.Selected = false
 			socBroadcasts = append(socBroadcasts, bs)
+
+			response.Recv(0)
+			socBytes, err := json.Marshal(bs)
+			if err != nil {
+				panic(err)
+			}
+			_, err = response.Send("--UPSERT--", 0)
+			result, err := response.Recv(0)
+			if result == "OKTOSEND" {
+				_, err = response.SendBytes(socBytes, 0)
+				if err != nil {
+					panic(err)
+				}
+
+			}
 		}
 		if input == "show soc" {
 			ShowSoc = true
@@ -1080,6 +1110,54 @@ func main() {
 				sounds[num] <- true
 			}
 		}
+		column := 0
+		row := 0
+		for i := 0;i < len(socBroadcasts);i++ {
+			if i < 5 {
+				column = 0
+				row = i
+			}else if i < 10 && i > 4 {
+				rowPos := i - 5
+				row = rowPos
+				column = 1
+			}else if i < 15 && i > 9 {
+				rowPos := i - 10
+				row = rowPos
+				column = 2
+			}else if i < 20 && i > 14 {
+				rowPos := i - 15
+				row = rowPos
+				column = 3
+			}
+			switch column {
+			case 0:
+				socBroadcasts[i].Payload.Col = 53
+			case 1:
+				socBroadcasts[i].Payload.Col = 83
+			case 2:
+				socBroadcasts[i].Payload.Col = 113
+			case 3:
+				socBroadcasts[i].Payload.Col = 143
+			case 4:
+				socBroadcasts[i].Payload.Col = 173
+			default:
+
+			}
+			switch row {
+			case 0:
+				socBroadcasts[i].Payload.Row = 0
+			case 1:
+				socBroadcasts[i].Payload.Row = 4
+			case 2:
+				socBroadcasts[i].Payload.Row = 8
+			case 3:
+				socBroadcasts[i].Payload.Row = 12
+			case 4:
+				socBroadcasts[i].Payload.Row = 16
+			default:
+			}
+
+		}
 
 		//Reset the input to a standardized place
 		out += showDesc(play.CurrentRoom)
@@ -1109,11 +1187,12 @@ func main() {
 	//			}
 				out += AssembleBroadside(socBroadcasts[i], socBroadcasts[i].Payload.Row, socBroadcasts[i].Payload.Col)
 			}
-			for i := 0;i < len(socBroadcasts);i++ {
-				if socBroadcasts[i].Payload.Selected {
-					out += AssembleBroadside(socBroadcasts[i], socBroadcasts[i].Payload.Row, socBroadcasts[i].Payload.Col)
-				}
-			}
+//			for i := 0;i < len(socBroadcasts);i++ {
+	//			if socBroadcasts[i].Payload.Selected {
+		//			out +=
+
+			//	}
+			//}
 			out += play.Profile
 		}
 		fmt.Print(out)
