@@ -156,7 +156,7 @@ func AssembleBroadside(broadside Broadcast, row int, col int) (string) {
 		if broadside.Payload.Selected {
 			broadside.Payload.Game = "SELECTED"
 		} else {
-			broadside.Payload.Game = "snowcrash"			
+			broadside.Payload.Game = "snowcrash"
 		}
 	}
 	namePlate := "                            "[len(broadside.Payload.Name+"@"+broadside.Payload.Game):]
@@ -166,6 +166,17 @@ func AssembleBroadside(broadside Broadcast, row int, col int) (string) {
 		cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m@"+broadside.Payload.Name+"@"+broadside.Payload.Game+namePlate+"\033[48;2;20;255;50m \033[0m")
 
 	}
+	broadRow := 0
+	if broadside.Payload.Selected && len(strings.Split(broadside.Payload.BigMessage, "\n")) > 1 {
+		bigSplit := strings.Split(broadside.Payload.BigMessage, "\n")
+		for i := 0;i < len(bigSplit);i++ {
+			cel += fmt.Sprint("\033["+strconv.Itoa(22+broadRow)+";53H\033[48:2:200:0:200m \033[0m"+bigSplit[broadRow]+"\033[48:2:200:0:200m \033[0m")
+			broadRow++
+		}
+	}
+
+
+
 	return cel
 	//	fmt.Println(cel)
 }
