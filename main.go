@@ -8,6 +8,7 @@ import (
 	"time"
 	"fmt"
 	"strconv"
+	"os/exec"
 	"strings"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
@@ -729,6 +730,11 @@ func main() {
 			fmt.Println("Have a great day!")
 			time.Sleep(1*time.Second)
 			os.Exit(1)
+		}
+		if input == "PAINT" {
+			url := "dat/ASCIIpaint/index.html"
+			cmd := exec.Command("xdg-open", url)
+			cmd.Run()
 		}
 		if strings.HasPrefix(input, "ooc") {
 			input = strings.Replace(input, "ooc ", "+=+", 1)
