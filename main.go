@@ -985,29 +985,56 @@ func main() {
 				}
 
 				fmt.Println("Sending --+--")
-				_, err := response.Send(play.Name+"--+--", 0)
-				_, err = response.Recv(0)
+				_, err := response.Send(play.Session+"--+--", 0)
+				isOK, err := response.Recv(0)
 				if err != nil {
 					panic(err)
 				}
-		//		out += string(result)
-				grapevines = updateChat(play, response)
-				fmt.Println("Sending ok")
-				_, err = response.Send("--SELECT:"+strings.Split(input, " ")[1], 0)
-				if err != nil {
-					panic(err)
-				}
-				socBytes, err := response.RecvBytes(0)
-				if err != nil {
-					panic(err)
-				}
-				err = json.Unmarshal(socBytes, &socBroadcasts)
-				if err != nil {
-					panic(err)
+				if isOK == "OKTOSEND" {
+						socByte, err := json.Marshal(socBroadcasts)
+						if err != nil {
+							panic(err)
+						}
+						_, err = response.SendBytes(socByte, 0)
+						if err != nil {
+							panic(err)
+						}
+					//		out += string(result)
+							grapevines = updateChat(play, response)
+							fmt.Println("Sending ok")
+							_, err = response.Send("--SELECT:"+strings.Split(input, " ")[1], 0)
+							if err != nil {
+								panic(err)
+							}
+							socBytes, err := response.RecvBytes(0)
+							if err != nil {
+								panic(err)
+							}
+							err = json.Unmarshal(socBytes, &socBroadcasts)
+							if err != nil {
+								panic(err)
+							}
+
 				}
 
 			}
 //			fmt.Println(string(socBytes))
+		}
+		if strings.HasPrefix(input, "gc: "){
+			var bs Broadcast
+			for scanner.Scan() {
+				fmt.Print("EDITING A NEW BROADCAST, @ on a newline to finish")
+				if scanner.Text() == "@" {
+					fmt.Print("Now enter your header, newline to finish")
+					break
+				}else {
+					bs.Payload.BigMessage += scanner.Text()
+				}
+			}
+			scanner.Scan()
+			bs.Payload.Message = scanner.Text()
+
+			socBroadcasts = append(socBroadcasts, bs)
 		}
 		if input == "show soc" {
 			ShowSoc = true
