@@ -147,6 +147,9 @@ type Player struct {
 	CoreShow bool
 	Channels []string
 	Battling bool
+
+	Session string
+
 	Slain int
 	Hoarded int
 

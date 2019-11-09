@@ -523,6 +523,32 @@ func main() {
 				}
 
 		}
+		if input == "==INVALIDATE::>" {
+			fmt.Println("INVALIDATING ALL SESSIONS")
+		//	response.Recv(0)
+			_, err = response.Send("::INVALIDATE::", 0)
+			if err != nil {
+				panic(err)
+			}
+		}
+		if input == "CHECK SESSION" {
+			fmt.Println(play.Session)
+			response.Recv(0)
+			_, err = response.Send(play.PlayerHash+"::CHECK::"+play.Session, 0)
+			if err != nil {
+				panic(err)
+			}
+			result, err := response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
+
+			if result == "+__+SHUTDOWN+__+" {
+				fmt.Println("\033[48:2:200:0:0mMIS-SESSION-TOKEN \nABORT\nABORT\nABORT")
+				os.Exit(1)
+			}
+
+		}
 		if strings.HasPrefix(input, "g:") {
 			message := strings.Split(input, ":")[1]
 			longMessage := ""
