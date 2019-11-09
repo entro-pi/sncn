@@ -978,6 +978,46 @@ func main() {
 
 			}
 		}
+		if ShowSoc {
+			response.Recv(0)
+			//clear the selection
+			for i := 0;i < len(socBroadcasts);i++ {
+				socBroadcasts[i].Payload.Selected = false
+			}
+
+			fmt.Println("Sending --+--")
+			_, err := response.Send(play.Session+"--+--", 0)
+			isOK, err := response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
+			if isOK == "OKTOSEND" {
+					socByte, err := json.Marshal(socBroadcasts)
+					if err != nil {
+						panic(err)
+					}
+					_, err = response.SendBytes(socByte, 0)
+					if err != nil {
+						panic(err)
+					}
+				//		out += string(result)
+						grapevines = updateChat(play, response)
+						fmt.Println("Sending ok")
+						_, err = response.Send("--SELECT:0", 0)
+						if err != nil {
+							panic(err)
+						}
+						socBytes, err := response.RecvBytes(0)
+						if err != nil {
+							panic(err)
+						}
+						err = json.Unmarshal(socBytes, &socBroadcasts)
+						if err != nil {
+							panic(err)
+						}
+//							count := 0
+			}
+		}
 		if strings.HasPrefix(input, "sel") {
 			if len(strings.Split(input, " ")) > 1 {
 				response.Recv(0)
