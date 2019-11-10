@@ -112,6 +112,7 @@ type Space struct{
 	Vnum int
 	Desc string
 	Mobiles []int
+	MobilesInRoom []Mobile
 	Items []int
 	CoreBoard string
 	Exits Exit
@@ -184,8 +185,9 @@ type Mobile struct {
 	MaxRezz int
 	Rezz int
 	Tech int
-	Aggro int
+	Aggro bool
 	Align int
+	Vnum int
 	X int
 	Y int
 	Char string

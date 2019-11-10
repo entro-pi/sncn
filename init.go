@@ -106,7 +106,7 @@ func InitMob() Mobile {
   mob.MaxRezz = 3
   mob.Rezz = 3
   mob.Tech = 2
-  mob.Aggro = 1
+  mob.Aggro = false
   mob.Align = -1
   return mob
 }

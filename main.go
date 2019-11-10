@@ -527,6 +527,16 @@ func main() {
 				}
 
 		}
+		if strings.HasPrefix(input, "summon ") {
+			sum, err := strconv.Atoi(strings.Split(input, "summon ")[1])
+			if err != nil {
+				fmt.Println("I don't know what that is!")
+				sum = 0
+			}else {
+				mob := lookupMobile(sum)
+				play.CurrentRoom.MobilesInRoom = append(play.CurrentRoom.MobilesInRoom, mob)
+			}
+		}
 		if input == "==INVALIDATE::>" {
 			fmt.Println("INVALIDATING ALL SESSIONS")
 		//	response.Recv(0)
@@ -1298,6 +1308,7 @@ func main() {
 			out += play.Profile
 		}
 		out += describeInventory(play)
+		out += describeEquipment(play)
 		fmt.Print(out)
 
 		fmt.Printf("\033[51;0H")

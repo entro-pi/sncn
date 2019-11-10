@@ -45,34 +45,7 @@ func ShowOoc(response *zmq.Socket, play Player) string {
   out := fmt.Sprint(chat)
 	return out
 }
-func lookupObject(vnum int) Object {
-  var obj Object
-  switch vnum {
-  case 1:
-    obj.Vnum = 1
-    obj.Name = "a red rose"
-    obj.LongName = "A rose floats here, slowly rotating."
-    obj.Zone = "zem"
-    obj.Value = 1
-    obj.Owned = false
-    return obj
-  case 2:
-    obj.Vnum = 2
-    obj.Name = "a nyancat"
-    obj.LongName = "A poptart kitten happily miaos in a circle."
-    obj.Zone = "zem"
-    obj.Value = 100
-    obj.Owned = false
-  default:
-    obj.Vnum = 0
-    obj.Name = "nothing"
-    obj.LongName = "The lack of things is...lacking"
-    obj.Zone = "zem"
-    obj.Value = 0
-    obj.Owned = false
-  }
-  return obj
-}
+
 func makePlate(plate string, play Player) []string {
   var out []string
   count := 1
@@ -100,7 +73,32 @@ func describeInventory(play Player) string {
   cel += fmt.Sprint("\033[20;174H\033[48;2;10;255;20m", plateString, " \033[0m")
   return cel
 }
+func describeEquipment(play Player) string {
+  cel := ""
+  plateString := "                                                 "
+  plate := makeEQPlate(plateString, play)
+  for i := 0;i < len(plate);i++ {
+    cel += plate[i]
+    fmt.Println(plate[i])
+  }
+  cel += fmt.Sprint("\033[20;1H\033[48;2;10;255;20m", plateString, " \033[0m")
+  return cel
+}
+func makeEQPlate(plate string, play Player) []string {
+  var out []string
+  count := 1
+  for i := 0;i < len(play.Inventory);i++ {
+      countString := strconv.Itoa(count)
 
+    //    out = append(out, fmt.Sprint("\033[",countString,";1H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m  x", plate, "\033[48;2;10;255;20m \033[0m"))
+
+      out = append(out, fmt.Sprint("\033[",countString,";1H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m", plate, "\033[48;2;10;255;20m \033[0m"))
+      count++
+
+
+  }
+  return out
+}
 
 func JackIn(in chan bool) error {
   fmt.Printf("\033[10;28H\033[0m")
@@ -322,7 +320,11 @@ func DescribeSpace(vnum int, Spaces []Space) string {
 		if Spaces[i].Vnum == vnum {
 			out += fmt.Sprint(Spaces[i].Zone)
 			out += fmt.Sprint(Spaces[i].Desc)
-		}
+      for m := 0;m < len(Spaces[i].MobilesInRoom);m++ {
+          countString := strconv.Itoa(47+m)
+          out += fmt.Sprint("\033["+countString+";53H"+Spaces[i].MobilesInRoom[m].LongName)
+      }
+    }
 	}
 	return out
 }
@@ -364,9 +366,13 @@ func showDesc(room Space) string {
 	}
 
 	out += fmt.Sprint("\033[38:2:140:40:140m]]\033[0m\033[0;0H")
-	if len(room.ZonePos) >= 2 {
-		out += drawDig(room.ZoneMap, room.ZonePos)
-	}
+//	if len(room.ZonePos) >= 2 {
+//		out += drawDig(room.ZoneMap, room.ZonePos)
+//	}
+  for m := 0;m < len(room.MobilesInRoom);m++ {
+      countString := strconv.Itoa(45-m)
+      out += fmt.Sprint("\033["+countString+";53H\033[38:2:200:10:175m"+room.MobilesInRoom[m].LongName+"\033[0m")
+  }
 	return out
 }
 func showWho(play Player) []string {
