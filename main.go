@@ -1232,7 +1232,6 @@ func main() {
 		//Reset the input to a standardized place
 		out += showDesc(play.CurrentRoom)
 		out += DescribePlayer(play)
-		//chats, out += showChat(play)
 		if play.CoreShow {
 			outln := ""
 			out += showCoreBoard(play)
@@ -1240,38 +1239,20 @@ func main() {
 			out += outln
 		}
 
-		if chatBoxes {
-			//ShowOocresponse, play)
-//			chats, out += showChat(play)
-		}
 		if grape {
 			grapevines = updateChat(play, response)
 		}
-//		}else {
-//			clearCoreBoard(play)
-//		}
 		if ShowSoc {
 			for i := 0;i < len(socOut);i++ {
-	//			if socBroadcasts[i].Payload.Selected {
-//					fmt.Println("\033[38:2:200:0:0mDOOOT\033[0m")
-	//			}
 				out += AssembleBroadside(socOut[i], socOut[i].Payload.Row, socOut[i].Payload.Col)
 			}
-//			for i := 0;i < len(socBroadcasts);i++ {
-	//			if socBroadcasts[i].Payload.Selected {
-		//			out +=
 
-			//	}
-			//}
 			out += play.Profile
 		}
+		out += describeInventory(play)
 		fmt.Print(out)
-		//fmt.Printf(play.Target)
 
 		fmt.Printf("\033[51;0H")
 	}
 		fmt.Sprint(chats)
-//	res, err := collection.InsertOne(context.Background(), bson.M{"Noun":"x"})
-//	res, err = collection.InsertOne(context.Background(), bson.M{"Verb":"+"})
-//	res, err = collection.InsertOne(context.Background(), bson.M{"ProperNoun":"y"})
 }
