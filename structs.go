@@ -130,12 +130,16 @@ type Exit struct {
 	Up int
 	Down int
 }
+type EquipmentItem struct {
+	Item Object
+}
 
 type Player struct {
 	Name string
 	Title string
 	Inventory []InventoryItem
 	Equipment []int
+	Equipped []EquipmentItem
 	CoreBoard string
 	PlainCoreBoard string
 	CurrentRoom Space
