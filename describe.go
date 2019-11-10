@@ -45,28 +45,46 @@ func ShowOoc(response *zmq.Socket, play Player) string {
   out := fmt.Sprint(chat)
 	return out
 }
+func lookupObject(vnum int) Object {
+  var obj Object
+  switch vnum {
+  case 1:
+    obj.Vnum = 1
+    obj.Name = "a red rose"
+    obj.LongName = "A rose floats here, slowly rotating."
+    obj.Zone = "zem"
+    obj.Value = 1
+    obj.Owned = false
+    return obj
+  }
+  return obj
+}
+func makePlate(plate string, play Player) []string {
+  var out []string
+  count := 1
+  for i := 0;i < len(play.Inventory);i++ {
+      obj := lookupObject(play.Inventory[i])
+      countString := strconv.Itoa(count)
+      out = append(out, fmt.Sprint("\033[",countString,";174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m", plate[len(obj.Name):]+obj.Name, "\033[48;2;10;255;20m \033[0m"))
+      count++
+  }
+  for count < 19 {
+    countString := strconv.Itoa(count)
+    out = append(out, fmt.Sprint("\033[",countString,";174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m", plate, "\033[48;2;10;255;20m \033[0m"))
+    count++
+
+  }
+  return out
+}
 func describeInventory(play Player) string {
   cel := ""
-  cel += fmt.Sprint("\033[1;174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[2;174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[3;174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[4;174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[5;174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[6;174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[7;174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[8;174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[9;174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[10;174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[11;174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[12;174H\033[48;2;10;255;20m \033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[13;174H\033[48;2;10;255;20m \033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[14;174H\033[48;2;10;255;20m \033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[15;174H\033[48;2;10;255;20m \033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[16;174H\033[48;2;10;255;20m \033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[17;174H\033[48;2;10;255;20m \033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[18;174H\033[48;2;10;255;20m \033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[19;174H\033[48;2;10;255;20m \033[48;2;10;10;20m                                                            \033[48;2;10;255;20m \033[0m")
-  cel += fmt.Sprint("\033[20;174H\033[48;2;10;255;20m                                                             \033[0m")
+  plateString := "                                                            "
+  plate := makePlate(plateString, play)
+  for i := 0;i < len(plate);i++ {
+    cel += plate[i]
+    fmt.Println(plate[i])
+  }
+  cel += fmt.Sprint("\033[20;174H\033[48;2;10;255;20m", plateString, " \033[0m")
   return cel
 }
 

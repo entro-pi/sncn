@@ -1126,6 +1126,11 @@ func main() {
 			broad := AssembleBroadside(bs, row, col)
 			fmt.Printf(broad)
 		}
+
+		if input == "gen rose" {
+			play.Inventory = append(play.Inventory, 1)
+			fmt.Println(play.Inventory)
+		}
 		if strings.Contains(input, "pewpew") {
 			if len(strings.Split(input, "pewpew ")) > 1 {
 				numString := strings.Split(input, "pewpew ")[1]
