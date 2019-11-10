@@ -72,7 +72,7 @@ func InitPlayer(name string, pass string) Player {
   blast.Name = "blast"
   play.Classes[0].Spells = append(play.Classes[0].Spells, blast)
 
-	play.Inventory = inv
+	play.Inventory = make([]InventoryItem, 20, 20)
 	play.Equipment = equ
   play.Rezz = 17
   play.MaxRezz = play.Rezz

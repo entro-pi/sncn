@@ -56,7 +56,10 @@ type SignIn struct {
 	Ref string
 	Payload SignInPayload
 }
-
+type InventoryItem struct {
+	Item Object
+	Number int
+}
 type SignInPayload struct {
 	Name string
 	Game string
@@ -130,7 +133,7 @@ type Exit struct {
 type Player struct {
 	Name string
 	Title string
-	Inventory []int
+	Inventory []InventoryItem
 	Equipment []int
 	CoreBoard string
 	PlainCoreBoard string

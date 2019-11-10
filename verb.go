@@ -29,6 +29,26 @@ func updateChat(play Player, response *zmq.Socket) int {
 	if len(value) > 1 {
 		count++
 	}
+	_, err = response.Send(play.Name+"++SAVE++", 0)
+	if err != nil {
+		panic(err)
+	}
+	value, err = response.Recv(0)
+	if err != nil {
+		panic(err)
+	}
+	if value == "SAVING" {
+		playBytes, err := bson.Marshal(play)
+		if err != nil {
+			panic(err)
+		}
+		_, err = response.SendBytes(playBytes, 0)
+		if err != nil {
+			panic(err)
+		}
+		response.Recv(0)
+	}
+
 	fmt.Printf("\033[51;0H")
 	return count
 }

@@ -1128,8 +1128,10 @@ func main() {
 		}
 
 		if input == "gen rose" {
-			play.Inventory = append(play.Inventory, 1)
-			fmt.Println(play.Inventory)
+			obj := lookupObject(1)
+			play.Inventory[0].Item = obj
+			play.Inventory[0].Number++
+//			fmt.Println(play.Inventory)
 		}
 		if strings.Contains(input, "pewpew") {
 			if len(strings.Split(input, "pewpew ")) > 1 {
