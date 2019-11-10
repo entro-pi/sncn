@@ -237,7 +237,7 @@ func main() {
 	chats, outln := showChat(play)
 	out += outln
 	updateChat(play, response)
-	out += ShowOoc(response, play)
+	//out += //ShowOocresponse, play)
 	var ShowSoc bool
 
 	var socBroadcasts []Broadcast
@@ -764,23 +764,6 @@ func main() {
 			cmd := exec.Command("xdg-open", url)
 			cmd.Run()
 		}
-		if strings.HasPrefix(input, "ooc") {
-			input = strings.Replace(input, "ooc ", "+=+", 1)
-			input = play.Name+input
-			//createChat(input[3:], play)
-			//todo
-			response.Recv(0)
-			_, err := response.Send(input, 0)
-			if err != nil {
-				panic(err)
-			}
-			chat, err := response.Recv(0)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Printf(chat)
-			sounds[9] <- true
-		}
 		if input == "blit" {
 			clearDirty()
 		}
@@ -1155,7 +1138,40 @@ func main() {
 		column := 0
 		row := 0
 		count := 0
-		for i := 0;i < len(socBroadcasts);i++ {
+		var socOut []Broadcast
+		inp := 0
+		currentInput := "default0"
+		if strings.HasPrefix(input, "page ") {
+			inpString := strings.Split(input, "page ")[1]
+			inp, err = strconv.Atoi(inpString)
+			if err != nil {
+				fmt.Print("That's not a number.")
+				continue
+			}
+			currentInput = input
+		}
+		if currentInput == "default0" || strings.HasPrefix(currentInput, "page ") {
+			if currentInput != "default0" {
+				inpString := strings.Split(input, "page ")[1]
+				inp, err = strconv.Atoi(inpString)
+				if err != nil {
+					fmt.Print("That's not a number.")
+					continue
+				}
+			}else {
+				inp = 0
+			}
+
+			startValue := inp*20
+			endValue := startValue + 20
+			if endValue > len(socBroadcasts) {
+				endValue = len(socBroadcasts)
+			}
+			socOut = socBroadcasts[startValue:endValue]
+
+		}
+
+		for i := 0;i < len(socOut);i++ {
 			if count < 5 {
 				column = 0
 				row = count
@@ -1167,39 +1183,43 @@ func main() {
 				rowPos := count - 10
 				row = rowPos
 				column = 2
-			}else if count < 20 && count > 14 {
+			}else if count <= 20 && count > 14 {
 				rowPos := count - 15
 				row = rowPos
 				column = 3
 			}else {
 				count = 0
-				row = count
+				row = 0
+				column = 0
+
 			}
 			switch column {
 			case 0:
-				socBroadcasts[i].Payload.Col = 53
+				socOut[i].Payload.Col = 53
 			case 1:
-				socBroadcasts[i].Payload.Col = 83
+				socOut[i].Payload.Col = 83
 			case 2:
-				socBroadcasts[i].Payload.Col = 113
+				socOut[i].Payload.Col = 113
 			case 3:
-				socBroadcasts[i].Payload.Col = 143
+				socOut[i].Payload.Col = 143
 			case 4:
-				socBroadcasts[i].Payload.Col = 173
+				socOut[i].Payload.Col = 173
 			default:
 
 			}
 			switch row {
 			case 0:
-				socBroadcasts[i].Payload.Row = 0
+				socOut[i].Payload.Row = 0
 			case 1:
-				socBroadcasts[i].Payload.Row = 4
+				socOut[i].Payload.Row = 4
 			case 2:
-				socBroadcasts[i].Payload.Row = 8
+				socOut[i].Payload.Row = 8
 			case 3:
-				socBroadcasts[i].Payload.Row = 12
+				socOut[i].Payload.Row = 12
 			case 4:
-				socBroadcasts[i].Payload.Row = 16
+				socOut[i].Payload.Row = 16
+			case 5:
+				socOut[i].Payload.Row = 20
 			default:
 			}
 			count++
@@ -1217,7 +1237,7 @@ func main() {
 		}
 
 		if chatBoxes {
-			ShowOoc(response, play)
+			//ShowOocresponse, play)
 //			chats, out += showChat(play)
 		}
 		if grape {
@@ -1227,11 +1247,11 @@ func main() {
 //			clearCoreBoard(play)
 //		}
 		if ShowSoc {
-			for i := 0;i < len(socBroadcasts);i++ {
+			for i := 0;i < len(socOut);i++ {
 	//			if socBroadcasts[i].Payload.Selected {
 //					fmt.Println("\033[38:2:200:0:0mDOOOT\033[0m")
 	//			}
-				out += AssembleBroadside(socBroadcasts[i], socBroadcasts[i].Payload.Row, socBroadcasts[i].Payload.Col)
+				out += AssembleBroadside(socOut[i], socOut[i].Payload.Row, socOut[i].Payload.Col)
 			}
 //			for i := 0;i < len(socBroadcasts);i++ {
 	//			if socBroadcasts[i].Payload.Selected {
