@@ -1126,13 +1126,54 @@ func main() {
 			broad := AssembleBroadside(bs, row, col)
 			fmt.Printf(broad)
 		}
+		if strings.HasPrefix(input, "eat ") {
+			toEat := strings.Split(input, " ")[1]
+			for i := 0;i < len(play.Inventory);i++ {
+				if strings.Contains(play.Inventory[i].Item.Name, toEat) {
+					play.Inventory[i].Number--
+					if play.Inventory[i].Number <= 0 {
+						play.Inventory[i].Number = 0
+						play.Inventory[i].Item = lookupObject(0)
+					}
+				}
+			}
+		}
+		if strings.HasPrefix(input, "generate ") {
+			vnum, err := strconv.Atoi(strings.Split(input, " ")[1])
+			if err != nil {
+				fmt.Println("I don't know what that is!")
+				vnum = 2
+			}
+			obj := lookupObject(vnum)
+			//fmt.Println(obj)
+			inc := false
+			if inc == false {
+				for i := 0;i < len(play.Inventory);i++ {
+					if play.Inventory[i].Item.Name == obj.Name {
+							play.Inventory[i].Number++
+							inc = true
+					}
+					if inc {
+						break
+					}
+				}
 
-		if input == "gen rose" {
-			obj := lookupObject(1)
-			play.Inventory[0].Item = obj
-			play.Inventory[0].Number++
+			}
+			if inc == false {
+				for i := 0;i < len(play.Inventory);i++ {
+					if play.Inventory[i].Number == 0 {
+						play.Inventory[i].Item = obj
+						play.Inventory[i].Number++
+						inc = true
+						break
+					}
+				}
+			}
+			inc = false
+			obj = lookupObject(0)
 //			fmt.Println(play.Inventory)
 		}
+
 		if strings.Contains(input, "pewpew") {
 			if len(strings.Split(input, "pewpew ")) > 1 {
 				numString := strings.Split(input, "pewpew ")[1]

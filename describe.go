@@ -56,6 +56,20 @@ func lookupObject(vnum int) Object {
     obj.Value = 1
     obj.Owned = false
     return obj
+  case 2:
+    obj.Vnum = 2
+    obj.Name = "a nyancat"
+    obj.LongName = "A poptart kitten happily miaos in a circle."
+    obj.Zone = "zem"
+    obj.Value = 100
+    obj.Owned = false
+  default:
+    obj.Vnum = 0
+    obj.Name = "nothing"
+    obj.LongName = "The lack of things is...lacking"
+    obj.Zone = "zem"
+    obj.Value = 0
+    obj.Owned = false
   }
   return obj
 }
@@ -65,7 +79,7 @@ func makePlate(plate string, play Player) []string {
   for i := 0;i < len(play.Inventory);i++ {
       countString := strconv.Itoa(count)
       if play.Inventory[i].Number != 0 {
-        out = append(out, fmt.Sprint("\033[",countString,";174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m  x", strconv.Itoa(play.Inventory[i].Number)+plate[len(play.Inventory[0].Item.Name)+3:]+play.Inventory[0].Item.Name, "\033[48;2;10;255;20m \033[0m"))
+        out = append(out, fmt.Sprint("\033[",countString,";174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m  x", strconv.Itoa(play.Inventory[i].Number)+plate[len(play.Inventory[i].Item.Name)+3:]+play.Inventory[i].Item.Name, "\033[48;2;10;255;20m \033[0m"))
         count++
       }else {
         out = append(out, fmt.Sprint("\033[",countString,";174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m", plate, "\033[48;2;10;255;20m \033[0m"))
