@@ -31,6 +31,8 @@ const (
 
 
 func main() {
+	inp := 0
+	currentInput := "default0"
 	numSoundsnames, err := os.Open("dat/sounds")
 	if err != nil {
 		panic(err)
@@ -1139,8 +1141,7 @@ func main() {
 		row := 0
 		count := 0
 		var socOut []Broadcast
-		inp := 0
-		currentInput := "default0"
+
 		if strings.HasPrefix(input, "page ") {
 			inpString := strings.Split(input, "page ")[1]
 			inp, err = strconv.Atoi(inpString)
@@ -1152,7 +1153,7 @@ func main() {
 		}
 		if currentInput == "default0" || strings.HasPrefix(currentInput, "page ") {
 			if currentInput != "default0" {
-				inpString := strings.Split(input, "page ")[1]
+				inpString := strings.Split(currentInput, "page ")[1]
 				inp, err = strconv.Atoi(inpString)
 				if err != nil {
 					fmt.Print("That's not a number.")
@@ -1161,15 +1162,18 @@ func main() {
 			}else {
 				inp = 0
 			}
-
-			startValue := inp*20
-			endValue := startValue + 20
-			if endValue > len(socBroadcasts) {
-				endValue = len(socBroadcasts)
-			}
-			socOut = socBroadcasts[startValue:endValue]
-
 		}
+		startValue := inp*20
+		endValue := startValue + 20
+		if startValue >= len(socBroadcasts) {
+			startValue = len(socBroadcasts) - 20
+		}
+		if endValue > len(socBroadcasts) {
+			endValue = len(socBroadcasts)
+		}
+		socOut = socBroadcasts[startValue:endValue]
+
+
 
 		for i := 0;i < len(socOut);i++ {
 			if count < 5 {
