@@ -7,10 +7,10 @@ import (
   "gocv.io/x/gocv"
 )
 
-func importPhoto(play Player) Player {
+func loadPhoto(play Player) Player {
   scanner := bufio.NewScanner(os.Stdin)
-  fmt.Println("Enter a full pathname in the type, \"/home/weasel/photo.png\"")
-  fmt.Println("320x240 resolution works best")
+  fmt.Print("\033[21;85HEnter a full pathname in the type, \"/home/weasel/photo.png\"")
+  fmt.Print("\033[22;85H320x240 resolution works best. \"done\" on a newline to choose\033[23;85H")
     for scanner.Scan() {
       if scanner.Text() == "done" {
         return play
@@ -32,11 +32,11 @@ func importPhoto(play Player) Player {
                                 gS := p[1].GetUCharAt((row*10)-1, (column*10)-1)
                                 bS := p[0].GetUCharAt((row*10)-1, (column*10)-1)
 
-              position := fmt.Sprint("\033[",row+2,";",column+2+75,"H")
+              position := fmt.Sprint("\033[",row+20,";",column+75,"H")
                                 word := fmt.Sprint(position,"\033[48;2;", rS, ";", gS, ";", bS, "m", "  ", "\033[0m")
                                 wordSecondary = append(wordSecondary, word)
 
-              position = fmt.Sprint("\033[",row+2,";",column+2,"H")
+              position = fmt.Sprint("\033[",row+20,";",column+51,"H")
                                 word = fmt.Sprint(position,"\033[48;2;", rS, ";", gS, ";", bS, "m", "  ", "\033[0m")
                                 wordFinal = append(wordFinal, word)
                         }

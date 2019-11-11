@@ -942,37 +942,8 @@ func main() {
 		if input == "score" {
 			out += DescribePlayer(play)
 		}
-		if input == "load profile picture" {
-			play = importPhoto(play)
-		}
-		if input == "capture profile picture" {
-			in := make(chan bool)
-			out := make(chan string)
-			frame := ""
-			go clientLoops(in, out)
-			newScan := bufio.NewScanner(os.Stdin)
-			PHOTO:
-			for newScan.Scan() {
-				in <- true
-				fmt.Printf("Press Enter to freeze frame\n@ on a newline to use.\nout on a newline to exit without saving.")
-				select {
-				case frame = <- out:
-					fmt.Printf(frame)
-					if newScan.Text() == "out" {
-						fmt.Print("Quitting without saving!")
-						in <- false
-						break PHOTO
-					}
-					if newScan.Text() == "@" {
-						play.Profile = frame
-						in <- false
-						break PHOTO
-					}
-					//nothing
-				}
-
-
-			}
+		if input == "load photo" {
+			play = loadPhoto(play)
 		}
 		if ShowSoc {
 			response.Recv(0)
@@ -1067,16 +1038,23 @@ func main() {
 			var bs Broadcast
 			count := 0
 			header := strings.Split(input, "gc: ")[1]
-			fmt.Print("\033[33;53HComposing message, "+header+"\033[35;53H")
-			fmt.Print("\033[34;53H@ on a newline to finish\033[37;53H")
+			fmt.Print("\033[21;85HComposing message, "+header)
+			fmt.Print("\033[22;85H@ on a newline to finish")
+			fmt.Print("\033[23;85H# on a newline to load a picture\033[24;85H")
 
 			for scanner.Scan() {
 				count++
-				lineCount := strconv.Itoa(count+36)
-				fmt.Print("\033[34;53H@ on a newline to finish\033["+lineCount+";53H")
+				lineCount := strconv.Itoa(count+24)
+				fmt.Print("\033[22;85H@ on a newline to finish\033["+lineCount+";85H")
 				if scanner.Text() == "@" {
 					break
-				}else {
+				}else if scanner.Text() == "#" {
+					play = loadPhoto(play)
+					bs.Payload.BigMessage += play.Profile
+
+					}else {
+
+						bs.Payload.BigMessage += "\033["+lineCount+";85H"
 					bs.Payload.BigMessage += scanner.Text() + "\n"
 				}
 			}
@@ -1306,7 +1284,7 @@ func main() {
 				out += AssembleBroadside(socOut[i], socOut[i].Payload.Row, socOut[i].Payload.Col)
 			}
 
-			out += play.Profile
+		//	out += play.Profile
 		}
 		out += describeInventory(play)
 		out += describeEquipment(play)
