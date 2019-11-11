@@ -1057,19 +1057,22 @@ func main() {
 				if strings.Contains(play.Inventory[i].Item.Name, fuzzyItem) {
 					slot := play.Inventory[i].Item.Slot
 					fmt.Print(slot, " Matches.")
-					if play.Equipped[slot].Item.Name != "nothing" {
+					if play.Equipped[slot].Item.Vnum == 0 {
 						if play.Inventory[i].Number > 1 {
 							play.Inventory[i].Number--
 							play.Equipped[slot].Item = play.Inventory[i].Item
-						}else {
-							var blank Object
-							play.Equipped[slot].Item = play.Inventory[i].Item
-							play.Inventory[i].Item = blank
-							play.Inventory[i].Number--
-						}
+						}else if play.Inventory[i].Item.Slot == slot {
+							if play.Equipped[i].Item.Vnum == 0 {
+								var blank Object
+								play.Equipped[slot].Item = play.Inventory[i].Item
+								play.Inventory[i].Item = blank
+								play.Inventory[i].Number--
+							}
+
 					}else {
 						fmt.Print("You're already wearing something in that slot!(",slot,")")
 					}
+				}
 				}
 			}
 		}
@@ -1087,12 +1090,14 @@ func main() {
 					slot := i
 					invSlot := 0
 					INV:
-					for c := 0;c < len(play.Inventory);c++ {
-						if play.Inventory[c].Item.Name == "nothing" {
+					for c := len(play.Inventory)-1;c >= 0;c-- {
+						if play.Inventory[c].Item.Vnum == play.Equipped[i].Item.Vnum {
 							invSlot = c
 							break INV
+						}else if play.Inventory[c].Item.Vnum == 0 {
+							invSlot = c
 						}
-						if c == len(play.Inventory)-1 && play.Inventory[c].Item.Name != "" {
+						if c == len(play.Inventory)-1 && play.Inventory[c].Item.Vnum != 0 {
 							fmt.Print("You don't have enough space in your inventory to remove that!")
 							break REM
 						}
