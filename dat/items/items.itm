@@ -1,0 +1,42 @@
+VNUM
+0
+NAME
+nothing
+LONGNAME
+nothing
+ZONE
+zem
+VALUE
+0
+OWNED
+false
+SLOT
+0
+VNUM
+1
+NAME
+a red rose
+LONGNAME
+A rose floats here, slowly rotating.
+ZONE
+zem
+VALUE
+1
+OWNED
+false
+SLOT
+2
+VNUM
+2
+NAME
+a nyancat
+LONGNAME
+A poptart kitten happily nyans in a circle.
+ZONE
+zem
+VALUE
+100
+OWNED
+false
+SLOT
+2

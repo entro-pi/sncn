@@ -71,6 +71,7 @@ func main() {
 	var response *zmq.Socket
 	chatBoxes := true
 	grape := true
+	var allItems []Object
 	//Make this relate to character level
 	var dug []Space
 	play.CoreShow = false
@@ -214,6 +215,9 @@ func main() {
 		}
 
 	}
+	fmt.Println("Loading items...")
+	allItems = readItemsFromFile("dat/items/items.itm")
+	//fmt.Println(allItems)
 	for i := 0;i < len(play.Channels);i++ {
 		response.Recv(0)
 		fmt.Println("Subscribing to "+play.Channels[i])
@@ -232,7 +236,7 @@ func main() {
 		clearDirty()
 		updateWho(play, true)
 	}
-
+	fmt.Sprint(mobiles)
 	photos := loadImages()
 	//Show the screen first off
 	play.CurrentRoom = populated[1]
@@ -247,7 +251,7 @@ func main() {
 	var socBroadcasts []Broadcast
 
 	//Game loop
-	fmt.Print("#of mobiles:"+strconv.Itoa(len(mobiles)))
+	fmt.Print("\033[38:2:15:185:0mPASS all checks: Enter to login\033[0m")
 	firstDig := false
 	ShowSoc = true
 	scanner := bufio.NewScanner(os.Stdin)
@@ -1192,18 +1196,18 @@ func main() {
 					play.Inventory[i].Number--
 					if play.Inventory[i].Number <= 0 {
 						play.Inventory[i].Number = 0
-						play.Inventory[i].Item = lookupObject(0)
+						play.Inventory[i].Item = allItems[0]
 					}
 				}
 			}
 		}
 		if strings.HasPrefix(input, "generate ") {
 			vnum, err := strconv.Atoi(strings.Split(input, " ")[1])
-			if err != nil {
-				fmt.Print("I don't know what that is!")
+			if err != nil || vnum >= len(allItems) {
+				fmt.Print("I don't know what that is!\nHave a nyancat.")
 				vnum = 2
 			}
-			obj := lookupObject(vnum)
+			obj := allItems[vnum]
 			//fmt.Println(obj)
 			inc := false
 			if inc == false {
@@ -1229,7 +1233,7 @@ func main() {
 				}
 			}
 			inc = false
-			obj = lookupObject(0)
+			obj = allItems[0]
 //			fmt.Println(play.Inventory)
 		}
 
