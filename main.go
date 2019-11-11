@@ -31,6 +31,7 @@ const (
 
 
 func main() {
+
 	inp := 0
 	currentInput := "default0"
 	numSoundsnames, err := os.Open("dat/sounds")
@@ -92,14 +93,14 @@ func main() {
 			play = InitPlayer("FSM", "noodles")
 			addPfile(play)
 			createMobiles("Noodles")
-			fmt.Println("\033[38:2:0:250:0mAll tests passed and world has been initialzed\n\033[0mYou may now start with --login.")
+			fmt.Print("\033[38:2:0:250:0mAll tests passed and world has been initialzed\n\033[0mYou may now start with --login.")
 			os.Exit(1)
 		}else if os.Args[1] == "--guest" {
 			//Continue on
 			populated = PopulateAreas()
 			play = InitPlayer("Wallace", "gromit")
 			savePfile(play)
-			fmt.Println("In client loop")
+			fmt.Print("In client loop")
 			fmt.Printf("\033[51;0H")
 		}else if os.Args[1] == "--login" {
 			//Continue on
@@ -110,7 +111,7 @@ func main() {
 			//just hang on to the password for now
 			fmt.Sprint(pword)
 			savePfile(play)
-			fmt.Println("In client loop")
+			fmt.Print("In client loop")
 			input := "go to 1"
 			//this is pretty incomprehensible
 			//TODO
@@ -118,7 +119,7 @@ func main() {
 			stripped := strings.TrimSpace(splitCommand[1])
 			inp, err := strconv.Atoi(stripped)
 			if err != nil {
-				fmt.Println("Error converting a stripped string")
+				fmt.Print("Error converting a stripped string")
 			}
 			for i := 0;i < len(populated);i++ {
 				if inp == populated[i].Vnum {
@@ -147,7 +148,7 @@ func main() {
 			if err != nil || play.PlayerHash == "2" {
 				panic(err)
 			}
-			fmt.Println(play.PlayerHash)
+			fmt.Print(play.PlayerHash)
 			fmt.Printf("\033[51;0H")
 		}else if os.Args[1] == "--builder" {
 			//Continue on
@@ -155,7 +156,7 @@ func main() {
 			play = InitPlayer("FlyingSpaghettiMonster", "monster")
 			savePfile(play)
 
-			fmt.Println("Builder log-in")
+			fmt.Print("Builder log-in")
 
 			fmt.Printf("\033[51;0H")
 		}	else if strings.Contains(os.Args[1], "--connect-core") {
@@ -166,7 +167,7 @@ func main() {
 				mobiles = PopulateAreaMobiles()
 				savePfile(play)
 
-				fmt.Println("Core login procedure started")
+				fmt.Print("Core login procedure started")
 				response, _ = zmq.NewSocket(zmq.REQ)
 
 				defer response.Close()
@@ -225,14 +226,14 @@ func main() {
 			panic(err)
 		}
 
-		fmt.Println("ok")
+		fmt.Print("ok")
 		connected <- false
 		sounds[9] <- true
 		clearDirty()
 		updateWho(play, true)
 	}
 
-
+	photos := loadImages()
 	//Show the screen first off
 	play.CurrentRoom = populated[1]
 	out += showDesc(play.CurrentRoom)
@@ -242,11 +243,11 @@ func main() {
 	updateChat(play, response)
 	//out += //ShowOocresponse, play)
 	var ShowSoc bool
-
+	firstRun := true
 	var socBroadcasts []Broadcast
 
 	//Game loop
-	fmt.Println("#of mobiles:"+strconv.Itoa(len(mobiles)))
+	fmt.Print("#of mobiles:"+strconv.Itoa(len(mobiles)))
 	firstDig := false
 	ShowSoc = true
 	scanner := bufio.NewScanner(os.Stdin)
@@ -262,7 +263,8 @@ func main() {
 		}
 		//clearCmd()
 		savePfile(play)
-		input := scanner.Text()
+		input := ""
+		input = scanner.Text()
 		//Save pfile first
 		save := false
 		if strings.HasPrefix(input, "dig") {
@@ -946,14 +948,15 @@ func main() {
 		if input == "load photo" {
 			play = loadPhoto(play)
 		}
-		if ShowSoc {
+		if firstRun {
+			firstRun = false
 			response.Recv(0)
 			//clear the selection
 			for i := 0;i < len(socBroadcasts);i++ {
 				socBroadcasts[i].Payload.Selected = false
 			}
 
-			fmt.Println("Sending --+--")
+			fmt.Print("Sending --+--")
 			_, err := response.Send(play.Session+"--+--", 0)
 			isOK, err := response.Recv(0)
 			if err != nil {
@@ -970,7 +973,7 @@ func main() {
 					}
 				//		out += string(result)
 						grapevines = updateChat(play, response)
-						fmt.Println("Sending ok")
+						fmt.Print("Sending ok")
 						_, err = response.Send("--SELECT:0", 0)
 						if err != nil {
 							panic(err)
@@ -994,7 +997,7 @@ func main() {
 					socBroadcasts[i].Payload.Selected = false
 				}
 
-				fmt.Println("Sending --+--")
+				fmt.Print("Sending --+--")
 				_, err := response.Send(play.Session+"--+--", 0)
 				isOK, err := response.Recv(0)
 				if err != nil {
@@ -1010,8 +1013,9 @@ func main() {
 							panic(err)
 						}
 					//		out += string(result)
-							grapevines = updateChat(play, response)
-							fmt.Println("Sending ok")
+							response.Recv(0)
+							//grapevines = updateChat(play, response)
+							fmt.Print("Sending ok")
 							_, err = response.Send("--SELECT:"+strings.Split(input, " ")[1], 0)
 							if err != nil {
 								panic(err)
@@ -1038,7 +1042,7 @@ func main() {
 			fuzzyItem := ""
 			if len(strings.Split(input, "wear ")) > 1 {
 				fuzzyItem = strings.Split(input, "wear ")[1]
-				fmt.Println("WEARING ",fuzzyItem)
+				fmt.Print("WEARING ",fuzzyItem)
 			}else {
 				input = ""
 				continue
@@ -1048,10 +1052,15 @@ func main() {
 					slot := play.Inventory[i].Item.Slot
 					fmt.Print(slot, " Matches.")
 					if play.Equipped[slot].Item.Name != "nothing" {
-						var blank Object
-						play.Equipped[slot].Item = play.Inventory[i].Item
-						play.Inventory[i].Item = blank
-						play.Inventory[i].Number--
+						if play.Inventory[i].Number > 1 {
+							play.Inventory[i].Number--
+							play.Equipped[slot].Item = play.Inventory[i].Item
+						}else {
+							var blank Object
+							play.Equipped[slot].Item = play.Inventory[i].Item
+							play.Inventory[i].Item = blank
+							play.Inventory[i].Number--
+						}
 					}else {
 						fmt.Print("You're already wearing something in that slot!(",slot,")")
 					}
@@ -1092,27 +1101,29 @@ func main() {
 				}
 			}
 		}
+
 		if strings.HasPrefix(input, "gc: "){
 			var bs Broadcast
 			count := 0
 			header := strings.Split(input, "gc: ")[1]
-			fmt.Print("\033[21;85HComposing message, "+header)
-			fmt.Print("\033[22;85H@ on a newline to finish")
-			fmt.Print("\033[23;85H# on a newline to load a picture\033[24;85H")
+			fmt.Print("\033[21;90HComposing message, "+header)
+			fmt.Print("\033[22;90H@ on a newline to finish")
+			fmt.Print("\033[23;90H# on a newline to load a picture\033[24;90H")
 
 			for scanner.Scan() {
 				count++
 				lineCount := strconv.Itoa(count+24)
-				fmt.Print("\033[22;85H@ on a newline to finish\033["+lineCount+";85H")
+				fmt.Print("\033[22;90H@ on a newline to finish\033["+lineCount+";90H")
 				if scanner.Text() == "@" {
 					break
 				}else if scanner.Text() == "#" {
-					play = loadPhoto(play)
-					bs.Payload.BigMessage += play.Profile
+					chosen := chooser(photos)
 
+					bs.Payload.BigMessage += chosen
+					fmt.Print(bs.Payload.BigMessage+"Graphic applied.")
 					}else {
 
-						bs.Payload.BigMessage += "\033["+lineCount+";85H"
+						bs.Payload.BigMessage += "\033["+lineCount+";90H"
 					bs.Payload.BigMessage += scanner.Text() + "\n"
 				}
 			}
@@ -1149,7 +1160,7 @@ func main() {
 		if strings.HasPrefix(input, "bs=") {
 			numBS, err := strconv.Atoi(strings.Split(input, "=")[1])
 			if err != nil {
-				fmt.Println("Error, was that a number?")
+				fmt.Print("Error, was that a number?")
 			}
 			for i := 0;i < len(socBroadcasts);i++ {
 				socBroadcasts[i].Payload.Selected = false
@@ -1189,7 +1200,7 @@ func main() {
 		if strings.HasPrefix(input, "generate ") {
 			vnum, err := strconv.Atoi(strings.Split(input, " ")[1])
 			if err != nil {
-				fmt.Println("I don't know what that is!")
+				fmt.Print("I don't know what that is!")
 				vnum = 2
 			}
 			obj := lookupObject(vnum)
@@ -1228,7 +1239,7 @@ func main() {
 				num, err := strconv.Atoi(numString)
 				if err != nil {
 					fmt.Println("Valid pews are 0-30")
-					fmt.Println("Interesting sounds, 9, 17, 29")
+					fmt.Print("Interesting sounds, 9, 17, 29")
 				}
 				sounds[num] <- true
 			}
