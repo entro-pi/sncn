@@ -342,7 +342,7 @@ func showPages(socBroadcasts []Broadcast, page int) string {
   for i := 1;i <= numPages;i++ {
     position := fmt.Sprint(strconv.Itoa(col+2*i))
     if i == curPage {
-      out += fmt.Sprint("\033[48;2;100;200;10m\033[38;2;200;10;200m\033[21;"+position+"H"+strconv.Itoa(i)+"\033[0m")
+      out += fmt.Sprint("\033[48;2;200;200;10m\033[38;2;10;200;200m\033[21;"+position+"H"+strconv.Itoa(i)+"\033[0m")
       }else {
         out += fmt.Sprint("\033[48;2;10;200;10m\033[38;2;150;10;100m\033[21;"+position+"H"+strconv.Itoa(i)+"\033[0m")
       }

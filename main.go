@@ -1280,9 +1280,15 @@ func main() {
 					continue
 				}
 			}else {
-				inp = 0
+				inp = 1
 			}
 		}
+
+		if len(socBroadcasts) <= 0 {
+			var blank Broadcast
+			socBroadcasts = append(socBroadcasts, blank)
+		}
+
 		startValue := inp*20
 		endValue := startValue + 20
 		if startValue >= len(socBroadcasts) {
@@ -1290,6 +1296,12 @@ func main() {
 		}
 		if endValue > len(socBroadcasts) {
 			endValue = len(socBroadcasts)
+		}
+		if startValue < 0 {
+			startValue = 0
+		}
+		if endValue <= 0 {
+			endValue = 1
 		}
 		socOut = socBroadcasts[startValue:endValue]
 
