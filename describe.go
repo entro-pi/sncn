@@ -87,12 +87,16 @@ func describeEquipment(play Player) string {
 func makeEQPlate(plate string, play Player) []string {
   var out []string
   count := 1
-  for i := 0;i < len(play.Inventory);i++ {
+  for i := 0;i < len(play.Equipped);i++ {
       countString := strconv.Itoa(count)
 
     //    out = append(out, fmt.Sprint("\033[",countString,";1H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m  x", plate, "\033[48;2;10;255;20m \033[0m"))
+      if play.Equipped[i].Item.LongName != "" {
+        out = append(out, fmt.Sprint("\033[",countString,";1H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m",play.Equipped[i].Item.LongName, plate[len(play.Equipped[i].Item.LongName):], "\033[48;2;10;255;20m \033[0m"))
+      }else {
+        out = append(out, fmt.Sprint("\033[",countString,";1H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m", plate, "\033[48;2;10;255;20m \033[0m"))
+      }
 
-      out = append(out, fmt.Sprint("\033[",countString,";1H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m", plate, "\033[48;2;10;255;20m \033[0m"))
       count++
 
 

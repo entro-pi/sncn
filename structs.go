@@ -71,6 +71,7 @@ type Object struct {
 	Zone string
 	Owner Player
 	Value int
+	Slot int
 	X int
 	Y int
 	Owned bool

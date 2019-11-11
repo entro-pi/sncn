@@ -11,6 +11,7 @@ func lookupObject(vnum int) Object {
     obj.Zone = "zem"
     obj.Value = 1
     obj.Owned = false
+    obj.Slot = 2
     return obj
   case 2:
     obj.Vnum = 2
@@ -19,6 +20,7 @@ func lookupObject(vnum int) Object {
     obj.Zone = "zem"
     obj.Value = 100
     obj.Owned = false
+    obj.Slot = 1
   default:
     obj.Vnum = 0
     obj.Name = "nothing"
@@ -26,6 +28,7 @@ func lookupObject(vnum int) Object {
     obj.Zone = "zem"
     obj.Value = 0
     obj.Owned = false
+    obj.Slot = 0
   }
   return obj
 }

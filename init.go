@@ -74,6 +74,7 @@ func InitPlayer(name string, pass string) Player {
 
 	play.Inventory = make([]InventoryItem, 20, 20)
 	play.Equipment = equ
+  play.Equipped = make([]EquipmentItem, 20, 20)
   play.Rezz = 17
   play.MaxRezz = play.Rezz
   play.Tech = 17

@@ -172,6 +172,7 @@ func main() {
 				defer response.Close()
 				//Preferred way to connec
 				hostname = "tcp://snowcrashnetwork.vineyard.haus:7777"
+
 				err := response.Connect(hostname)
 				fmt.Printf("\033[51;0H")
 				user = strings.TrimSpace(user)
@@ -1033,7 +1034,64 @@ func main() {
 //			fmt.Println(string(socBytes))
 		}
 
+		if strings.HasPrefix(input, "wear ") {
+			fuzzyItem := ""
+			if len(strings.Split(input, "wear ")) > 1 {
+				fuzzyItem = strings.Split(input, "wear ")[1]
+				fmt.Println("WEARING ",fuzzyItem)
+			}else {
+				input = ""
+				continue
+			}
+			for i := 0;i < len(play.Inventory);i++ {
+				if strings.Contains(play.Inventory[i].Item.Name, fuzzyItem) {
+					slot := play.Inventory[i].Item.Slot
+					fmt.Print(slot, " Matches.")
+					if play.Equipped[slot].Item.Name != "nothing" {
+						var blank Object
+						play.Equipped[slot].Item = play.Inventory[i].Item
+						play.Inventory[i].Item = blank
+						play.Inventory[i].Number--
+					}else {
+						fmt.Print("You're already wearing something in that slot!(",slot,")")
+					}
+				}
+			}
+		}
+		if strings.HasPrefix(input, "remove ") {
+			fuzzyItem := ""
+			if len(strings.Split(input, "remove ")) > 1 {
+				fuzzyItem = strings.Split(input, "remove ")[1]
+			}else {
+				input = ""
+				continue
+			}
+			REM:
+			for i := 0;i < len(play.Equipped);i++ {
+				if strings.Contains(play.Equipped[i].Item.LongName, fuzzyItem) {
+					slot := i
+					invSlot := 0
+					INV:
+					for c := 0;c < len(play.Inventory);c++ {
+						if play.Inventory[c].Item.Name == "nothing" {
+							invSlot = c
+							break INV
+						}
+						if c == len(play.Inventory)-1 && play.Inventory[c].Item.Name != "" {
+							fmt.Print("You don't have enough space in your inventory to remove that!")
+							break REM
+						}
+					}
+					play.Inventory[invSlot].Item = play.Equipped[slot].Item
+					play.Inventory[invSlot].Number++
+					var blank Object
+					play.Equipped[slot].Item = blank
+					fmt.Print("You remove ",play.Inventory[invSlot].Item.Name)
+					break REM
 
+				}
+			}
+		}
 		if strings.HasPrefix(input, "gc: "){
 			var bs Broadcast
 			count := 0
@@ -1081,6 +1139,7 @@ func main() {
 				}
 
 			}
+			clearDirty()
 		}
 		if input == "show soc" {
 			ShowSoc = true
