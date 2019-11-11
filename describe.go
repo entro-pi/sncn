@@ -15,18 +15,11 @@ import (
   "go.mongodb.org/mongo-driver/mongo/options"
 )
 func clearBigBroad() {
-  fmt.Print("\033[26;53H                                                                                    ")
-  fmt.Print("\033[27;53H                                                                                    ")
-  fmt.Print("\033[28;53H                                                                                    ")
-  fmt.Print("\033[29;53H                                                                                    ")
-  fmt.Print("\033[30;53H                                                                                    ")
-  fmt.Print("\033[31;53H                                                                                    ")
-  fmt.Print("\033[32;53H                                                                                    ")
-  fmt.Print("\033[33;53H                                                                                    ")
-  fmt.Print("\033[34;53H                                                                                    ")
-  fmt.Print("\033[35;53H                                                                                    ")
-  fmt.Print("\033[36;53H                                                                                    ")
+  for i := 21;i < 46;i++ {
+    pos := strconv.Itoa(i)
+    fmt.Print("\033["+pos+";53H                                                                                    ")
 
+  }
 }
 func ShowOoc(response *zmq.Socket, play Player) string {
   input := "+++"

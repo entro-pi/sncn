@@ -701,6 +701,7 @@ func main() {
 		if strings.HasPrefix(input, "tc:") {
 			play = battle(input, play, sounds)
 			clearCore()
+			ShowSoc = true
 		}
 		if input == "show room vnum" {
 			fmt.Print("\033[38;2;150;0;150mROOM VNUM :"+strconv.Itoa(play.CurrentRoom.Vnum)+"\033[0m")
@@ -895,6 +896,8 @@ func main() {
 			//old coreboard, or convert it to xp, i dunno
 			if len(strings.Split(input, "=")) > 1 {
 				size := strings.Split(input, "=")[1]
+				clearBigBroad()
+				ShowSoc = false
 				play.CoreBoard, play = genCoreBoard(size, play, populated)
 				out += showCoreBoard(play)
 				play.CoreShow = true
@@ -1118,6 +1121,7 @@ func main() {
 		if strings.HasPrefix(input, "gc: "){
 			var bs Broadcast
 			count := 0
+			clearBigBroad()
 			header := strings.Split(input, "gc: ")[1]
 			fmt.Print("\033[21;90HComposing message, "+header)
 			fmt.Print("\033[22;90H@ on a newline to finish")

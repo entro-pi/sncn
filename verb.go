@@ -519,19 +519,60 @@ func craftObject() Object {
 																longName = ""
 //                                 break keyPressListenerLoop
                          case term.KeyBackspace:
-													 				clearDirty()
-                                  val := resetCraft()
+													 clearDirty()
+													 val := resetCraft()
+													 val += fmt.Sprint(namePos, name)
+													 val += fmt.Sprint(longNamePos, longName)
+													 fmt.Print(val)
+														if len(name) <= 0 {
+															name = " "
+														}
+														if len(longName) <= 0 {
+															longName = " "
+														}
+													if !named {
+														 fmt.Println("BACKSPACE")
+														 name = name[:len(name)-1]
+														 if len(name) <= 0 {
+															 name = " "
+														 }
+														 fmt.Printf("\033[3;80H%v                                                            ", name)
+													 }else if !longNamed {
+														 longName = longName[:len(longName)-1]
+														 if len(longName) <= 0 {
+															longName = " "
+														 }
+														 fmt.Printf("\033[6;70H%v                                                            ", longName)
+													 }
+												 case term.KeyBackspace2:
+																 clearDirty()
+																 val := resetCraft()
+																 val += fmt.Sprint(namePos, name)
+ 	 															 val += fmt.Sprint(longNamePos, longName)
  																 fmt.Print(val)
-																 if !named {
-																	 name = name[:len(name)-2]
-																	 fmt.Printf("\033[3;80H%v   ROAR                                                     ", name)
+													 				if len(name) <= 0 {
+																		name = " "
+																	}
+																	if len(longName) <= 0 {
+																		longName = " "
+																	}
+													 			if !named {
+																	 fmt.Println("BACKSPACE")
+																	 name = name[:len(name)-1]
+																	 if len(name) <= 0 {
+																		 name = " "
+																	 }
+																	 fmt.Printf("\033[3;80H%v                                                            ", name)
 																 }else if !longNamed {
-																	 longName = longName[:len(longName)-2]
-																	 fmt.Printf("\033[6;70H%v        doop                                                ", longName)
+																	 longName = longName[:len(longName)-1]
+																	 if len(longName) <= 0 {
+																	 	longName = " "
+																	 }
+																	 fmt.Printf("\033[7;70H%v                                                            ", longName)
 																 }
-																 fmt.Printf("\033[3;80H%v                                                  doot      ", name)
+//																 fmt.Printf("\033[3;80H%v                                                  doot      ", name)
 
-																 fmt.Printf("\033[6;70H%v                                                        ", longName)
+	//															 fmt.Printf("\033[6;70H%v                                                        ", longName)
 
 												 case term.KeySpace:
 													 if !named {
@@ -541,34 +582,46 @@ func craftObject() Object {
 													 }
                          case term.KeyEnter:
                                  val := resetCraft()
+
+	 															 val += fmt.Sprint(namePos, name)
+	 															 val += fmt.Sprint(longNamePos, longName)
 																 fmt.Print(val)
 																 fmt.Println("Value Accepted.")
 																 if !named {
 																	 obj.Name = name
 																	 named = true
-																 }else if !longNamed {
+																 }else if !longNamed && len(longName) > 5 {
 																	 obj.LongName = longName
  															 		longNamed = true
 																 }
 																 if named && longNamed {
 																	 fmt.Println("Naming complete, are you happy with these changes?")
-																	 fmt.Print("Enter again to save and exit, escape to discard changes.")
-																	 fmt.Scanln()
-																	 return obj
+																	 fmt.Print("@ to save and exit, escape to discard changes.")
+																	 key := ""
+																	 _, err := fmt.Scan(&key)
+																	 if err != nil {
+																		 panic(err)
+																	 }
+																	 if key == "@" {
+																		 return obj
+																	 }
 																 }
                          default:
                                  // we only want to read a single character or one key pressed event
                                  val := resetCraft()
 																 fmt.Print(val)
 
-
+																fmt.Print(namePos, name)
+																fmt.Print(longNamePos, longName)
 															 	if !named {
 																	name += string(ev.Ch)
 															 		namePos = fmt.Sprint("\033[3;80H")
-															 		fmt.Print(namePos, name)
-
-															 	}else if !longNamed {
-															 		longNamePos = fmt.Sprint("\033[6;70H")
+																	fmt.Print(namePos, name)
+															 	}
+																if !longNamed && named {
+																	fmt.Print(namePos, name)
+																	longName += string(ev.Ch)
+															 		longNamePos = fmt.Sprint("\033[7;70H")
 															 		fmt.Print(longNamePos, longName)
 															 	}
 
