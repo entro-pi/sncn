@@ -1056,7 +1056,7 @@ func main() {
 			for i := 0;i < len(play.Inventory);i++ {
 				if strings.Contains(play.Inventory[i].Item.Name, fuzzyItem) {
 					slot := play.Inventory[i].Item.Slot
-					fmt.Print(slot, " Matches.")
+					fmt.Println(slot, " Matches.")
 					if play.Equipped[slot].Item.Vnum == 0 {
 						if play.Inventory[i].Number > 1 {
 							play.Inventory[i].Number--
@@ -1072,6 +1072,8 @@ func main() {
 					}else {
 						fmt.Print("You're already wearing something in that slot!(",slot,")")
 					}
+				}else {
+					fmt.Print("You're already wearing something in that slot!(",slot,")")
 				}
 				}
 			}
@@ -1364,6 +1366,7 @@ func main() {
 			for i := 0;i < len(socOut);i++ {
 				out += AssembleBroadside(socOut[i], socOut[i].Payload.Row, socOut[i].Payload.Col)
 			}
+			out += showPages(socBroadcasts, inp)
 
 		//	out += play.Profile
 		}

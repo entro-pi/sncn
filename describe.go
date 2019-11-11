@@ -333,6 +333,24 @@ func DescribeSpace(vnum int, Spaces []Space) string {
 	return out
 }
 
+func showPages(socBroadcasts []Broadcast, page int) string {
+  numberBroadcasts := len(socBroadcasts)
+  var out string
+  col := 80
+  curPage := page
+  numPages := numberBroadcasts / 20
+  for i := 1;i <= numPages;i++ {
+    position := fmt.Sprint(strconv.Itoa(col+2*i))
+    if i == curPage {
+      out += fmt.Sprint("\033[48;2;100;200;10m\033[38;2;200;10;200m\033[21;"+position+"H"+strconv.Itoa(i)+"\033[0m")
+      }else {
+        out += fmt.Sprint("\033[48;2;10;200;10m\033[38;2;150;10;100m\033[21;"+position+"H"+strconv.Itoa(i)+"\033[0m")
+      }
+
+  }
+  return out
+}
+
 func showDesc(room Space) string {
 	out := ""
 	splitPos := AssembleDescCel(room, 25)
