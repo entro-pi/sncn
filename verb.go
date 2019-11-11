@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"bufio"
   "math/rand"
+	term "github.com/nsf/termbox-go"
 	"context"
 	"time"
 	zmq "github.com/pebbe/zmq4"
@@ -460,22 +460,11 @@ func genCoreBoard(size string, play Player, populated []Space) (string, Player) 
 	return outVal, play
 }
 
-
-func craftMob(scanner bufio.Scanner) Mobile {
-	mob := InitMob()
-	namePos := ""
-	named := false
-	longNamePos := ""
-	longNamed := false
+func resetCraft() string {
 	val := ""
-  val += "\033[0;53H\033[48:2:200:120:0m                                                                              \033[0m"
-  val += "\033[32;53H\033[48:2:200:120:0m                                                                              \033[0m"
-
-	for scanner.Scan() {
-		if scanner.Text() == "exit" {
-			return mob
-		}else {
-  for i := 2;i < 32;i++ {
+	val += "\033[0;53H\033[48:2:200:120:0m                                                                              \033[0m"
+	val += "\033[32;53H\033[48:2:200:120:0m                                                                              \033[0m"
+	for i := 2;i < 32;i++ {
 
 		if i == 2{
 			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m \033[0m                                Name                                        \033[48:2:200:120:0m \033[0m"
@@ -499,32 +488,97 @@ func craftMob(scanner bufio.Scanner) Mobile {
 			val += "\033["+strconv.Itoa(i)+";53H\033[48:2:200:120:0m \033[0m                                                                            \033[48:2:200:120:0m \033[0m"
 			val += "\033["+strconv.Itoa(i+1)+";53H\"exit\" to end"
 		}
-
-
-  }
-	fmt.Print(val)
-	if !named {
-		namePos = fmt.Sprint("\033[3;80H")
-		fmt.Print(namePos)
-		scanner.Scan()
-		mob.Name = scanner.Text()
-		named = true
 	}
-	if !longNamed {
-		longNamePos = fmt.Sprint("\033[6;70H")
-		fmt.Print(longNamePos)
-		scanner.Scan()
-		mob.LongName = scanner.Text()
-		longNamed = true
-	}
-	val += namePos + longNamePos
-  fmt.Print(val)
-
-
-	}
-
+	return val
 }
-return mob
+func craftObject() Object {
+	var obj Object
+	namePos := ""
+	name := ""
+	longName := ""
+	named := false
+	longNamePos := ""
+	longNamed := false
+
+         err := term.Init()
+         if err != nil {
+                 panic(err)
+         }
+
+         defer term.Close()
+				 val := resetCraft()
+				 fmt.Print(val)
+         for {
+                 switch ev := term.PollEvent(); ev.Type {
+                 case term.EventKey:
+                         switch ev.Key {
+                         case term.KeyEsc:
+													 			named = false
+																name = ""
+																longNamed = false
+																longName = ""
+//                                 break keyPressListenerLoop
+                         case term.KeyBackspace:
+													 				clearDirty()
+                                  val := resetCraft()
+ 																 fmt.Print(val)
+																 if !named {
+																	 name = name[:len(name)-2]
+																	 fmt.Printf("\033[3;80H%v   ROAR                                                     ", name)
+																 }else if !longNamed {
+																	 longName = longName[:len(longName)-2]
+																	 fmt.Printf("\033[6;70H%v        doop                                                ", longName)
+																 }
+																 fmt.Printf("\033[3;80H%v                                                  doot      ", name)
+
+																 fmt.Printf("\033[6;70H%v                                                        ", longName)
+
+												 case term.KeySpace:
+													 if !named {
+														 name += " "
+													 }else if !longNamed {
+														 longName += " "
+													 }
+                         case term.KeyEnter:
+                                 val := resetCraft()
+																 fmt.Print(val)
+																 fmt.Println("Value Accepted.")
+																 if !named {
+																	 obj.Name = name
+																	 named = true
+																 }else if !longNamed {
+																	 obj.LongName = longName
+ 															 		longNamed = true
+																 }
+																 if named && longNamed {
+																	 fmt.Println("Naming complete, are you happy with these changes?")
+																	 fmt.Print("Enter again to save and exit, escape to discard changes.")
+																	 fmt.Scanln()
+																	 return obj
+																 }
+                         default:
+                                 // we only want to read a single character or one key pressed event
+                                 val := resetCraft()
+																 fmt.Print(val)
+
+
+															 	if !named {
+																	name += string(ev.Ch)
+															 		namePos = fmt.Sprint("\033[3;80H")
+															 		fmt.Print(namePos, name)
+
+															 	}else if !longNamed {
+															 		longNamePos = fmt.Sprint("\033[6;70H")
+															 		fmt.Print(longNamePos, longName)
+															 	}
+
+                         }
+                 case term.EventError:
+                         panic(ev.Err)
+                 }
+         }
+
+return obj
 
 }
 //TODO make this modular

@@ -237,6 +237,8 @@ func main() {
 		updateWho(play, true)
 	}
 	fmt.Sprint(mobiles)
+
+	fmt.Println("Loading graphics...")
 	photos := loadImages()
 	//Show the screen first off
 	play.CurrentRoom = populated[1]
@@ -902,8 +904,8 @@ func main() {
 			//// TODO:
 			//This
 		}
-		if strings.Contains(input, "craft mobile"){
-			craftMob(*scanner)
+		if strings.Contains(input, "craft object"){
+			craftObject()
 
 		}
 		if strings.HasPrefix(input, "view from") {
