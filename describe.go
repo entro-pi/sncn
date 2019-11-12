@@ -549,6 +549,7 @@ func DescribePlayer(play Player) string {
   out += fmt.Sprint(techShow)
   out += fmt.Sprint(hp)
 	out += fmt.Sprint("\033[38;0H")
+  out += fmt.Sprintln("<<====", play.BankAccount.Amount, "====>>")
   out += fmt.Sprintln("\033[38:2:200:0:0mHas slain "+strconv.Itoa(play.Slain)+" monsters\033[0m")
   out += fmt.Sprintln("\033[38:2:150:150:0mHas found "+strconv.Itoa(play.Hoarded)+" treasures\033[0m")
 	out += fmt.Sprintln("======================")

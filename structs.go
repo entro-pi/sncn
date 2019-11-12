@@ -76,6 +76,7 @@ type Object struct {
 	Y int
 	Owned bool
 }
+
 type BroadcastPayload struct {
   Channel string
   Message string
@@ -86,7 +87,42 @@ type BroadcastPayload struct {
 	Selected bool
 	BigMessage string
 	ID int
+	Transaction OnlineTransaction
+	Store OnlineStore
 }
+type Butler struct {
+	Employer string
+	Funds Account
+	ToBuy Object
+}
+type OnlineStore struct {
+	Owner string
+	Float float64
+	Inventory []OnlineTransaction
+}
+
+type OnlineTransaction struct {
+	ItemHash string
+	Item Object
+	Sold bool
+	To Account
+	Price float64
+}
+type Bank struct {
+	Clientele Client
+	Owner string
+}
+type Client struct {
+		User string
+		TotalAmount float64
+		Accounts []float64
+}
+type Account struct {
+	Owner string
+	Income OnlineStore
+	Amount float64
+}
+
 type Broadcast struct {
     Event string
     Ref string
@@ -147,8 +183,11 @@ type Player struct {
 	PlayerHash string
 	Classes []Class
 	Target string
-	Profile string
 	TargetLong string
+	//ToBuy will have to either be an ItemHash
+	//Or a vnum
+	ToBuy int
+	BankAccount Account
 	TarX int
 	TarY int
 	OldX int
@@ -157,11 +196,12 @@ type Player struct {
 	CoreShow bool
 	Channels []string
 	Battling bool
-
+	Profile string
 	Session string
 
 	Slain int
 	Hoarded int
+
 
 	MaxRezz int
 	Rezz int

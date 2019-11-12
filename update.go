@@ -23,7 +23,7 @@ func insertBroadcasts(broadside []Broadcast) {
 
 	collection := client.Database("broadcasts").Collection("general")
   for i := 0;i < len(broadside);i++ {
-    update := bson.M{"broadcast":bson.M{"event":broadside[i].Event,"ref":broadside[i].Ref,"payload":bson.M{"channel":broadside[i].Payload.Channel,"message":broadside[i].Payload.Message,"game":broadside[i].Payload.Game, "name":broadside[i].Payload.Name, "row":broadside[i].Payload.Row, "col":broadside[i].Payload.Col, "selected":false,"bigmessage":broadside[i].Payload.BigMessage}}}
+    update := bson.M{"broadcast":bson.M{"event":broadside[i].Event,"ref":broadside[i].Ref,"payload":bson.M{"channel":broadside[i].Payload.Channel,"message":broadside[i].Payload.Message,"game":broadside[i].Payload.Game, "name":broadside[i].Payload.Name, "row":broadside[i].Payload.Row, "col":broadside[i].Payload.Col, "selected":false,"bigmessage":broadside[i].Payload.BigMessage,"transaction":broadside[i].Payload.Transaction}}}
 
   	result, err := collection.InsertOne(context.Background(), update)
   	if err != nil {

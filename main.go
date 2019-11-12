@@ -942,6 +942,10 @@ func main() {
 		if input == "addclass" {
 			play = addClass(play)
 		}
+		if input == "add credbits" {
+			fmt.Println("You have been awarded 100 credbits")
+			play.BankAccount.Amount += 100.0
+		}
 		if strings.HasPrefix(input, "go to") {
 			splitCommand := strings.Split(input, "to")
 			stripped := strings.TrimSpace(splitCommand[1])
@@ -998,6 +1002,49 @@ func main() {
 //							count := 0
 			}
 		}
+		if input == "BUY" {
+			ref := ""
+			sale := false
+			sold := false
+			for i := 0;i < len(socBroadcasts);i++ {
+				if socBroadcasts[i].Payload.Transaction.Item.Name != "nothing" {
+					sold = false
+				}else {
+					sold = true
+				}
+				if socBroadcasts[i].Payload.Selected && !sold {
+					ref = socBroadcasts[i].Ref
+					fmt.Println("\033[38:2:200:0:0mREF",ref,"\033[0m")
+					sale = true
+					break
+				}
+			}
+			if sale {
+				response.Recv(0)
+				fmt.Print("BUYING ",ref)
+				_, err := response.Send(play.PlayerHash+"||SALE||"+ref, 0)
+				if err != nil {
+					panic(err)
+				}
+				result, err := response.Recv(0)
+				if err != nil {
+					panic(err)
+				}
+				fmt.Print(result)
+				response.Send("ok", 0)
+				playBytes, err := response.RecvBytes(0)
+				if err != nil {
+					panic(err)
+				}
+				err = bson.Unmarshal(playBytes, &play)
+				if err != nil {
+					panic(err)
+				}
+				_, err = response.Send("done", 0)
+				sale = false
+			}
+		}
+
 		if strings.HasPrefix(input, "sel") {
 			if len(strings.Split(input, " ")) > 1 {
 				response.Recv(0)
@@ -1125,7 +1172,8 @@ func main() {
 			header := strings.Split(input, "gc: ")[1]
 			fmt.Print("\033[21;90HComposing message, "+header)
 			fmt.Print("\033[22;90H@ on a newline to finish")
-			fmt.Print("\033[23;90H# on a newline to load a picture\033[24;90H")
+			fmt.Print("\033[23;90H# on a newline to load a picture")
+			fmt.Print("\033[24;90H^ on a newline to attach an item for sale")
 
 			for scanner.Scan() {
 				count++
@@ -1138,6 +1186,58 @@ func main() {
 
 					bs.Payload.BigMessage += chosen
 					fmt.Print(bs.Payload.BigMessage+"Graphic applied.")
+					}else if scanner.Text() == "^" {
+						done := false
+						for !done {
+							fmt.Print("Enter the name of what you would like to sell")
+							scanner.Scan()
+							ATTACH:
+							for i := 0;i < len(play.Inventory);i++ {
+									if strings.Contains(play.Inventory[i].Item.Name, scanner.Text()) {
+										var transaction OnlineTransaction
+
+										fmt.Print("\033[38:2:150:150:0mAttaching ",play.Inventory[i].Item.Name, "\033[0m")
+										transaction.Item = play.Inventory[i].Item
+										transaction.Sold = false
+										transaction.To = play.BankAccount
+										setPrice := false
+										for !setPrice {
+											fmt.Print("Now we have to set a price. (10, 100, etc)")
+											scanner.Scan()
+											fmt.Print("I got ", scanner.Text(), " is that right?(y/n)")
+											price := scanner.Text()
+											scanner.Scan()
+											if scanner.Text() == "y" || scanner.Text() == "Y" {
+												priceInt, err := strconv.Atoi(price)
+												if err != nil {
+													fmt.Print("That's not a number..")
+													setPrice = false
+												}else {
+													price64 := float64(priceInt)
+													transaction.Price = price64
+													setPrice = true
+													done = true
+													bs.Payload.Transaction = transaction
+													fmt.Println(bs.Payload.Transaction)
+													break ATTACH
+												}
+											}
+										}
+										done = true
+									}
+							}
+							for i := 0;i < len(play.Inventory);i++ {
+								if play.Inventory[i].Item.Name == bs.Payload.Transaction.Item.Name {
+									if play.Inventory[i].Number > 1 {
+										play.Inventory[i].Number--
+									}else {
+										play.Inventory[i].Item = allItems[0]
+										play.Inventory[i].Number = 0
+									}
+								}
+							}
+
+						}
 					}else {
 
 						bs.Payload.BigMessage += "\033["+lineCount+";90H"
@@ -1146,6 +1246,7 @@ func main() {
 			}
 			bs.Payload.Message = header
 			bs.Payload.Channel = "snow"
+			bs.Ref = UIDMaker()
 			bs.Payload.Game = "snowcrash.network"
 			bs.Payload.Name = play.Name
 			bs.Payload.Row = 0
