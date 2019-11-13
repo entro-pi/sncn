@@ -1007,7 +1007,7 @@ func main() {
 			sale := false
 			sold := false
 			for i := 0;i < len(socBroadcasts);i++ {
-				if socBroadcasts[i].Payload.Transaction.Item.Name != "nothing" {
+				if socBroadcasts[i].Payload.Transaction.Item.Name != "nothing" || socBroadcasts[i].Payload.Transaction.Item.Name != "" {
 					sold = false
 				}else {
 					sold = true
