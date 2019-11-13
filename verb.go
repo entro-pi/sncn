@@ -197,6 +197,9 @@ func AssembleBroadside(broadside Broadcast, row int, col int) (string) {
 			cel += fmt.Sprint("\033["+strconv.Itoa(25+broadRow)+";53H\033[0m"+bigSplit[broadRow]+"\033[0m")
 			broadRow++
 		}
+		if !broadside.Payload.Transaction.Sold {
+			cel += fmt.Sprintf("\033[45;53H\033[38:2:150:50:150m{{FOR SALE %v}} \033[38:2:75:75:0m||'BUY' for %v credbits||\033[0m", broadside.Payload.Transaction.Item.Name, broadside.Payload.Transaction.Price)
+		}
 	}
 
 

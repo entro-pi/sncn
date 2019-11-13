@@ -1014,7 +1014,7 @@ func main() {
 				}
 				if socBroadcasts[i].Payload.Selected && !sold {
 					ref = socBroadcasts[i].Ref
-					fmt.Println("\033[38:2:200:0:0mREF",ref,"\033[0m")
+					//fmt.Print("\033[38:2:200:0:0mREF",ref,"\033[0m")
 					sale = true
 					break
 				}
@@ -1031,6 +1031,14 @@ func main() {
 					panic(err)
 				}
 				fmt.Print(result)
+				if strings.Contains(result, "approved") {
+					for i := 0;i < len(socBroadcasts);i++ {
+						if socBroadcasts[i].Ref == ref {
+							socBroadcasts[i].Payload.Transaction.Sold = true
+							clearBigBroad()
+						}
+					}
+				}
 				response.Send("ok", 0)
 				playBytes, err := response.RecvBytes(0)
 				if err != nil {
@@ -1042,6 +1050,7 @@ func main() {
 				}
 				_, err = response.Send("done", 0)
 				sale = false
+
 			}
 		}
 
@@ -1218,7 +1227,7 @@ func main() {
 													setPrice = true
 													done = true
 													bs.Payload.Transaction = transaction
-													fmt.Println(bs.Payload.Transaction)
+													fmt.Print(bs.Payload.Transaction)
 													break ATTACH
 												}
 											}

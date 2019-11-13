@@ -15,7 +15,7 @@ import (
   "go.mongodb.org/mongo-driver/mongo/options"
 )
 func clearBigBroad() {
-  for i := 21;i < 46;i++ {
+  for i := 21;i <= 46;i++ {
     pos := strconv.Itoa(i)
     fmt.Print("\033["+pos+";53H                                                                                    ")
 
