@@ -1173,7 +1173,9 @@ func main() {
 				}
 			}
 		}
-
+		if input == "stack" {
+			play = stack(play)
+		}
 		if strings.HasPrefix(input, "gc: "){
 			var bs Broadcast
 			count := 0
@@ -1187,7 +1189,9 @@ func main() {
 			for scanner.Scan() {
 				count++
 				lineCount := strconv.Itoa(count+24)
-				fmt.Print("\033[22;90H@ on a newline to finish\033["+lineCount+";90H")
+				fmt.Print("\033[22;90H@ on a newline to finish")
+				fmt.Print("\033[23;90H# on a newline to load a picture")
+				fmt.Print("\033[24;90H^ on a newline to attach an item for sale\033["+lineCount+";90H")
 				if scanner.Text() == "@" {
 					break
 				}else if scanner.Text() == "#" {
@@ -1198,28 +1202,28 @@ func main() {
 					}else if scanner.Text() == "^" {
 						done := false
 						for !done {
-							fmt.Print("Enter the name of what you would like to sell")
+							fmt.Print("\033[25;90HEnter the name of what you would like to sell :")
 							scanner.Scan()
 							ATTACH:
 							for i := 0;i < len(play.Inventory);i++ {
 									if strings.Contains(play.Inventory[i].Item.Name, scanner.Text()) {
 										var transaction OnlineTransaction
 
-										fmt.Print("\033[38:2:150:150:0mAttaching ",play.Inventory[i].Item.Name, "\033[0m")
+										fmt.Print("\033[26;90H\033[38:2:150:150:0mAttaching ",play.Inventory[i].Item.Name, "\033[0m")
 										transaction.Item = play.Inventory[i].Item
 										transaction.Sold = false
 										transaction.To = play.BankAccount
 										setPrice := false
 										for !setPrice {
-											fmt.Print("Now we have to set a price. (10, 100, etc)")
+											fmt.Print("\033[27;90HNow we have to set a price. (10, 100, etc) :")
 											scanner.Scan()
-											fmt.Print("I got ", scanner.Text(), " is that right?(y/n)")
+											fmt.Print("\033[28;90HI got ", scanner.Text(), " is that right?(y/n) :")
 											price := scanner.Text()
 											scanner.Scan()
 											if scanner.Text() == "y" || scanner.Text() == "Y" {
 												priceInt, err := strconv.Atoi(price)
 												if err != nil {
-													fmt.Print("That's not a number..")
+													fmt.Print("\033[29;90HThat's not a number..")
 													setPrice = false
 												}else {
 													price64 := float64(priceInt)
@@ -1227,7 +1231,8 @@ func main() {
 													setPrice = true
 													done = true
 													bs.Payload.Transaction = transaction
-													fmt.Print(bs.Payload.Transaction)
+//													fmt.Print(bs.Payload.Transaction)
+													clearBigBroad()
 													break ATTACH
 												}
 											}

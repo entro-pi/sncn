@@ -40,3 +40,17 @@ OWNED
 false
 SLOT
 2
+VNUM
+3
+NAME
+cauldron bubbling ooze
+LONGNAME
+A cauldron filled with green ooze.
+ZONE
+zem
+VALUE
+1000
+OWNED
+false
+SLOT
+0

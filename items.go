@@ -81,7 +81,11 @@ func readItemsFromFile(filePath string) []Object {
   return objHolder
 }
 
+func stack(play Player) Player {
+  //need to do a deepequals
 
+  return play
+}
 func lookupObject(vnum int) Object {
   var obj Object
   switch vnum {

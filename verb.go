@@ -637,6 +637,151 @@ func craftObject() Object {
 return obj
 
 }
+
+func craftMobile() Mobile {
+	var mob Mobile
+	namePos := ""
+	name := ""
+	longName := ""
+	named := false
+	longNamePos := ""
+	longNamed := false
+
+         err := term.Init()
+         if err != nil {
+                 panic(err)
+         }
+
+         defer term.Close()
+				 val := resetCraft()
+				 fmt.Print(val)
+         for {
+                 switch ev := term.PollEvent(); ev.Type {
+                 case term.EventKey:
+                         switch ev.Key {
+                         case term.KeyEsc:
+													 			named = false
+																name = ""
+																longNamed = false
+																longName = ""
+//                                 break keyPressListenerLoop
+                         case term.KeyBackspace:
+													 clearDirty()
+													 val := resetCraft()
+													 val += fmt.Sprint(namePos, name)
+													 val += fmt.Sprint(longNamePos, longName)
+													 fmt.Print(val)
+														if len(name) <= 0 {
+															name = " "
+														}
+														if len(longName) <= 0 {
+															longName = " "
+														}
+													if !named {
+														 fmt.Println("BACKSPACE")
+														 name = name[:len(name)-1]
+														 if len(name) <= 0 {
+															 name = " "
+														 }
+														 fmt.Printf("\033[3;80H%v                                                            ", name)
+													 }else if !longNamed {
+														 longName = longName[:len(longName)-1]
+														 if len(longName) <= 0 {
+															longName = " "
+														 }
+														 fmt.Printf("\033[6;70H%v                                                            ", longName)
+													 }
+												 case term.KeyBackspace2:
+																 clearDirty()
+																 val := resetCraft()
+																 val += fmt.Sprint(namePos, name)
+ 	 															 val += fmt.Sprint(longNamePos, longName)
+ 																 fmt.Print(val)
+													 				if len(name) <= 0 {
+																		name = " "
+																	}
+																	if len(longName) <= 0 {
+																		longName = " "
+																	}
+													 			if !named {
+																	 fmt.Println("BACKSPACE")
+																	 name = name[:len(name)-1]
+																	 if len(name) <= 0 {
+																		 name = " "
+																	 }
+																	 fmt.Printf("\033[3;80H%v                                                            ", name)
+																 }else if !longNamed {
+																	 longName = longName[:len(longName)-1]
+																	 if len(longName) <= 0 {
+																	 	longName = " "
+																	 }
+																	 fmt.Printf("\033[7;70H%v                                                            ", longName)
+																 }
+//																 fmt.Printf("\033[3;80H%v                                                  doot      ", name)
+
+	//															 fmt.Printf("\033[6;70H%v                                                        ", longName)
+
+												 case term.KeySpace:
+													 if !named {
+														 name += " "
+													 }else if !longNamed {
+														 longName += " "
+													 }
+                         case term.KeyEnter:
+                                 val := resetCraft()
+
+	 															 val += fmt.Sprint(namePos, name)
+	 															 val += fmt.Sprint(longNamePos, longName)
+																 fmt.Print(val)
+																 fmt.Println("Value Accepted.")
+																 if !named {
+																	 mob.Name = name
+																	 named = true
+																 }else if !longNamed && len(longName) > 5 {
+																	 mob.LongName = longName
+ 															 		longNamed = true
+																 }
+																 if named && longNamed {
+																	 fmt.Println("Naming complete, are you happy with these changes?")
+																	 fmt.Print("@ to save and exit, escape to discard changes.")
+																	 key := ""
+																	 _, err := fmt.Scan(&key)
+																	 if err != nil {
+																		 panic(err)
+																	 }
+																	 if key == "@" {
+																		 return mob
+																	 }
+																 }
+                         default:
+                                 // we only want to read a single character or one key pressed event
+                                 val := resetCraft()
+																 fmt.Print(val)
+
+																fmt.Print(namePos, name)
+																fmt.Print(longNamePos, longName)
+															 	if !named {
+																	name += string(ev.Ch)
+															 		namePos = fmt.Sprint("\033[3;80H")
+																	fmt.Print(namePos, name)
+															 	}
+																if !longNamed && named {
+																	fmt.Print(namePos, name)
+																	longName += string(ev.Ch)
+															 		longNamePos = fmt.Sprint("\033[7;70H")
+															 		fmt.Print(longNamePos, longName)
+															 	}
+
+                         }
+                 case term.EventError:
+                         panic(ev.Err)
+                 }
+         }
+
+return mob
+
+}
+
 //TODO make this modular
 func createChat(message string, play Player) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
