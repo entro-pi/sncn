@@ -171,6 +171,7 @@ type EquipmentItem struct {
 	Item Object
 }
 
+
 type Player struct {
 	Name string
 	Title string
