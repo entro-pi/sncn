@@ -248,7 +248,7 @@ func main() {
 	out += DescribePlayer(play)
 	chats, outln := showChat(play)
 	out += outln
-	updateChat(play, response)
+	updateChat()
 	//out += //ShowOocresponse, play)
 	var ShowSoc bool
 	firstRun := true
@@ -1000,7 +1000,8 @@ func main() {
 			for i := 0;i < len(socBroadcasts);i++ {
 				socBroadcasts[i].Payload.Selected = false
 			}
-
+		}
+/*
 			fmt.Print("Sending --+--")
 			_, err := response.Send(play.Session+"--+--", 0)
 			isOK, err := response.Recv(0)
@@ -1017,12 +1018,12 @@ func main() {
 						panic(err)
 					}
 				//		out += string(result)
-						grapevines = updateChat(play, response)
+						grapevines = len(updateChat())
 						fmt.Print("Sending ok")
-						_, err = response.Send("--SELECT:0", 0)
-						if err != nil {
-							panic(err)
-						}
+					//	_, err = response.Send("--SELECT:0", 0)
+						//if err != nil {
+						//	panic(err)
+						//}
 						socBytes, err := response.RecvBytes(0)
 						if err != nil {
 							panic(err)
@@ -1033,7 +1034,7 @@ func main() {
 						}
 //							count := 0
 			}
-		}
+		}*/
 		if input == "BUY" {
 			ref := ""
 			sale := false
@@ -1523,7 +1524,7 @@ func main() {
 		}
 
 		if grape {
-			grapevines = updateChat(play, response)
+			grapevines = len(updateChat())
 		}
 		if ShowSoc {
 			for i := 0;i < len(socOut);i++ {

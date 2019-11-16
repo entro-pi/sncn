@@ -11,7 +11,6 @@ import (
 	term "github.com/nsf/termbox-go"
 	"context"
 	"time"
-	zmq "github.com/pebbe/zmq4"
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
@@ -99,45 +98,46 @@ func lookupPlayer(name string, pass string) Player {
 
 }
 
-
-func updateChat(play Player, response *zmq.Socket) int {
-	count := 0
-	response.Recv(0)
-	_, err := response.Send(play.Name+"=+=", 0)
+func updateChat() []Broadcast {
+	userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
 	if err != nil {
 		panic(err)
 	}
-	value, err := response.Recv(0)
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
 	if err != nil {
 		panic(err)
-	}
-//	fmt.Print(value)
-	if len(value) > 1 {
-		count++
-	}
-	_, err = response.Send(play.Name+"++SAVE++", 0)
-	if err != nil {
-		panic(err)
-	}
-	value, err = response.Recv(0)
-	if err != nil {
-		panic(err)
-	}
-	if value == "SAVING" {
-		playBytes, err := bson.Marshal(play)
-		if err != nil {
-			panic(err)
-		}
-		_, err = response.SendBytes(playBytes, 0)
-		if err != nil {
-			panic(err)
-		}
-		response.Recv(0)
 	}
 
-	fmt.Printf("\033[51;0H")
-	return count
+	findOptions := options.Find()
+	findOptions.SetLimit(1000)
+	collection := client.Database("broadcasts").Collection("general")
+
+	result, err := collection.Find(context.Background(), bson.M{}, findOptions)
+	if err != nil {
+		panic(err)
+	}
+//	fmt.Println("\033[38:2:255:0:0m", result, "\033[0m")
+	var container []Broadcast
+
+	err = result.All(context.Background(), &container)
+	if err != nil {
+		panic(err)
+	}
+	//	fmt.Print("\033[38:2:0:0:200m",container, "\033[0m")
+	return container
 }
+
 func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone string, digNum int, populated []Space) (int, Space) {
 	digVnumEnd := strings.Split(digNums, "-")[1]
 	dg, digNum := initDigRoom(digFrame, digNums, digZone, play, digNum)
