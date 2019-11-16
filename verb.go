@@ -251,7 +251,36 @@ func AssembleComposeCel(chatMess Chat, row int) (string, int) {
 	return cel, row
 	//	fmt.Println(cel)
 }
+func sendBroadcast(bcast Broadcast) Broadcast {
+  userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  if err != nil {
+    panic(err)
+  }
+  ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+  err = client.Connect(ctx)
+  if err != nil {
+    panic(err)
+  }
+  update := bson.M{"event":bcast.Event,"ref":bcast.Ref,"payload":bson.M{"channel":bcast.Payload.Channel,"id":bcast.Payload.ID, "message":bcast.Payload.Message,"game":bcast.Payload.Game,"name":bcast.Payload.Name}}
+  collection := client.Database("broadcasts").Collection("general")
+  _, err = collection.InsertOne(context.Background(), update)
+  if err != nil {
+    panic(err)
+  }
+  fmt.Println("Upserted the broadcast")
+  return bcast
 
+}
 func AssembleBroadside(broadside Broadcast, row int, col int) (string) {
 	var cel string
 	colString := strconv.Itoa(col)
@@ -992,7 +1021,7 @@ func addPfile(play Player) {
 		panic(err)
 	}
 	collection := client.Database("pfiles").Collection("Players")
-	_, err = collection.InsertOne(context.Background(), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipped":play.Equipped,
+	_, err = collection.InsertOne(context.Background(), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":bson.M{"inventory":play.Inventory}, "equipped":bson.M{"equipped":play.Equipped},
 						"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha })
 }
 func savePfile(play Player) {
@@ -1016,6 +1045,6 @@ func savePfile(play Player) {
 		panic(err)
 	}
 	collection := client.Database("pfiles").Collection("Players")
-	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipped":play.Equipped,
+	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":bson.M{"inventory":play.Inventory}, "equipped":bson.M{"equipped":play.Equipped},
 							"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha, "classes": play.Classes })
 					}

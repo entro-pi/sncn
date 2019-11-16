@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"os"
 	"context"
 	"time"
@@ -653,6 +652,7 @@ func main() {
 
 		}
 		if input == "logout" {
+			savePfile(play)
 			response.Recv(0)
 			fmt.Println(play.Name+"+==LOGOUT")
 			_, err := response.Send(play.Name+"+==LOGOUT", 0)
@@ -1110,51 +1110,19 @@ func main() {
 
 		if strings.HasPrefix(input, "sel") {
 			if len(strings.Split(input, " ")) > 1 {
-				response.Recv(0)
-				//clear the selection
-				for i := 0;i < len(socBroadcasts);i++ {
-					socBroadcasts[i].Payload.Selected = false
+				socBroadcasts = getBroadcasts()
+				toSelect, err := strconv.Atoi(strings.Split(input, " ")[1])
+				if err != nil || toSelect >= len(socBroadcasts) {
+					fmt.Print("That's not a valid number...")
+				}else {
+					//remember to clear the first selection
+					for i := 0;i < len(socBroadcasts);i++ {
+						socBroadcasts[i].Payload.Selected = false
+					}
+					socBroadcasts[toSelect].Payload.Selected = true
+					
 				}
-
-				fmt.Print("Sending --+--")
-				_, err := response.Send(play.Session+"--+--", 0)
-				isOK, err := response.Recv(0)
-				if err != nil {
-					panic(err)
-				}
-				if isOK == "OKTOSEND" {
-						socByte, err := json.Marshal(socBroadcasts)
-						if err != nil {
-							panic(err)
-						}
-						_, err = response.SendBytes(socByte, 0)
-						if err != nil {
-							panic(err)
-						}
-					//		out += string(result)
-							response.Recv(0)
-							//grapevines = updateChat(play, response)
-							fmt.Print("Sending ok")
-							_, err = response.Send("--SELECT:"+strings.Split(input, " ")[1], 0)
-							if err != nil {
-								panic(err)
-							}
-							socBytes, err := response.RecvBytes(0)
-							if err != nil {
-								panic(err)
-							}
-							err = json.Unmarshal(socBytes, &socBroadcasts)
-							if err != nil {
-								panic(err)
-							}
-							//clear the description section
-							clearBigBroad()
-//							count := 0
-
-				}
-
 			}
-//			fmt.Println(string(socBytes))
 		}
 
 		if strings.HasPrefix(input, "wear ") {
@@ -1315,28 +1283,15 @@ func main() {
 			bs.Payload.Message = header
 			bs.Payload.Channel = "snow"
 			bs.Ref = UIDMaker()
+			bs.Payload.ID = len(getBroadcasts())
 			bs.Payload.Game = "snowcrash.network"
 			bs.Payload.Name = play.Name
 			bs.Payload.Row = 0
 			bs.Payload.Col = 0
 			bs.Payload.Selected = false
-			socBroadcasts = append(socBroadcasts, bs)
-
-			response.Recv(0)
-			socBytes, err := json.Marshal(bs)
-			if err != nil {
-				panic(err)
-			}
-			_, err = response.Send("--UPSERT--", 0)
-			result, err := response.Recv(0)
-			if result == "OKTOSEND" {
-				_, err = response.SendBytes(socBytes, 0)
-				if err != nil {
-					panic(err)
-				}
-
-			}
-			clearDirty()
+			sendBroadcast(bs)
+			time.Sleep(100*time.Millisecond)
+			socBroadcasts = getBroadcasts()
 		}
 		if input == "show soc" {
 			ShowSoc = true
