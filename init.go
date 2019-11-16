@@ -51,10 +51,8 @@ func addClass(play Player) Player {
 func InitPlayer(name string, pass string) Player {
 	var play Player
 	var inv []int
-	var equ []int
   var class Class
 	inv = append(inv, 1)
-	equ = append(equ, 1)
 	play.Name = name
 	play.Title = "The Unknown"
   play.Classes = append(play.Classes, class)
@@ -74,11 +72,11 @@ func InitPlayer(name string, pass string) Player {
   play.Classes[0].Spells = append(play.Classes[0].Spells, blast)
 
 	play.Inventory = make([]InventoryItem, 20, 20)
-	play.Equipment = equ
   play.Equipped = make([]EquipmentItem, 20, 20)
   play.Rezz = 17
   play.MaxRezz = play.Rezz
   play.Tech = 17
+  play.PlayerHash = hash(name+pass)
 
 	play.Str = 1
 	play.Int = 1

@@ -44,6 +44,8 @@ func makePlate(plate string, play Player) []string {
   count := 1
   for i := 0;i < len(play.Inventory);i++ {
       countString := strconv.Itoa(count)
+//      fmt.Println(play.Inventory[i].Number)
+
       if play.Inventory[i].Number != 0 {
         out = append(out, fmt.Sprint("\033[",countString,";174H\033[48;2;10;255;20m \033[0m\033[48;2;10;10;20m  x", strconv.Itoa(play.Inventory[i].Number)+plate[len(play.Inventory[i].Item.Name)+3:]+play.Inventory[i].Item.Name, "\033[48;2;10;255;20m \033[0m"))
         count++

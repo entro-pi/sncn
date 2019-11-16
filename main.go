@@ -93,6 +93,7 @@ func main() {
 			populated = PopulateAreas()
 			play = InitPlayer("FSM", "noodles")
 			addPfile(play)
+			savePfile(play)
 			createMobiles("Noodles")
 			fmt.Print("\033[38:2:0:250:0mAll tests passed and world has been initialzed\n\033[0mYou may now start with --login.")
 			os.Exit(1)
@@ -149,6 +150,7 @@ func main() {
 			if err != nil || play.PlayerHash == "2" {
 				panic(err)
 			}*/
+			savePfile(play)
 			play = lookupPlayerByHash(play.PlayerHash)
 			fmt.Print(play.PlayerHash)
 			fmt.Printf("\033[51;0H")
@@ -167,7 +169,6 @@ func main() {
 
 				populated = PopulateAreas()
 				mobiles = PopulateAreaMobiles()
-				savePfile(play)
 
 				fmt.Print("Core login procedure started")
 				response, _ = zmq.NewSocket(zmq.REQ)
@@ -177,9 +178,13 @@ func main() {
 				hostname = "tcp://snowcrashnetwork.vineyard.haus:7777"
 
 				err := response.Connect(hostname)
+				if err != nil {
+					panic(err)
+				}
 				fmt.Printf("\033[51;0H")
 				user = strings.TrimSpace(user)
 				pword = strings.TrimSpace(pword)
+				fmt.Println(hash(user+pword))
 //				_, err = response.Send(user+":=:"+pword, 0)
 	//			if err != nil {
 		//			panic(err)
@@ -188,7 +193,10 @@ func main() {
 				//if err != nil {
 			//		panic(err)
 			//	}
-				play := lookupPlayer(user, pword)
+			//	play = InitPlayer(user, pword)
+			//	savePfile(play)
+
+				play = lookupPlayer(user, pword)
 //				err = bson.Unmarshal(playBytes, &play)
 				if err != nil || play.PlayerHash == "2"{
 					fmt.Print("\033[38:2:150:0:150mAuthorization failed\033[0m")
@@ -253,7 +261,7 @@ func main() {
 	var ShowSoc bool
 	firstRun := true
 	var socBroadcasts []Broadcast
-
+	socBroadcasts = getBroadcasts()
 	//Game loop
 	fmt.Print("\033[38:2:15:185:0mPASS all checks: Enter to login\033[0m")
 	firstDig := false
@@ -663,7 +671,7 @@ func main() {
 		}
 		if strings.HasPrefix(input, "create") {
 			name, password := strings.Split(input, " ")[1], strings.Split(input, " ")[2]
-			response.Recv(0)
+			/*response.Recv(0)
 			_, err := response.Send(name + ":-:" + password, 0)
 			if err != nil {
 				panic(err)
@@ -676,13 +684,22 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-//			play = InitPlayer(name, password)
-//			play.PlayerHash, err = response.Recv(0)
-	//		if err != nil {
-		//		panic(err)
-		//	}
+			play = InitPlayer(name, password)
+		//	play.PlayerHash, err = response.Recv(0)
+			if err != nil {
+				panic(err)
+			}
 			fmt.Println(play.PlayerHash)
-		}
+		*/
+
+		user := strings.TrimSpace(name)
+		password = strings.TrimSpace(password)
+//		play.PlayerHash = hash(user+password)
+		play = InitPlayer(user, password)
+
+		addPfile(play)
+		savePfile(play)
+			}
 /*		if strings.HasPrefix(input, "login") {
 			userPass := strings.Split(input, " ")
 			user, pass := userPass[1], userPass[2]
@@ -999,6 +1016,9 @@ func main() {
 			//clear the selection
 			for i := 0;i < len(socBroadcasts);i++ {
 				socBroadcasts[i].Payload.Selected = false
+				if i == 0 {
+					socBroadcasts = getBroadcasts()
+				}
 			}
 		}
 /*
@@ -1035,6 +1055,7 @@ func main() {
 //							count := 0
 			}
 		}*/
+		savePfile(play)
 		if input == "BUY" {
 			ref := ""
 			sale := false
@@ -1396,6 +1417,7 @@ func main() {
 			inc = false
 			obj = allItems[0]
 //			fmt.Println(play.Inventory)
+			savePfile(play)
 		}
 
 		if strings.Contains(input, "pewpew") {
@@ -1516,6 +1538,8 @@ func main() {
 		//Reset the input to a standardized place
 		out += showDesc(play.CurrentRoom)
 		out += DescribePlayer(play)
+		out += describeInventory(play)
+		out += describeEquipment(play)
 		if play.CoreShow {
 			outln := ""
 			out += showCoreBoard(play)
@@ -1533,12 +1557,14 @@ func main() {
 			out += showPages(socBroadcasts, inp)
 
 		//	out += play.Profile
-		}
-		out += describeInventory(play)
-		out += describeEquipment(play)
+
+//		out += describeInventory(play)
+	//	out += describeEquipment(play)
 		fmt.Print(out)
+		savePfile(play)
 
 		fmt.Printf("\033[51;0H")
+		}
 	}
 		fmt.Sprint(chats)
 }

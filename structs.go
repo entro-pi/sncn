@@ -176,7 +176,6 @@ type Player struct {
 	Name string
 	Title string
 	Inventory []InventoryItem
-	Equipment []int
 	Equipped []EquipmentItem
 	CoreBoard string
 	PlainCoreBoard string

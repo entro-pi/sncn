@@ -51,10 +51,12 @@ func lookupPlayerByHash(playerHash string) Player {
     panic(err)
   }
   err = result.Decode(&player)
+
   if err != nil {
     fmt.Println("\033[38:2:150:0:150mPlayerfile requested was not found\033[0m")
     var noob Player
     noob.PlayerHash = "2"
+		panic(err)
     return noob
   }
   return player
@@ -88,14 +90,55 @@ func lookupPlayer(name string, pass string) Player {
     panic(err)
   }
   err = result.Decode(&player)
-  if err != nil {
+
+	if err != nil {
     fmt.Println("\033[38:2:150:0:150mPlayerfile requested was not found\033[0m")
     var noob Player
     noob.PlayerHash = "2"
+		panic(err)
     return noob
   }
   return player
 
+}
+func getBroadcasts() []Broadcast {
+	userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	findOptions := options.Find()
+	findOptions.SetLimit(1000)
+	collection := client.Database("broadcasts").Collection("general")
+
+	result, err := collection.Find(context.Background(), bson.M{}, findOptions)
+	if err != nil {
+		panic(err)
+	}
+//	fmt.Println("\033[38:2:255:0:0m", result, "\033[0m")
+	var container []Broadcast
+
+	err = result.All(context.Background(), &container)
+	if err != nil {
+		panic(err)
+	}
+	//	fmt.Print("\033[38:2:0:0:200m",container, "\033[0m")
+	return container
 }
 
 func updateChat() []Broadcast {
@@ -949,7 +992,7 @@ func addPfile(play Player) {
 		panic(err)
 	}
 	collection := client.Database("pfiles").Collection("Players")
-	_, err = collection.InsertOne(context.Background(), bson.M{"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipment":play.Equipment,
+	_, err = collection.InsertOne(context.Background(), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipped":play.Equipped,
 						"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha })
 }
 func savePfile(play Player) {
@@ -973,6 +1016,6 @@ func savePfile(play Player) {
 		panic(err)
 	}
 	collection := client.Database("pfiles").Collection("Players")
-	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipment":play.Equipment,
+	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipped":play.Equipped,
 							"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha, "classes": play.Classes })
 					}
