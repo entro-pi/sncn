@@ -1,7 +1,8 @@
 package main
 
 import (
-
+  "os"
+  "bufio"
   "context"
   "time"
 	"strconv"
@@ -119,7 +120,17 @@ func InitFight() Fight {
 
 
 func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+  userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
 	if err != nil {
 		panic(err)
 	}

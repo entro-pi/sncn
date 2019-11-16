@@ -4,6 +4,8 @@ import (
 	"github.com/SolarLune/dngn"
 	"fmt"
 	"strconv"
+	"os"
+	"bufio"
 	"strings"
   "math/rand"
 	term "github.com/nsf/termbox-go"
@@ -14,6 +16,90 @@ import (
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
+
+func hash(value string) string {
+  newVal := ""
+  for i := 0;i < len(value);i++ {
+    newVal += strconv.Itoa(int(value[i])*32+100)
+  }
+  return newVal
+}
+func lookupPlayerByHash(playerHash string) Player {
+  userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  if err != nil {
+    panic(err)
+  }
+  ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+  err = client.Connect(ctx)
+  if err != nil {
+    panic(err)
+  }
+  var player Player
+  collection := client.Database("pfiles").Collection("Players")
+
+  result  := collection.FindOne(context.Background(), bson.M{"playerhash": bson.M{"$eq":playerHash}})
+  if err != nil {
+    panic(err)
+  }
+  err = result.Decode(&player)
+  if err != nil {
+    fmt.Println("\033[38:2:150:0:150mPlayerfile requested was not found\033[0m")
+    var noob Player
+    noob.PlayerHash = "2"
+    return noob
+  }
+  return player
+}
+
+func lookupPlayer(name string, pass string) Player {
+  userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  passCred := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+passCred+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  if err != nil {
+    panic(err)
+  }
+  ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+  err = client.Connect(ctx)
+  if err != nil {
+    panic(err)
+  }
+  var player Player
+  collection := client.Database("pfiles").Collection("Players")
+
+  result  := collection.FindOne(context.Background(), bson.M{"playerhash": bson.M{"$eq":hash(name+pass)}})
+  if err != nil {
+    panic(err)
+  }
+  err = result.Decode(&player)
+  if err != nil {
+    fmt.Println("\033[38:2:150:0:150mPlayerfile requested was not found\033[0m")
+    var noob Player
+    noob.PlayerHash = "2"
+    return noob
+  }
+  return player
+
+}
+
+
 func updateChat(play Player, response *zmq.Socket) int {
 	count := 0
 	response.Recv(0)
@@ -784,7 +870,17 @@ return mob
 
 //TODO make this modular
 func createChat(message string, play Player) {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
 	if err != nil {
 		panic(err)
 	}
@@ -808,7 +904,17 @@ func createChat(message string, play Player) {
 
 //TODO make this modular
 func createMobiles(name string) {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
 	if err != nil {
 		panic(err)
 	}
@@ -823,7 +929,17 @@ func createMobiles(name string) {
 }
 
 func addPfile(play Player) {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
 	if err != nil {
 		panic(err)
 	}
@@ -837,7 +953,17 @@ func addPfile(play Player) {
 						"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha })
 }
 func savePfile(play Player) {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
 	if err != nil {
 		panic(err)
 	}

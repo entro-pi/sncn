@@ -136,7 +136,7 @@ func main() {
 			}
 			//log the character in
 
-			response.Recv(0)
+/*			response.Recv(0)
 			_, err = response.Send(user + ":=:" + pword, 0)
 			if err != nil {
 				panic(err)
@@ -148,7 +148,8 @@ func main() {
 			err = bson.Unmarshal(playBytes, &play)
 			if err != nil || play.PlayerHash == "2" {
 				panic(err)
-			}
+			}*/
+			play = lookupPlayerByHash(play.PlayerHash)
 			fmt.Print(play.PlayerHash)
 			fmt.Printf("\033[51;0H")
 		}else if os.Args[1] == "--builder" {
@@ -179,15 +180,16 @@ func main() {
 				fmt.Printf("\033[51;0H")
 				user = strings.TrimSpace(user)
 				pword = strings.TrimSpace(pword)
-				_, err = response.Send(user+":=:"+pword, 0)
-				if err != nil {
-					panic(err)
-				}
-				playBytes, err := response.RecvBytes(0)
-				if err != nil {
-					panic(err)
-				}
-				err = bson.Unmarshal(playBytes, &play)
+//				_, err = response.Send(user+":=:"+pword, 0)
+	//			if err != nil {
+		//			panic(err)
+			//	}
+				//playBytes, err := response.RecvBytes(0)
+				//if err != nil {
+			//		panic(err)
+			//	}
+				play := lookupPlayer(user, pword)
+//				err = bson.Unmarshal(playBytes, &play)
 				if err != nil || play.PlayerHash == "2"{
 					fmt.Print("\033[38:2:150:0:150mAuthorization failed\033[0m")
 					os.Exit(1)
@@ -358,7 +360,17 @@ func main() {
 									play.CurrentRoom.Desc += descScanner.Text() + "\n"
 								}
 							}
-							client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+							userFile, err := os.Open("weaselcreds")
+						  if err != nil {
+						    panic(err)
+						  }
+						  defer userFile.Close()
+						  scanner := bufio.NewScanner(userFile)
+						  scanner.Scan()
+						  user := scanner.Text()
+						  scanner.Scan()
+						  pass := scanner.Text()
+						  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
 							if err != nil {
 								panic(err)
 							}
@@ -483,7 +495,17 @@ func main() {
 
 			}
 			if save {
-				client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+				userFile, err := os.Open("weaselcreds")
+			  if err != nil {
+			    panic(err)
+			  }
+			  defer userFile.Close()
+			  scanner := bufio.NewScanner(userFile)
+			  scanner.Scan()
+			  user := scanner.Text()
+			  scanner.Scan()
+			  pass := scanner.Text()
+			  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
 				if err != nil {
 					panic(err)
 				}
@@ -661,7 +683,7 @@ func main() {
 		//	}
 			fmt.Println(play.PlayerHash)
 		}
-		if strings.HasPrefix(input, "login") {
+/*		if strings.HasPrefix(input, "login") {
 			userPass := strings.Split(input, " ")
 			user, pass := userPass[1], userPass[2]
 			response.Recv(0)
@@ -679,7 +701,7 @@ func main() {
 				os.Exit(1)
 			}
 			fmt.Println(play.PlayerHash)
-		}
+		}*/
 		if strings.HasPrefix(input, "wizinit:") {
 			fmt.Println("Sending init world command")
 			pass := strings.Split(input, "--")[1]
@@ -740,7 +762,17 @@ func main() {
 				}
 			}
 
-			client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+			userFile, err := os.Open("weaselcreds")
+		  if err != nil {
+		    panic(err)
+		  }
+		  defer userFile.Close()
+		  scanner := bufio.NewScanner(userFile)
+		  scanner.Scan()
+		  user := scanner.Text()
+		  scanner.Scan()
+		  pass := scanner.Text()
+		  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
 			if err != nil {
 				panic(err)
 			}

@@ -2,6 +2,8 @@ sncn
 .bson
 dat/*.bson
 
+weaselcreds
+
 dat/mongodump
 
 dat/sounds/128293__xenonn__layered-gunshot-3.wav
