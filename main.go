@@ -69,7 +69,7 @@ func main() {
 	var hostname string
 	var response *zmq.Socket
 	chatBoxes := true
-	grape := true
+//	grape := true
 	var allItems []Object
 	//Make this relate to character level
 	var dug []Space
@@ -227,7 +227,7 @@ func main() {
 	fmt.Println("Loading items...")
 	allItems = readItemsFromFile("dat/items/items.itm")
 	//fmt.Println(allItems)
-	for i := 0;i < len(play.Channels);i++ {
+	/*for i := 0;i < len(play.Channels);i++ {
 		response.Recv(0)
 		fmt.Println("Subscribing to "+play.Channels[i])
 		_, err := response.Send(play.Name+"+|+"+play.Channels[i], 0)
@@ -244,7 +244,7 @@ func main() {
 		sounds[9] <- true
 		clearDirty()
 		updateWho(play, true)
-	}
+	}*/
 	fmt.Sprint(mobiles)
 
 	fmt.Println("Loading graphics...")
@@ -257,14 +257,14 @@ func main() {
 	out += outln
 	updateChat()
 	//out += //ShowOocresponse, play)
-	var ShowSoc bool
+//	var ShowSoc bool
 	firstRun := true
 	var socBroadcasts []Broadcast
 	socBroadcasts = getBroadcasts()
 	//Game loop
 	fmt.Print("\033[38:2:15:185:0mPASS all checks: Enter to login\033[0m")
 	firstDig := false
-	ShowSoc = true
+//	ShowSoc = true
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan(){
 		out = ""
@@ -545,7 +545,8 @@ func main() {
 
 		//COMMAND SECTION
 		if input == "save" {
-				message := fmt.Sprint("++SAVE++"+play.PlayerHash)
+				savePfile(play)
+	/*			message := fmt.Sprint("++SAVE++"+play.PlayerHash)
 				response.Recv(0)
 				_, err = response.Send(message, 0)
 				if err != nil {
@@ -563,7 +564,7 @@ func main() {
 				if err != nil {
 					panic(err)
 				}
-
+*/
 		}
 		if strings.HasPrefix(input, "summon ") {
 			sum, err := strconv.Atoi(strings.Split(input, "summon ")[1])
@@ -599,8 +600,8 @@ func main() {
 				fmt.Println("\033[48:2:200:0:0mMIS-SESSION-TOKEN \nABORT\nABORT\nABORT")
 				os.Exit(1)
 			}
-
-		}
+			//not as useful now
+		}/*
 		if strings.HasPrefix(input, "g:") {
 			message := strings.Split(input, ":")[1]
 			longMessage := ""
@@ -623,11 +624,12 @@ func main() {
 				panic(err)
 			}
 			sounds[9] <- true
-		}
+		}*/
 		if input == "who" {
 			who := fmt.Sprint(showWho(play))
 			fmt.Printf("\033[38:2:175:0:150m"+who+"\033[0m")
 		}
+		/*
 		if strings.Contains(input, "gvsub ") {
 
 			channel := strings.Split(input, "gvsub ")[1]
@@ -639,7 +641,8 @@ func main() {
 			}
 
 		}
-
+*/
+/*
 		if strings.Contains(input, "gvunsub ") {
 
 			channel := strings.Split(input, "gvunsub ")[1]
@@ -651,6 +654,7 @@ func main() {
 			}
 
 		}
+*/
 		if input == "logout" {
 			savePfile(play)
 			response.Recv(0)
@@ -719,28 +723,11 @@ func main() {
 			}
 			fmt.Println(play.PlayerHash)
 		}*/
-		if strings.HasPrefix(input, "wizinit:") {
-			fmt.Println("Sending init world command")
-			pass := strings.Split(input, "--")[1]
-			response.Recv(0)
-			_, err := response.Send("init world:"+play.Name+"--"+pass, 0)
-			if err != nil {
-				panic(err)
-			}
-		}
-		if input == "shutdown server" {
-			fmt.Println("Sending shutdown signal")
-			response.Recv(0)
-			_, err := response.Send("+===shutdown===+", 0)
-			if err != nil {
-				panic(err)
-			}
-		}
 		//secondary commands
 		if strings.HasPrefix(input, "tc:") {
 			play = battle(input, play, sounds)
 			clearCore()
-			ShowSoc = true
+		//	ShowSoc = true
 		}
 		if input == "show room vnum" {
 			fmt.Print("\033[38;2;150;0;150mROOM VNUM :"+strconv.Itoa(play.CurrentRoom.Vnum)+"\033[0m")
@@ -880,7 +867,7 @@ func main() {
 			updateZoneMap(play, populated)
 		}
 		if input == "hide grape" {
-			grape = false
+		//	grape = false
 			clearDirty()
 			out += showDesc(play.CurrentRoom)
 			out += DescribePlayer(play)
@@ -897,7 +884,7 @@ func main() {
 
 		}
 		if input == "show grape" {
-			grape = true
+			//grape = true
 			sounds[9] <- true
 		}
 		if input == "hide chat" {
@@ -946,7 +933,7 @@ func main() {
 			if len(strings.Split(input, "=")) > 1 {
 				size := strings.Split(input, "=")[1]
 				clearBigBroad()
-				ShowSoc = false
+		//		ShowSoc = false
 				play.CoreBoard, play = genCoreBoard(size, play, populated)
 				out += showCoreBoard(play)
 				play.CoreShow = true
@@ -1012,7 +999,6 @@ func main() {
 		}
 		if firstRun {
 			firstRun = false
-			response.Recv(0)
 			//clear the selection
 			for i := 0;i < len(socBroadcasts);i++ {
 				socBroadcasts[i].Payload.Selected = false
@@ -1112,15 +1098,18 @@ func main() {
 			if len(strings.Split(input, " ")) > 1 {
 				socBroadcasts = getBroadcasts()
 				toSelect, err := strconv.Atoi(strings.Split(input, " ")[1])
+				for i := 0;i < len(socBroadcasts);i++ {
+					socBroadcasts[i].Payload.Selected = false
+				}
+				clearBigBroad()
 				if err != nil || toSelect >= len(socBroadcasts) {
 					fmt.Print("That's not a valid number...")
 				}else {
 					//remember to clear the first selection
-					for i := 0;i < len(socBroadcasts);i++ {
-						socBroadcasts[i].Payload.Selected = false
-					}
+
 					socBroadcasts[toSelect].Payload.Selected = true
-					
+					//out += AssembleBroadside(socBroadcasts[toSelect], socBroadcasts[toSelect].Payload.Row, socBroadcasts[toSelect].Payload.Col)
+					//fmt.Print(out)
 				}
 			}
 		}
@@ -1293,11 +1282,11 @@ func main() {
 			time.Sleep(100*time.Millisecond)
 			socBroadcasts = getBroadcasts()
 		}
-		if input == "show soc" {
+	/*	if input == "show soc" {
 			ShowSoc = true
 		}else if input == "hide soc" {
 			ShowSoc = false
-		}
+		}*/
 		if strings.HasPrefix(input, "bs=") {
 			numBS, err := strconv.Atoi(strings.Split(input, "=")[1])
 			if err != nil {
@@ -1354,6 +1343,8 @@ func main() {
 							inc = true
 					}
 					if inc {
+						savePfile(play)
+
 						break
 					}
 				}
@@ -1365,6 +1356,8 @@ func main() {
 						play.Inventory[i].Item = obj
 						play.Inventory[i].Number++
 						inc = true
+						savePfile(play)
+
 						break
 					}
 				}
@@ -1372,7 +1365,6 @@ func main() {
 			inc = false
 			obj = allItems[0]
 //			fmt.Println(play.Inventory)
-			savePfile(play)
 		}
 
 		if strings.Contains(input, "pewpew") {
@@ -1502,10 +1494,7 @@ func main() {
 			out += outln
 		}
 
-		if grape {
-			grapevines = len(updateChat())
-		}
-		if ShowSoc {
+//		if ShowSoc {
 			for i := 0;i < len(socOut);i++ {
 				out += AssembleBroadside(socOut[i], socOut[i].Payload.Row, socOut[i].Payload.Col)
 			}
@@ -1519,7 +1508,7 @@ func main() {
 		savePfile(play)
 
 		fmt.Printf("\033[51;0H")
-		}
-	}
+	//	}
+}
 		fmt.Sprint(chats)
 }

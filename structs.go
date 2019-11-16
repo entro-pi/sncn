@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/SolarLune/dngn"
+
 	"time"
 )
 
@@ -170,7 +171,6 @@ type Exit struct {
 type EquipmentItem struct {
 	Item Object
 }
-
 
 type Player struct {
 	Name string

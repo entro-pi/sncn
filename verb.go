@@ -271,7 +271,7 @@ func sendBroadcast(bcast Broadcast) Broadcast {
   if err != nil {
     panic(err)
   }
-  update := bson.M{"event":bcast.Event,"ref":bcast.Ref,"payload":bson.M{"channel":bcast.Payload.Channel,"id":bcast.Payload.ID, "message":bcast.Payload.Message,"game":bcast.Payload.Game,"name":bcast.Payload.Name}}
+  update := bson.M{"event":bcast.Event,"ref":bcast.Ref,"payload":bson.M{"channel":bcast.Payload.Channel,"id":bcast.Payload.ID, "message":bcast.Payload.Message,"game":bcast.Payload.Game,"name":bcast.Payload.Name,"bigmessage":bcast.Payload.BigMessage}}
   collection := client.Database("broadcasts").Collection("general")
   _, err = collection.InsertOne(context.Background(), update)
   if err != nil {
@@ -1021,7 +1021,7 @@ func addPfile(play Player) {
 		panic(err)
 	}
 	collection := client.Database("pfiles").Collection("Players")
-	_, err = collection.InsertOne(context.Background(), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":bson.M{"inventory":play.Inventory}, "equipped":bson.M{"equipped":play.Equipped},
+	_, err = collection.InsertOne(context.Background(), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":bson.A{play.Inventory}, "equipped":bson.A{play.Equipped},
 						"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha })
 }
 func savePfile(play Player) {
@@ -1045,6 +1045,6 @@ func savePfile(play Player) {
 		panic(err)
 	}
 	collection := client.Database("pfiles").Collection("Players")
-	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":bson.M{"inventory":play.Inventory}, "equipped":bson.M{"equipped":play.Equipped},
+	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":bson.A{play.Inventory}, "equipped":bson.A{play.Equipped},
 							"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha, "classes": play.Classes })
 					}
