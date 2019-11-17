@@ -6,28 +6,6 @@ import (
 	"time"
 )
 
-type Class struct {
-	Level float64
-	Name string
-	Skills []Skill
-	Spells []Spell
-}
-
-type Spell struct {
-	TechUsage int
-	Usage rune
-	Level int
-	Consumed bool
-	Name string
-}
-
-type Skill struct {
-	Name string
-	DamType string
-	Level int
-	Usage rune
-	Dam int
-}
 
 type StatusPayload struct {
 	Game string
@@ -255,6 +233,8 @@ type Player struct {
 	Level float64
 	Target string
 	TargetLong string
+	ESlotSpell Spell
+	ESlotSkill Skill
 	//ToBuy will have to either be an ItemHash
 	//Or a vnum
 	ToBuy int

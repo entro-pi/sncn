@@ -581,6 +581,12 @@ func DescribePlayer(play Player) string {
   out += fmt.Sprint(techShow)
   out += fmt.Sprint(hp)
 	out += fmt.Sprint("\033[38;0H")
+  if len(play.ESlotSpell.Name) > 1 {
+    out += fmt.Sprint("\033[38:2:150:0:175m'e'\033[0m = "+play.ESlotSpell.Name)    
+  }else if len(play.ESlotSkill.Name) > 1 {
+    out += fmt.Sprint("\033[38:2:150:0:175m'e'\033[0m = "+play.ESlotSkill.Name)
+  }
+
   out += fmt.Sprintln("<<====", play.BankAccount.Amount, "====>>")
   out += fmt.Sprintln("\033[38:2:200:0:0mHas slain "+strconv.Itoa(play.Slain)+" monsters\033[0m")
   out += fmt.Sprintln("\033[38:2:150:150:0mHas found "+strconv.Itoa(play.Hoarded)+" treasures\033[0m")

@@ -51,13 +51,10 @@ func addClass(play Player) Player {
 func InitPlayer(name string, pass string) Player {
 	var play Player
 	var inv []int
-  var class Class
 	inv = append(inv, 1)
 	play.Name = name
 	play.Title = "The Unknown"
-  play.Classes = append(play.Classes, class)
-  play.Classes[0].Level = 1
-  play.Classes[0].Name = "wildling"
+  play.Classes = make([]Class, 10, 10)
   var rip Skill
   rip.Name = "overcharge"
   rip.DamType = "slash"

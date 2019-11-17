@@ -69,6 +69,8 @@ import (
                           			play.TarX -= 1
                           		case 'd':
                           			play.TarX += 1
+                              case 'e':
+                                
                               case 'c':
                                 if play.Won >= len(play.Fights.Oppose) {
                                   fmt.Printf("\033[38:2:175:150:0mSlew %v monsters, clearing the core.\033[0m", play.Won)

@@ -1152,6 +1152,34 @@ func main() {
 		if input == "stack" {
 			play = stack(play)
 		}
+
+		if strings.HasPrefix(input, "join") {
+			if len(strings.Split(input, " ")) >= 2 {
+				join := true
+				classToJoin := strings.Split(input, " ")[1]
+				for i := 0;i < len(play.Classes);i++ {
+					if play.Classes[i].Name == classToJoin {
+						join = false
+					}
+				}
+				if join {
+					classesCanJoin := listClasses()
+						SELECTCLASS:
+						for i := 0;i < len(play.Classes);i++ {
+							if play.Classes[i].Name == "" {
+								for c := 0;c < len(classesCanJoin);c++ {
+									if classToJoin == classesCanJoin[c].Name {
+										play.Classes[i] = classesCanJoin[c]
+										fmt.Print("You are now a member of the "+play.Classes[i].Name)
+										break SELECTCLASS
+									}
+								}
+							}
+						}
+
+				}
+			}
+		}
 		if strings.HasPrefix(input, "gc: "){
 			var bs Broadcast
 			count := 0
