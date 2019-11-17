@@ -1,4 +1,17 @@
 
+![ouroboro](docs/ouroboro.png)
+
+***November 16th, 2019***
+I tossed the idea of profile photos in favour of
+an equipment/inventory system. I'm thinking about how
+to roll in a battle system and what kind I'd like it
+to be. Currently the old implementation got broken along
+the way and I'm not too jazzed about re-doing it as it
+was mostly placeholder anyway. The one part I want to keep
+is the roar intro to battle. That got me jazzed every time.
+Especially when I surprised myself with it.
+
+
 
 
 
@@ -187,7 +200,7 @@ You can clip through walls, but that'll be an easy fix.
 
 The battle spam design will be tomorrow, and you can bet I'm going to do something fun for that. I'm thinking a health
 bar that spans the top screen, giving an imperative feel to fighting. As well for skills and attacks, things are going
-to be tied to maybe half a dozen different attacks at any one time. I want to work stances in as well, to give that 
+to be tied to maybe half a dozen different attacks at any one time. I want to work stances in as well, to give that
 extra bit of "off" to help balance.
 
 
