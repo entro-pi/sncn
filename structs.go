@@ -170,6 +170,39 @@ type Exit struct {
 }
 type EquipmentItem struct {
 	Item Object
+	Number int
+}
+type EquipmentBank struct {
+
+  SlotOne EquipmentItem
+  SlotOneAmount int
+
+  SlotTwo EquipmentItem
+  SlotTwoAmount int
+
+  SlotThree EquipmentItem
+  SlotThreeAmount int
+
+  SlotFour EquipmentItem
+  SlotFourAmount int
+
+  SlotFive EquipmentItem
+  SlotFiveAmount int
+
+  SlotSix EquipmentItem
+  SlotSixAmount int
+
+  SlotSeven EquipmentItem
+  SlotSevenAmount int
+
+  SlotEight EquipmentItem
+  SlotEightAmount int
+
+  SlotNine EquipmentItem
+  SlotNineAmount int
+
+  SlotTen EquipmentItem
+  SlotTenAmount int
 }
 type InventoryBank struct {
 
@@ -207,6 +240,7 @@ type Player struct {
 	Name string
 	Title string
 	ItemBank InventoryBank
+	EqBank EquipmentBank
 	Inventory []InventoryItem
 	Equipped []EquipmentItem
 	CoreBoard string

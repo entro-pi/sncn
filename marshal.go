@@ -112,122 +112,114 @@ func composeInv(play Player) Player {
   }
   return play
 }
+func decompEq(play Player) Player {
 
+  num := play.EqBank.SlotOneAmount
+  for i := 0;i < num;i++ {
+    //fmt.Println("\033[38:2:200:0:0mslot one\033[0m")
 
-//Todo, make these receivers on a type
-func initInv(play Player) Player {
-  for i := 1;i < play.Inventory[0].Number;i++ {
-    if i >= 1 {
-//          fmt.Println("\033[38:2:0:200:0mINV\033[0m")
-      play.ItemBank.SlotOne.Item = play.Inventory[0].Item
-      play.ItemBank.SlotOneAmount++
-    }else {
-      var blank Object
-      play.ItemBank.SlotOne.Item = blank
-      play.ItemBank.SlotOneAmount = 0
-    }
+    play.Equipped[0] = play.EqBank.SlotOne
+    play.Equipped[0].Number++
   }
+  play.EqBank.SlotOneAmount = 0
+  num = play.EqBank.SlotTwoAmount
+  for i := 0;i < num;i++ {
+    //fmt.Println("\033[38:2:200:0:0mslot two\033[0m")
+    play.Equipped[1] = play.EqBank.SlotTwo
+    play.Equipped[1].Number++
+  }
+  play.EqBank.SlotTwoAmount = 0
+  num = play.EqBank.SlotThreeAmount
+  for i := 0;i < num;i++ {
+    play.Equipped[2] = play.EqBank.SlotThree
+    play.Equipped[2].Number++
+  }
+  play.EqBank.SlotThreeAmount = 0
+  num = play.EqBank.SlotFourAmount
+  for i := 0;i < num;i++ {
+    play.Equipped[3] = play.EqBank.SlotFour
+    play.Equipped[3].Number++
+  }
+  play.EqBank.SlotFourAmount = 0
+  num = play.EqBank.SlotFiveAmount
+  for i := 0;i < num;i++ {
+    play.Equipped[4] = play.EqBank.SlotFive
+    play.Equipped[4].Number++
+  }
+  play.EqBank.SlotFiveAmount = 0
+  num = play.EqBank.SlotSixAmount
+  for i := 0;i < num;i++ {
+    play.Equipped[5] = play.EqBank.SlotSix
+    play.Equipped[5].Number++
+  }
+  play.EqBank.SlotSixAmount = 0
+  num = play.EqBank.SlotSevenAmount
+  for i := 0;i < num;i++ {
+    play.Equipped[6] = play.EqBank.SlotSeven
+    play.Equipped[6].Number++
+  }
+  play.EqBank.SlotSevenAmount = 0
+  num = play.EqBank.SlotEightAmount
+  for i := 0;i < num;i++ {
+    play.Equipped[7] = play.EqBank.SlotEight
+    play.Equipped[7].Number++
+  }
+  play.EqBank.SlotEightAmount = 0
+  num = play.EqBank.SlotNineAmount
+  for i := 0;i < num;i++ {
+    play.Equipped[8] = play.EqBank.SlotNine
+    play.Equipped[8].Number++
+  }
+  play.EqBank.SlotNineAmount = 0
+  num = play.EqBank.SlotTenAmount
+  for i := 0;i < num;i++ {
+    play.Equipped[9] = play.EqBank.SlotTen
+    play.Equipped[9].Number++
+  }
+  play.EqBank.SlotTenAmount = 0
+  return play
+}
 
-
-  for i := 1;i < play.Inventory[1].Number;i++ {
-    if i >= 1 {
-//          fmt.Println("\033[38:2:0:200:0mINV\033[0m")
-      play.ItemBank.SlotTwo.Item = play.Inventory[1].Item
-
-      play.ItemBank.SlotTwoAmount++
-    }else {
-      var blank Object
-      play.ItemBank.SlotTwo.Item = blank
-      play.ItemBank.SlotTwoAmount = 0
-    }
+func composeEq(play Player) Player {
+  if play.Equipped[0].Number >= 1 {
+    play.EqBank.SlotOne.Item = play.Equipped[0].Item
+    play.EqBank.SlotOneAmount = play.Equipped[0].Number
   }
-  for i := 1;i < play.Inventory[2].Number;i++ {
-    if i >= 1 {
-//          fmt.Println("\033[38:2:0:200:0mINV\033[0m")
-      play.ItemBank.SlotThree.Item = play.Inventory[2].Item
-      play.ItemBank.SlotThreeAmount++
-    }else {
-      var blank Object
-      play.ItemBank.SlotThree.Item = blank
-      play.ItemBank.SlotThreeAmount = 0
-    }
+  if play.Equipped[1].Number >= 1 {
+    play.EqBank.SlotTwo.Item = play.Equipped[1].Item
+    play.EqBank.SlotTwoAmount = play.Equipped[1].Number
   }
-  for i := 1;i < play.Inventory[3].Number;i++ {
-    if i >= 1 {
-//          fmt.Println("\033[38:2:0:200:0mINV\033[0m")
-      play.ItemBank.SlotFour.Item = play.Inventory[3].Item
-      play.ItemBank.SlotFourAmount++
-    }else {
-      var blank Object
-      play.ItemBank.SlotFour.Item = blank
-      play.ItemBank.SlotFourAmount = 0
-    }
+  if play.Equipped[2].Number >= 1 {
+    play.EqBank.SlotThree.Item = play.Equipped[2].Item
+    play.EqBank.SlotThreeAmount = play.Equipped[2].Number
   }
-  for i := 1;i < play.Inventory[4].Number;i++ {
-    if i >= 1 {
-//          fmt.Println("\033[38:2:0:200:0mINV\033[0m")
-      play.ItemBank.SlotFive.Item = play.Inventory[4].Item
-      play.ItemBank.SlotFiveAmount++
-    }else {
-      var blank Object
-      play.ItemBank.SlotFive.Item = blank
-      play.ItemBank.SlotFiveAmount = 0
-    }
+  if play.Equipped[3].Number >= 1 {
+    play.EqBank.SlotFour.Item = play.Equipped[3].Item
+    play.EqBank.SlotFourAmount = play.Equipped[3].Number
   }
-  for i := 1;i < play.Inventory[5].Number;i++ {
-    if i >= 1 {
-//          fmt.Println("\033[38:2:0:200:0mINV\033[0m")
-      play.ItemBank.SlotSix.Item = play.Inventory[5].Item
-      play.ItemBank.SlotSixAmount++
-    }else {
-      var blank Object
-      play.ItemBank.SlotSix.Item = blank
-      play.ItemBank.SlotSixAmount = 0
-    }
+  if play.Equipped[4].Number >= 1 {
+    play.EqBank.SlotFive.Item = play.Equipped[4].Item
+    play.EqBank.SlotFiveAmount = play.Equipped[4].Number
   }
-  for i := 1;i < play.Inventory[6].Number;i++ {
-    if i >= 1 {
-//          fmt.Println("\033[38:2:0:200:0mINV\033[0m")
-      play.ItemBank.SlotSeven.Item = play.Inventory[6].Item
-      play.ItemBank.SlotSevenAmount++
-    }else {
-      var blank Object
-      play.ItemBank.SlotSeven.Item = blank
-      play.ItemBank.SlotSevenAmount = 0
-    }
+  if play.Equipped[5].Number >= 1 {
+    play.EqBank.SlotSix.Item = play.Equipped[5].Item
+    play.EqBank.SlotSixAmount = play.Equipped[5].Number
   }
-  for i := 1;i < play.Inventory[7].Number;i++ {
-    if i >= 1 {
-//          fmt.Println("\033[38:2:0:200:0mINV\033[0m")
-      play.ItemBank.SlotEight.Item = play.Inventory[7].Item
-      play.ItemBank.SlotEightAmount++
-    }else {
-      var blank Object
-      play.ItemBank.SlotEight.Item = blank
-      play.ItemBank.SlotEightAmount = 0
-    }
+  if play.Equipped[6].Number >= 1 {
+    play.EqBank.SlotSeven.Item = play.Equipped[6].Item
+    play.EqBank.SlotSevenAmount = play.Equipped[6].Number
   }
-  for i := 1;i < play.Inventory[8].Number;i++ {
-    if i >= 1 {
-//          fmt.Println("\033[38:2:0:200:0mINV\033[0m")
-      play.ItemBank.SlotNine.Item = play.Inventory[8].Item
-      play.ItemBank.SlotNineAmount++
-    }else {
-      var blank Object
-      play.ItemBank.SlotNine.Item = blank
-      play.ItemBank.SlotNineAmount = 0
-    }
+  if play.Equipped[7].Number >= 1 {
+    play.EqBank.SlotEight.Item = play.Equipped[7].Item
+    play.EqBank.SlotEightAmount = play.Equipped[7].Number
   }
-  for i := 1;i < play.Inventory[9].Number;i++ {
-    if i >= 1 {
-//          fmt.Println("\033[38:2:0:200:0mINV\033[0m")
-      play.ItemBank.SlotTen.Item = play.Inventory[9].Item
-      play.ItemBank.SlotTenAmount++
-    }else {
-      var blank Object
-      play.ItemBank.SlotTen.Item = blank
-      play.ItemBank.SlotTenAmount = 0
-    }
+  if play.Equipped[8].Number >= 1 {
+    play.EqBank.SlotNine.Item = play.Equipped[8].Item
+    play.EqBank.SlotNineAmount = play.Equipped[8].Number
+  }
+  if play.Equipped[9].Number >= 1 {
+    play.EqBank.SlotTen.Item = play.Equipped[9].Item
+    play.EqBank.SlotTenAmount = play.Equipped[9].Number
   }
   return play
 }

@@ -61,7 +61,7 @@ func lookupPlayerByHash(playerHash string) Player {
     return noob
   }
 	player = decompInv(player)
-
+	player = decompEq(player)
   return player
 }
 
@@ -102,6 +102,7 @@ func lookupPlayer(name string, pass string) Player {
     return noob
   }
 	player = decompInv(player)
+	player = decompEq(player)
   return player
 
 }
@@ -1058,6 +1059,7 @@ func savePfile(play Player) {
 		panic(err)
 	}
 	savePinv(play)
+	savePeq(play)
 }
 func savePinv(play Player) {
 	play = composeInv(play)
@@ -1082,6 +1084,36 @@ func savePinv(play Player) {
 	}
 	filter := bson.M{"playerhash":bson.M{"$eq": play.PlayerHash}}
 	update := bson.M{"$set":bson.M{"itembank":bson.M{"slotone":play.ItemBank.SlotOne,"slotoneamount":play.ItemBank.SlotOneAmount,"slottwo":play.ItemBank.SlotTwo,"slottwoamount":play.ItemBank.SlotTwoAmount,"slotthree":play.ItemBank.SlotThree,"slotthreeamount":play.ItemBank.SlotThreeAmount,"slotfour":play.ItemBank.SlotFour,"slotfiveamount":play.ItemBank.SlotFiveAmount,"slotsix":play.ItemBank.SlotSix,"slotsixamount":play.ItemBank.SlotSixAmount,"slotseven":play.ItemBank.SlotSeven,"slotsevenamount":play.ItemBank.SlotSevenAmount,"sloteight":play.ItemBank.SlotEight,"sloteightamount":play.ItemBank.SlotEightAmount,"slotnine":play.ItemBank.SlotNine,"slotnineamount":play.ItemBank.SlotNineAmount,"slotten":play.ItemBank.SlotTen,"slottenamount":play.ItemBank.SlotTenAmount}}}
+	collection := client.Database("pfiles").Collection("Players")
+	_, err = collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
+	if err != nil {
+		panic(err)
+	}
+}
+
+func savePeq(play Player) {
+	play = composeEq(play)
+	userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+	filter := bson.M{"playerhash":bson.M{"$eq": play.PlayerHash}}
+	update := bson.M{"$set":bson.M{"eqbank":bson.M{"slotone":play.EqBank.SlotOne,"slotoneamount":play.EqBank.SlotOneAmount,"slottwo":play.EqBank.SlotTwo,"slottwoamount":play.EqBank.SlotTwoAmount,"slotthree":play.EqBank.SlotThree,"slotthreeamount":play.EqBank.SlotThreeAmount,"slotfour":play.EqBank.SlotFour,"slotfiveamount":play.EqBank.SlotFiveAmount,"slotsix":play.EqBank.SlotSix,"slotsixamount":play.EqBank.SlotSixAmount,"slotseven":play.EqBank.SlotSeven,"slotsevenamount":play.EqBank.SlotSevenAmount,"sloteight":play.EqBank.SlotEight,"sloteightamount":play.EqBank.SlotEightAmount,"slotnine":play.EqBank.SlotNine,"slotnineamount":play.EqBank.SlotNineAmount,"slotten":play.EqBank.SlotTen,"slottenamount":play.EqBank.SlotTenAmount}}}
 	collection := client.Database("pfiles").Collection("Players")
 	_, err = collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
 	if err != nil {

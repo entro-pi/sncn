@@ -1132,9 +1132,11 @@ func main() {
 						if play.Inventory[i].Number > 1 {
 							play.Inventory[i].Number--
 							play.Equipped[slot].Item = play.Inventory[i].Item
+							play.Equipped[slot].Number++
 						}else if play.Inventory[i].Item.Slot == slot {
 							if play.Equipped[i].Item.Vnum == 0 {
 								var blank Object
+								play.Equipped[slot].Number++
 								play.Equipped[slot].Item = play.Inventory[i].Item
 								play.Inventory[i].Item = blank
 								play.Inventory[i].Number--
