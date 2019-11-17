@@ -86,7 +86,14 @@ import (
 
                               prepend := fmt.Sprint("\033["+playY+";"+playX+"H")
                                   play.Target = prepend+"\033[48:2:150:0:150m \033[0m"
-
+                                  splitBoard := strings.Split(play.PlainCoreBoard, "\n")
+                                  for r := 0;r < len(splitBoard);r++ {
+                                    for c := 0;c < len(splitBoard[r]);c++ {
+                                      if play.TarY == r && play.TarX == c {
+                                        play.TargetLong = string(splitBoard[r][c])
+                                      }
+                                    }
+                                  }
 
                                   out = ""
                                   out += showBattle(damMsg)
