@@ -726,11 +726,6 @@ func main() {
 			fmt.Println(play.PlayerHash)
 		}*/
 		//secondary commands
-		if strings.HasPrefix(input, "tc:") {
-			play = battle(input, play, sounds)
-			clearCore()
-		//	ShowSoc = true
-		}
 		if input == "show room vnum" {
 			fmt.Print("\033[38;2;150;0;150mROOM VNUM :"+strconv.Itoa(play.CurrentRoom.Vnum)+"\033[0m")
 		}
@@ -1303,6 +1298,12 @@ func main() {
 					}
 				}
 			}
+		}
+		if input == "dive" {
+			if len(play.CoreBoard) > 5 {
+				battle(play, sounds)
+			}
+
 		}
 		if strings.HasPrefix(input, "generate ") {
 			vnum, err := strconv.Atoi(strings.Split(input, " ")[1])
