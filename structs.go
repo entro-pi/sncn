@@ -87,6 +87,10 @@ type BroadcastPayload struct {
 	Col int
 	Selected bool
 	BigMessage string
+	CoreBoard string
+	Fights Fight
+	PlainCoreBoard string
+	CPU string
 	ID int
 	Transaction OnlineTransaction
 	Store OnlineStore
@@ -248,6 +252,7 @@ type Player struct {
 	CurrentRoom Space
 	PlayerHash string
 	Classes []Class
+	Level float64
 	Target string
 	TargetLong string
 	//ToBuy will have to either be an ItemHash

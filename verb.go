@@ -276,7 +276,12 @@ func sendBroadcast(bcast Broadcast) Broadcast {
   if err != nil {
     panic(err)
   }
-  update := bson.M{"event":bcast.Event,"ref":bcast.Ref,"payload":bson.M{"channel":bcast.Payload.Channel,"id":bcast.Payload.ID, "message":bcast.Payload.Message,"game":bcast.Payload.Game,"name":bcast.Payload.Name,"bigmessage":bcast.Payload.BigMessage,"transaction":bcast.Payload.Transaction}}
+  update := bson.M{"event":bcast.Event,"ref":bcast.Ref,"payload":bson.M{
+		"channel":bcast.Payload.Channel,"id":bcast.Payload.ID,
+		 "message":bcast.Payload.Message,"game":bcast.Payload.Game,
+		 "name":bcast.Payload.Name,"bigmessage":bcast.Payload.BigMessage,
+		 "transaction":bcast.Payload.Transaction,"cpu":bcast.Payload.CPU,
+		 "plaincoreboard":bcast.Payload.PlainCoreBoard,"coreboard":bcast.Payload.CoreBoard}}
   collection := client.Database("broadcasts").Collection("general")
   _, err = collection.InsertOne(context.Background(), update)
   if err != nil {
@@ -314,7 +319,12 @@ func updateBroadcast(bcast Broadcast) Broadcast {
     panic(err)
   }
 	filter := bson.M{"ref":bson.M{"$eq":bcast.Ref}}
-  update := bson.M{"$set":bson.M{"event":bcast.Event,"ref":bcast.Ref,"payload":bson.M{"channel":bcast.Payload.Channel,"id":bcast.Payload.ID, "message":bcast.Payload.Message,"game":bcast.Payload.Game,"name":bcast.Payload.Name,"bigmessage":bcast.Payload.BigMessage,"transaction":bcast.Payload.Transaction}}}
+  update := bson.M{"$set":bson.M{"event":bcast.Event,"ref":bcast.Ref,
+		"payload":bson.M{"channel":bcast.Payload.Channel,"id":bcast.Payload.ID,
+			 "message":bcast.Payload.Message,"game":bcast.Payload.Game,"name":bcast.Payload.Name,
+			 "bigmessage":bcast.Payload.BigMessage,"transaction":bcast.Payload.Transaction,
+			 "cpu":bcast.Payload.CPU,"plaincoreboard":bcast.Payload.PlainCoreBoard,
+			 "coreboard":bcast.Payload.CoreBoard}}}
   collection := client.Database("broadcasts").Collection("general")
   _, err = collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
   if err != nil {
@@ -559,14 +569,16 @@ func improvedTargeting(play Player, target string) (Player) {
 	return play
 }
 
+func setCoreBoard(play Player, broad Broadcast) Player {
+	play.CPU = broad.Payload.CPU
+	play.PlainCoreBoard = broad.Payload.PlainCoreBoard
+	play.Fights = broad.Payload.Fights
+	play.CoreBoard = broad.Payload.CoreBoard
+	return play
+}
 
-func genCoreBoard(size string, play Player, populated []Space) (string, Player) {
+func genCoreBoard(sizeX int, sizeY int, broad Broadcast) (string, Broadcast) {
 	//Create a room map
-	sizeX, err := strconv.Atoi(strings.Split(size, ":")[0])
-	sizeY, err := strconv.Atoi(strings.Split(size, ":")[1])
-	if err != nil {
-		fmt.Print("Error, invalid coreboard size!")
-	}
 	Room := dngn.NewRoom(sizeX, sizeY)
 	splits := rand.Intn(75)
 	Room.GenerateBSP('%', 'D', splits)
@@ -576,7 +588,7 @@ func genCoreBoard(size string, play Player, populated []Space) (string, Player) 
 //	}
   newValue := ""
   outVal := ""
-	play.Fights = InitFight()
+	broad.Payload.Fights = InitFight()
 //	fmt.Println("Generating and populating map")
 	for i := 0;i < len(Room.Data);i++ {
 
@@ -588,10 +600,10 @@ func genCoreBoard(size string, play Player, populated []Space) (string, Player) 
 					ChanceTreasure := "T"
 					if rand.Intn(100) > 98 {
 							newValue += ChanceTreasure
-							tiara := InitObject(play)
+							tiara := InitObject()
 							tiara.X = s
 							tiara.Y = i
-							play.Fights.Treasure = append(play.Fights.Treasure, tiara)
+							broad.Payload.Fights.Treasure = append(broad.Payload.Fights.Treasure, tiara)
 							continue
 					}
 					if rand.Intn(100) > 95 {
@@ -601,7 +613,7 @@ func genCoreBoard(size string, play Player, populated []Space) (string, Player) 
 						ferret.X = s
 						ferret.Y = i
 						ferret.Char = "F"
-						play.Fights.Oppose = append(play.Fights.Oppose, ferret)
+						broad.Payload.Fights.Oppose = append(broad.Payload.Fights.Oppose, ferret)
 						continue
 					}else {
 						newValue += string(value[s])
@@ -613,57 +625,25 @@ func genCoreBoard(size string, play Player, populated []Space) (string, Player) 
 			}
       newValue += "\n"
     }
-		play.CPU = newValue + "\n"
-		out := ""
-    play.PlainCoreBoard = newValue
-    play.CoreBoard = newValue
-    out += showCoreBoard(play)
-    _, outln := showChat(play)
-		out += outln
-    out += showDesc(play.CurrentRoom)
-		time.Sleep(250*time.Millisecond)
+		broad.Payload.CPU = newValue + "\n"
+    broad.Payload.PlainCoreBoard = newValue
+    broad.Payload.CoreBoard = newValue
     newValue = strings.ReplaceAll(newValue, "T", "\033[48;2;200;150;0mT\033[0m")
-		fmt.Print(out)
 
-    play.CoreBoard = newValue
-		out += showCoreBoard(play)
-    _, outln = showChat(play)
-		out += outln
-    out += showDesc(play.CurrentRoom)
-		time.Sleep(250*time.Millisecond)
+    broad.Payload.CoreBoard = newValue
     newValue = strings.ReplaceAll(newValue, "M", "\033[48;2;200;50;50mM\033[0m")
-		fmt.Print(out)
 
-    play.CoreBoard = newValue
-		out += showCoreBoard(play)
-    _, outln = showChat(play)
-		out += outln
-    out += showDesc(play.CurrentRoom)
-		time.Sleep(250*time.Millisecond)
+    broad.Payload.CoreBoard = newValue
 		newValue = strings.ReplaceAll(newValue, "%", "\033[38;2;0;150;150m%\033[0m")
-		fmt.Print(out)
 
-    play.CoreBoard = newValue
-		out += showCoreBoard(play)
-    _, outln = showChat(play)
-		out += outln
-    out += showDesc(play.CurrentRoom)
-		time.Sleep(250*time.Millisecond)
+    broad.Payload.CoreBoard = newValue
 		newValue = strings.ReplaceAll(newValue, "D", "\033[48;2;200;150;150mD\033[0m")
-		fmt.Print(out)
 
-    play.CoreBoard = newValue
-		out += showCoreBoard(play)
-    _, outln = showChat(play)
-		out += outln
-    out += showDesc(play.CurrentRoom)
-		time.Sleep(250*time.Millisecond)
+    broad.Payload.CoreBoard = newValue
 		newValue = strings.ReplaceAll(newValue, " ", "\033[48:2:0:200:150m \033[0m")
-		play.CoreBoard = newValue
+		broad.Payload.CoreBoard = newValue
     outVal += newValue + "\n"
-		fmt.Print(out)
-		//fmt.Println(play.CPU)
-	return outVal, play
+	return outVal, broad
 }
 
 func resetCraft() string {
@@ -1098,7 +1078,7 @@ func savePfile(play Player) {
 	collection := client.Database("pfiles").Collection("Players")
 	_, err = collection.UpdateOne(context.Background(),filter, bson.M{"$set":bson.M{
 		"playerhash":play.PlayerHash,"name":play.Name,
-		"title":play.Title,"inventory":play.Inventory,
+		"title":play.Title,"inventory":play.Inventory,"level":play.Level,
 		 "equipped":play.Equipped,"coreboard": play.CoreBoard,
 		 "bankaccount":bson.M{"owner":play.Name,"amount":play.BankAccount.Amount},
 		  "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis,

@@ -298,7 +298,7 @@ func showCoreBoard(play Player) string {
 	out := ""
   coreSplit := strings.Split(play.CoreBoard, "\n")
   for i := 0;i < len(coreSplit);i++ {
-      core += fmt.Sprint("\033[",strconv.Itoa(i+20),";54H",coreSplit[i])
+      core += fmt.Sprint("\033[",strconv.Itoa(i+22),";53H",coreSplit[i])
     }
     out = fmt.Sprint(core)
 		return out
@@ -308,7 +308,7 @@ func clearCoreBoard(play Player) {
   //This needs to be made dynamic for when we adjust the view. for now it's fine
   coreSpace := "                          "
   for i := 0;i < len(coreSplit);i++ {
-    core := fmt.Sprint("\033[",strconv.Itoa(i+20),";52H ")
+    core := fmt.Sprint("\033[",strconv.Itoa(i+22),";53H ")
 
     fmt.Print(core+coreSpace)
   }

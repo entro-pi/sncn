@@ -7,6 +7,7 @@ import (
 	"time"
 	"fmt"
 	"strconv"
+	"math/rand"
 	"os/exec"
 	"strings"
   "go.mongodb.org/mongo-driver/bson"
@@ -931,14 +932,7 @@ func main() {
 		if strings.Contains(input, "gen coreboard") {
 			//TODO make this so one doesn't loose the
 			//old coreboard, or convert it to xp, i dunno
-			if len(strings.Split(input, "=")) > 1 {
-				size := strings.Split(input, "=")[1]
-				clearBigBroad()
-		//		ShowSoc = false
-				play.CoreBoard, play = genCoreBoard(size, play, populated)
-				out += showCoreBoard(play)
-				play.CoreShow = true
-			}
+
 		}
 		if strings.Contains(input, "open map") {
 			//// TODO:
@@ -1173,6 +1167,7 @@ func main() {
 			fmt.Print("\033[23;90H# on a newline to load a picture")
 			fmt.Print("\033[24;90H^ on a newline to attach an item for sale")
 
+
 			for scanner.Scan() {
 				count++
 				lineCount := strconv.Itoa(count+24)
@@ -1180,6 +1175,12 @@ func main() {
 				fmt.Print("\033[23;90H# on a newline to load a picture")
 				fmt.Print("\033[24;90H^ on a newline to attach an item for sale\033["+lineCount+";90H")
 				if scanner.Text() == "@" {
+					sizeX := rand.Intn(int(play.Level+10))+15
+					sizeY := rand.Intn(int(play.Level+10))+15
+					clearBigBroad()
+					bs.Payload.CoreBoard, bs = genCoreBoard(sizeX, sizeY, bs)
+					out += showCoreBoard(play)
+					fmt.Print(out)
 					break
 				}else if scanner.Text() == "#" {
 					chosen := chooser(photos)
@@ -1469,16 +1470,17 @@ func main() {
 		out += DescribePlayer(play)
 		out += describeInventory(play)
 		out += describeEquipment(play)
-		if play.CoreShow {
-			outln := ""
-			out += showCoreBoard(play)
-			play, outln = showCoreMobs(play)
-			out += outln
-		}
 
 //		if ShowSoc {
 			for i := 0;i < len(socOut);i++ {
 				out += AssembleBroadside(socOut[i], socOut[i].Payload.Row, socOut[i].Payload.Col)
+				if socOut[i].Payload.Selected && len(socOut[i].Payload.CoreBoard) > 5 {
+					outln := ""
+					play = setCoreBoard(play, socOut[i])
+					out += showCoreBoard(play)
+					play, outln = showCoreMobs(play)
+					out += outln
+				}
 			}
 			out += showPages(socBroadcasts, inp)
 

@@ -93,12 +93,11 @@ func InitPlayer(name string, pass string) Player {
 	return play
 
 }
-func InitObject(play Player) Object {
+func InitObject() Object {
   var obj Object
   obj.Name = "a golden tiara"
   obj.LongName = "A golden tiara lies here."
   obj.Vnum = 1
-  obj.Zone = play.CurrentRoom.Zone
   obj.Value = 1
   obj.Owned = false
   return obj
