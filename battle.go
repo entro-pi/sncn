@@ -95,6 +95,16 @@ import (
                                     }
                                   }
 
+                                  if play.TargetLong == "%" {
+                                    play.TarY = play.OldY
+                                    play.TarX = play.OldX
+                                    playY = strconv.Itoa(play.TarY+22)
+                                    playX = strconv.Itoa(play.TarX+53)
+
+                                    prepend = fmt.Sprint("\033["+playY+";"+playX+"H")
+                                    play.Target = prepend+"\033[48:2:150:0:150m \033[0m"
+                                  }
+
                                   out = ""
                                   out += showBattle(damMsg)
                       //            out += showDesc(play.CurrentRoom)
