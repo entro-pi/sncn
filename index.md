@@ -3,24 +3,82 @@
 
 ***November 16th, 2019***
 I tossed the idea of profile photos in favour of
+
 an equipment/inventory system. I'm thinking about how
+
 to roll in a battle system and what kind I'd like it
+
 to be. Currently the old implementation got broken along
-the way and I'm not too jazzed about re-doing it as it
+
+the way and I'm not too excited about re-doing it as it
+
 was mostly placeholder anyway. The one part I want to keep
+
 is the roar intro to battle. That got me jazzed every time.
+
 Especially when I surprised myself with it.
 
+
+
 I'm thinking something odd for the battle system. For one
+
 it will not be one kind of battle for everything. I want
+
 to have different types of battle for different classes.
 
 For instance, a dexterous hacker has a ddr-style keyboard
+
 battle to produce battlespam. (this is going to be
+
 a typing test game) While a harmonious enchanter will have
+
 a keypad game of simon to produce the same.
 
+Matching the patterns correctly will result in more "hits"
 
+and more messups will correlate to "misses" and getting hit.
+
+
+
+
+I'm unsure of multiclassing at this point. I wanted to be
+
+able to multiclass, but that was when I was thinking this
+
+thing would look more like a diku than anything else.
+
+I think the biggest thing is going to be making sure there's
+
+little to no penalty to trying out a class, but advancing in
+
+a class will take real life time digestion of skill points.
+
+Ie I want to advance in hacker to close the level gap
+
+between me and my prey so the keyboard battle is less
+
+insanely hard. I select my chosen path, the amount of
+
+points to spend, and it gives me an amount of time until
+
+that is complete. I agree and it starts digesting. I come
+
+back in a few hours and lo and behold! A battle that was
+
+once inhumanely hard is now manageable.
+
+
+As for social spaces, the only way to "see" another player
+
+right now is if they post to a public channel.
+
+
+
+In other news I migrated the vast majority of sncn's backend
+
+to a mongo atlas server, and increased the reactivity of the
+
+game tenfold.
 
 
 ![sunshot](docs/Screenshot from 2019-11-07 21-40-15.png)
