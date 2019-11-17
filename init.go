@@ -78,6 +78,11 @@ func InitPlayer(name string, pass string) Player {
   play.Tech = 17
   play.PlayerHash = hash(name+pass)
 
+  var bank Account
+  bank.Owner = play.Name
+  bank.Amount = 0.0
+  play.BankAccount = bank
+
 	play.Str = 1
 	play.Int = 1
 	play.Dex = 1

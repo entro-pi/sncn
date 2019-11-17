@@ -276,7 +276,7 @@ func sendBroadcast(bcast Broadcast) Broadcast {
   if err != nil {
     panic(err)
   }
-  update := bson.M{"event":bcast.Event,"ref":bcast.Ref,"payload":bson.M{"channel":bcast.Payload.Channel,"id":bcast.Payload.ID, "message":bcast.Payload.Message,"game":bcast.Payload.Game,"name":bcast.Payload.Name,"bigmessage":bcast.Payload.BigMessage}}
+  update := bson.M{"event":bcast.Event,"ref":bcast.Ref,"payload":bson.M{"channel":bcast.Payload.Channel,"id":bcast.Payload.ID, "message":bcast.Payload.Message,"game":bcast.Payload.Game,"name":bcast.Payload.Name,"bigmessage":bcast.Payload.BigMessage,"transaction":bcast.Payload.Transaction}}
   collection := client.Database("broadcasts").Collection("general")
   _, err = collection.InsertOne(context.Background(), update)
   if err != nil {
@@ -286,6 +286,46 @@ func sendBroadcast(bcast Broadcast) Broadcast {
   return bcast
 
 }
+func onlineHash(value string) string {
+  newVal := ""
+  for i := 0;i < len(value);i++ {
+    newVal += strconv.Itoa(int(value[i])*24+240)
+  }
+  return newVal
+}
+func updateBroadcast(bcast Broadcast) Broadcast {
+  userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  if err != nil {
+    panic(err)
+  }
+  ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+  err = client.Connect(ctx)
+  if err != nil {
+    panic(err)
+  }
+	filter := bson.M{"ref":bson.M{"$eq":bcast.Ref}}
+  update := bson.M{"$set":bson.M{"event":bcast.Event,"ref":bcast.Ref,"payload":bson.M{"channel":bcast.Payload.Channel,"id":bcast.Payload.ID, "message":bcast.Payload.Message,"game":bcast.Payload.Game,"name":bcast.Payload.Name,"bigmessage":bcast.Payload.BigMessage,"transaction":bcast.Payload.Transaction}}}
+  collection := client.Database("broadcasts").Collection("general")
+  _, err = collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
+  if err != nil {
+    panic(err)
+  }
+  fmt.Println("Upserted the broadcast")
+  return bcast
+
+}
+
+
 func AssembleBroadside(broadside Broadcast, row int, col int) (string) {
 	var cel string
 	colString := strconv.Itoa(col)
@@ -1052,9 +1092,10 @@ func savePfile(play Player) {
 	if err != nil {
 		panic(err)
 	}
+	filter := bson.M{"playerhash":bson.M{"$eq":play.PlayerHash}}
 	collection := client.Database("pfiles").Collection("Players")
-	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"$set":bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipped":play.Equipped,
-							"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha, "classes": play.Classes }})
+	_, err = collection.UpdateOne(context.Background(),filter, bson.M{"$set":bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipped":play.Equipped,
+							"coreboard": play.CoreBoard,"bankaccount":bson.M{"owner":play.Name,"amount":play.BankAccount.Amount}, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha, "classes": play.Classes }}, options.Update().SetUpsert(true))
 	if err != nil {
 		panic(err)
 	}

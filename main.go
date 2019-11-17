@@ -982,6 +982,7 @@ func main() {
 		if input == "add credbits" {
 			fmt.Println("You have been awarded 100 credbits")
 			play.BankAccount.Amount += 100.0
+			savePfile(play)
 		}
 		if strings.HasPrefix(input, "go to") {
 			splitCommand := strings.Split(input, "to")
@@ -1044,8 +1045,6 @@ func main() {
 		}*/
 		//savePfile(play)
 		if input == "BUY" {
-			ref := ""
-			sale := false
 			sold := false
 			for i := 0;i < len(socBroadcasts);i++ {
 				if socBroadcasts[i].Payload.Transaction.Item.Name != "nothing" || socBroadcasts[i].Payload.Transaction.Item.Name != "" {
@@ -1054,44 +1053,18 @@ func main() {
 					sold = true
 				}
 				if socBroadcasts[i].Payload.Selected && !sold {
-					ref = socBroadcasts[i].Ref
+					approved := ""
 					//fmt.Print("\033[38:2:200:0:0mREF",ref,"\033[0m")
-					sale = true
-					break
-				}
-			}
-			if sale {
-				response.Recv(0)
-				fmt.Print("BUYING ",ref)
-				_, err := response.Send(play.PlayerHash+"||SALE||"+ref, 0)
-				if err != nil {
-					panic(err)
-				}
-				result, err := response.Recv(0)
-				if err != nil {
-					panic(err)
-				}
-				fmt.Print(result)
-				if strings.Contains(result, "approved") {
-					for i := 0;i < len(socBroadcasts);i++ {
-						if socBroadcasts[i].Ref == ref {
-							socBroadcasts[i].Payload.Transaction.Sold = true
-							clearBigBroad()
-						}
+					play, approved = onlineTransaction(&socBroadcasts[i], play, allItems)
+					if strings.Contains(approved, "approved") {
+						socBroadcasts[i].Payload.Transaction.Sold = true
+						socBroadcasts[i] = updateBroadcast(socBroadcasts[i])
+						clearBigBroad()
+					}else {
+						fmt.Println(approved)
 					}
-				}
-				response.Send("ok", 0)
-				playBytes, err := response.RecvBytes(0)
-				if err != nil {
-					panic(err)
-				}
-				err = bson.Unmarshal(playBytes, &play)
-				if err != nil {
-					panic(err)
-				}
-				_, err = response.Send("done", 0)
-				sale = false
 
+				}
 			}
 		}
 

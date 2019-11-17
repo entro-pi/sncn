@@ -81,6 +81,77 @@ func readItemsFromFile(filePath string) []Object {
   return objHolder
 }
 
+func onlineTransaction(advert *Broadcast, customer Player, allItems []Object) (Player, string) {
+  output := ""
+  if advert.Payload.Transaction.Sold {
+    return customer, "SOLD OUT"
+  }
+  if len(advert.Payload.Store.Inventory) > 0 {
+      for i := 0;i < len(advert.Payload.Store.Inventory);i++ {
+        hasSpace := false
+        slot := 0
+        vnum := advert.Payload.Store.Inventory[i].Item.Vnum
+        hash := advert.Payload.Store.Inventory[i].ItemHash
+        price := advert.Payload.Store.Inventory[i].Price
+        customerCash := customer.BankAccount.Amount
+        isSold := advert.Payload.Store.Inventory[i].Sold
+        fmt.Println("VNUM",vnum,"HASH",hash,"PRICE",price,"CUSTOMERCASH",customerCash,"ISSOLD",isSold)
+        for c := len(customer.Inventory) - 1;c > 0;c-- {
+          if customer.Inventory[c].Item.Name == "nothing" {
+            hasSpace = true
+            slot = c
+          }
+        }
+        if customerCash >= price && hasSpace {
+            customer.BankAccount.Amount -= price
+        }
+        if hash == onlineHash(allItems[vnum].LongName) {
+          customer.Inventory[slot].Item = allItems[vnum]
+          customer.Inventory[slot].Number++
+          advert.Payload.Store.Inventory[i].Sold = true
+          fmt.Println("\033[38:2:0:200:0mTransaction approved.\033[0m")
+          output += fmt.Sprintln("\033[38:2:0:200:0mTransaction approved.\033[0m")
+
+          return customer, output
+        }
+      }
+  }else if !advert.Payload.Transaction.Sold {
+      hasSpace := false
+      hasCash := false
+      slot := 0
+      vnum := advert.Payload.Transaction.Item.Vnum
+      hash := advert.Payload.Transaction.ItemHash
+      price := advert.Payload.Transaction.Price
+      customerCash := customer.BankAccount.Amount
+
+      fmt.Println("VNUM",vnum,"HASH",hash,"PRICE",price,"CUSTOMERCASH",customerCash)
+      for c := len(customer.Inventory) - 1;c > 0;c-- {
+        if customer.Inventory[c].Item.Name == "nothing" || customer.Inventory[c].Item.Name == "" || customer.Inventory[c].Item.Name == advert.Payload.Transaction.Item.Name{
+          hasSpace = true
+          slot = c
+        }
+      }
+      if customerCash >= price && hasSpace {
+          customer.BankAccount.Amount -= price
+          hasCash = true
+      }
+      if hasSpace && hasCash {
+        customer.Inventory[slot].Item = allItems[vnum]
+        customer.Inventory[slot].Number++
+        fmt.Println("\033[38:2:0:200:0mTransaction approved.\033[0m")
+        output += fmt.Sprintln("\033[38:2:0:200:0mTransaction approved.\033[0m")
+        return customer, output
+
+      }
+  }else {
+    output += fmt.Sprint("Looks like you missed out on the sale!")
+    output += fmt.Sprint("That is sold out!")
+  }
+  output += fmt.Sprintln("\033[38:2:200:0:0mTransaction declined.\033[0m")
+  fmt.Println("\033[38:2:200:0:0mTransaction declined.\033[0m")
+  return customer, output
+}
+
 func stack(play Player) Player {
   //need to do a deepequals
 
