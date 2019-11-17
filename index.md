@@ -11,6 +11,14 @@ was mostly placeholder anyway. The one part I want to keep
 is the roar intro to battle. That got me jazzed every time.
 Especially when I surprised myself with it.
 
+I'm thinking something odd for the battle system. For one
+it will not be one kind of battle for everything. I want
+to have different types of battle for different classes.
+
+For instance, a dexterous hacker has a ddr-style keyboard
+battle to produce battlespam. (this is going to be
+a typing test game) While a harmonious enchanter will have
+a keypad game of simon to produce the same.
 
 
 
