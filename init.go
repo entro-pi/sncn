@@ -94,7 +94,6 @@ func InitObject(play Player) Object {
   obj.LongName = "A golden tiara lies here."
   obj.Vnum = 1
   obj.Zone = play.CurrentRoom.Zone
-  obj.Owner = play
   obj.Value = 1
   obj.Owned = false
   return obj

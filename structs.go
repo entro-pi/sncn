@@ -70,7 +70,7 @@ type Object struct {
 	LongName string
 	Vnum int
 	Zone string
-	Owner Player
+	OwnerHash string
 	Value int
 	Slot int
 	X int
@@ -171,10 +171,42 @@ type Exit struct {
 type EquipmentItem struct {
 	Item Object
 }
+type InventoryBank struct {
 
+  SlotOne InventoryItem
+  SlotOneAmount int
+
+  SlotTwo InventoryItem
+  SlotTwoAmount int
+
+  SlotThree InventoryItem
+  SlotThreeAmount int
+
+  SlotFour InventoryItem
+  SlotFourAmount int
+
+  SlotFive InventoryItem
+  SlotFiveAmount int
+
+  SlotSix InventoryItem
+  SlotSixAmount int
+
+  SlotSeven InventoryItem
+  SlotSevenAmount int
+
+  SlotEight InventoryItem
+  SlotEightAmount int
+
+  SlotNine InventoryItem
+  SlotNineAmount int
+
+  SlotTen InventoryItem
+  SlotTenAmount int
+}
 type Player struct {
 	Name string
 	Title string
+	ItemBank InventoryBank
 	Inventory []InventoryItem
 	Equipped []EquipmentItem
 	CoreBoard string

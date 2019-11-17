@@ -192,7 +192,7 @@ func main() {
 				//if err != nil {
 			//		panic(err)
 			//	}
-			//	play = InitPlayer(user, pword)
+				//play = InitPlayer(user, pword)
 			//	savePfile(play)
 
 				play = lookupPlayer(user, pword)
@@ -277,7 +277,7 @@ func main() {
 			grapevinesCurrent = grapevines
 		}
 		//clearCmd()
-		savePfile(play)
+		//savePfile(play)
 		input := ""
 		input = scanner.Text()
 		//Save pfile first
@@ -546,6 +546,7 @@ func main() {
 		//COMMAND SECTION
 		if input == "save" {
 				savePfile(play)
+				savePinv(play)
 	/*			message := fmt.Sprint("++SAVE++"+play.PlayerHash)
 				response.Recv(0)
 				_, err = response.Send(message, 0)
@@ -1041,7 +1042,7 @@ func main() {
 //							count := 0
 			}
 		}*/
-		savePfile(play)
+		//savePfile(play)
 		if input == "BUY" {
 			ref := ""
 			sale := false
@@ -1343,6 +1344,9 @@ func main() {
 							inc = true
 					}
 					if inc {
+						fmt.Println("TRUE ITEMBANK")
+						play.ItemBank.SlotOne.Item = play.Inventory[i].Item
+						play.ItemBank.SlotOneAmount++
 						savePfile(play)
 
 						break
@@ -1356,6 +1360,9 @@ func main() {
 						play.Inventory[i].Item = obj
 						play.Inventory[i].Number++
 						inc = true
+						fmt.Println("FALSE ITEMBANK")
+						play.ItemBank.SlotOne.Item = play.Inventory[i].Item
+						play.ItemBank.SlotOneAmount++
 						savePfile(play)
 
 						break
@@ -1505,7 +1512,9 @@ func main() {
 //		out += describeInventory(play)
 	//	out += describeEquipment(play)
 		fmt.Print(out)
-		savePfile(play)
+		if len(play.Inventory) > 1 {
+			savePfile(play)
+		}
 
 		fmt.Printf("\033[51;0H")
 	//	}

@@ -24,6 +24,7 @@ func hash(value string) string {
   return newVal
 }
 func lookupPlayerByHash(playerHash string) Player {
+
   userFile, err := os.Open("weaselcreds")
   if err != nil {
     panic(err)
@@ -59,6 +60,8 @@ func lookupPlayerByHash(playerHash string) Player {
 		panic(err)
     return noob
   }
+	player = decompInv(player)
+
   return player
 }
 
@@ -98,6 +101,7 @@ func lookupPlayer(name string, pass string) Player {
 		panic(err)
     return noob
   }
+	player = decompInv(player)
   return player
 
 }
@@ -1021,8 +1025,11 @@ func addPfile(play Player) {
 		panic(err)
 	}
 	collection := client.Database("pfiles").Collection("Players")
-	_, err = collection.InsertOne(context.Background(), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":bson.A{play.Inventory}, "equipped":bson.A{play.Equipped},
+	_, err = collection.InsertOne(context.Background(), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipped":play.Equipped,
 						"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha })
+		if err != nil {
+			panic(err)
+		}
 }
 func savePfile(play Player) {
 	userFile, err := os.Open("weaselcreds")
@@ -1045,6 +1052,39 @@ func savePfile(play Player) {
 		panic(err)
 	}
 	collection := client.Database("pfiles").Collection("Players")
-	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":bson.A{play.Inventory}, "equipped":bson.A{play.Equipped},
-							"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha, "classes": play.Classes })
+	_, err = collection.UpdateOne(context.Background(), options.Update().SetUpsert(true), bson.M{"$set":bson.M{"playerhash":play.PlayerHash,"name":play.Name,"title":play.Title,"inventory":play.Inventory, "equipped":play.Equipped,
+							"coreboard": play.CoreBoard, "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis, "con":play.Con, "cha":play.Cha, "classes": play.Classes }})
+	if err != nil {
+		panic(err)
+	}
+	savePinv(play)
+}
+func savePinv(play Player) {
+	play = composeInv(play)
+	userFile, err := os.Open("weaselcreds")
+  if err != nil {
+    panic(err)
+  }
+  defer userFile.Close()
+  scanner := bufio.NewScanner(userFile)
+  scanner.Scan()
+  user := scanner.Text()
+  scanner.Scan()
+  pass := scanner.Text()
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+	if err != nil {
+		panic(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		panic(err)
+	}
+	filter := bson.M{"playerhash":bson.M{"$eq": play.PlayerHash}}
+	update := bson.M{"$set":bson.M{"itembank":bson.M{"slotone":play.ItemBank.SlotOne,"slotoneamount":play.ItemBank.SlotOneAmount,"slottwo":play.ItemBank.SlotTwo,"slottwoamount":play.ItemBank.SlotTwoAmount,"slotthree":play.ItemBank.SlotThree,"slotthreeamount":play.ItemBank.SlotThreeAmount,"slotfour":play.ItemBank.SlotFour,"slotfiveamount":play.ItemBank.SlotFiveAmount,"slotsix":play.ItemBank.SlotSix,"slotsixamount":play.ItemBank.SlotSixAmount,"slotseven":play.ItemBank.SlotSeven,"slotsevenamount":play.ItemBank.SlotSevenAmount,"sloteight":play.ItemBank.SlotEight,"sloteightamount":play.ItemBank.SlotEightAmount,"slotnine":play.ItemBank.SlotNine,"slotnineamount":play.ItemBank.SlotNineAmount,"slotten":play.ItemBank.SlotTen,"slottenamount":play.ItemBank.SlotTenAmount}}}
+	collection := client.Database("pfiles").Collection("Players")
+	_, err = collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
+	if err != nil {
+		panic(err)
+	}
 					}
