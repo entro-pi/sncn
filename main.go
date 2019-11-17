@@ -1152,7 +1152,31 @@ func main() {
 		if input == "stack" {
 			play = stack(play)
 		}
-
+		if input == "list my classes" {
+			out += listMyClasses(play)
+		}
+		if strings.HasPrefix(input, "set e") {
+			if len(strings.Split(input , "set eskill ")) >= 2 {
+				newSkillSpell := strings.Split(input, "set eskill ")[1]
+				for i := 0;i < len(play.Classes);i++ {
+					if len(play.Classes[i].Skills) > 0 {
+						if strings.Contains(play.Classes[i].Skills[i].Name, newSkillSpell) {
+							play.ESlotSkill = play.Classes[i].Skills[i]
+						}
+					}
+				}
+			}
+			if len(strings.Split(input , "set espell ")) >= 2 {
+				newSkillSpell := strings.Split(input, "set espell ")[1]
+				for i := 0;i < len(play.Classes);i++ {
+					if len(play.Classes[i].Spells) > 0 {
+						if strings.Contains(play.Classes[i].Spells[i].Name, newSkillSpell) {
+							play.ESlotSpell = play.Classes[i].Spells[i]
+						}
+					}
+				}
+			}
+		}
 		if strings.HasPrefix(input, "join") {
 			if len(strings.Split(input, " ")) >= 2 {
 				join := true

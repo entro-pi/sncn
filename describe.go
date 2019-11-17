@@ -580,11 +580,14 @@ func DescribePlayer(play Player) string {
   techShow := ratio
   out += fmt.Sprint(techShow)
   out += fmt.Sprint(hp)
-	out += fmt.Sprint("\033[38;0H")
+	out += fmt.Sprint("\033[28;0H")
+  out += listMyClasses(play)
   if len(play.ESlotSpell.Name) > 1 {
-    out += fmt.Sprint("\033[38:2:150:0:175m'e'\033[0m = "+play.ESlotSpell.Name)    
+    out += fmt.Sprintln("\033[38:2:150:150:5m'e'\033[0m = "+play.ESlotSpell.Name)
   }else if len(play.ESlotSkill.Name) > 1 {
-    out += fmt.Sprint("\033[38:2:150:0:175m'e'\033[0m = "+play.ESlotSkill.Name)
+    out += fmt.Sprintln("\033[38:2:150:10:105m'e'\033[0m = "+play.ESlotSkill.Name)
+  }else {
+    out += fmt.Sprintln("")
   }
 
   out += fmt.Sprintln("<<====", play.BankAccount.Amount, "====>>")

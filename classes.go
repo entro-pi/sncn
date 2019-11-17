@@ -1,5 +1,10 @@
 package main
 
+import (
+  "fmt"
+  "math"
+  "strconv"
+)
 
 type Class struct {
 	Level float64
@@ -31,6 +36,18 @@ func listClasses() []Class {
   //add classes here to populate the game logic with them
   totalClasses = append(totalClasses, Brutalizer())
   return totalClasses
+}
+func listMyClasses(play Player) string {
+  out := ""
+  for i := 0;i < len(play.Classes);i++ {
+    if len(play.Classes[i].Name) > 1 {
+      out += fmt.Sprintf("\033[38:2:150:0:150m"+play.Classes[i].Name+" %.2f\033[0m\n", play.Classes[i].Level)
+    }else {
+      out += fmt.Sprintln("\033[38:2:150:0:150mUnassigned "+strconv.Itoa(int(math.Floor(play.Classes[i].Level)))+"\033[0m")
+
+    }
+  }
+  return out
 }
 
 func Brutalizer() Class {
