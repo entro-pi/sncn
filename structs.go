@@ -271,6 +271,8 @@ type Player struct {
 	Cha int
 }
 type Fight struct {
+	Won int
+	Found int
 	Oppose []Mobile
 	Former []Player
 	Treasure []Object

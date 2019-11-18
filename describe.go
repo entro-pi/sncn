@@ -253,44 +253,27 @@ func showProfile(play Player) (string) {
 }
 
 
-func showCoreMobs(play Player) (Player, string) {
-  core := ""
-	out := ""
-  coreSplit := strings.Split(play.PlainCoreBoard, "\n")
-  for i := 0;i < len(coreSplit);i++ {
-    for r := 0;r < len(coreSplit[i]);r++ {
-      if coreSplit[i][r] == 'T' {
-        for tres := 0;tres < len(play.Fights.Treasure);tres++ {
-          if play.Fights.Treasure[tres].X == r && play.Fights.Treasure[tres].Y == i {
-            if play.Fights.Treasure[tres].Owned {
-              core += fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H \033[0m")
-            }
-          }
-        }
+func showBattleSpam(spam []string) {
+  count := 0
+  if len(spam) >= 1 {
+    for i := len(spam)-1;i > 0;i-- {
+      if i > 22 {
+        i = 0
+        count++
+        i += count
       }
-      if coreSplit[i][r] == 'M' {
-          for bat := 0;bat < len(play.Fights.Oppose);bat++ {
-            if play.Fights.Oppose[bat].MaxRezz <= 0 && play.Fights.Oppose[bat].X == r && play.Fights.Oppose[bat].Y == i{
-              //fmt.Println("ONE DOWN AT"+strconv.Itoa(play.Fights.Oppose[bat].X)+":"+strconv.Itoa(play.Fights.Oppose[bat].Y))
-              play.Fights.Oppose[bat].Char = fmt.Sprint("\033[48;2;5;0;150m\033["+strconv.Itoa(play.Fights.Oppose[bat].Y+20)+";"+strconv.Itoa(play.Fights.Oppose[bat].X+54)+"H\033[48:2:175:0:0mC\033[0m")
-    //          core += play.Fights.Oppose[bat].Char
-  //            play.TargetLong = "C"
-              break
-            }else {
-//              play.TargetLong = string(coreSplit[i][r])
-              core += fmt.Sprint("\033["+strconv.Itoa(i+20)+";"+strconv.Itoa(r+54)+"H\033[48:2:175:0:150m"+string(play.Fights.Oppose[bat].Char)+"\033[0m")
-
-            }
-
-        }
-
-
-        }
-      }
+      fmt.Print("\033["+strconv.Itoa(i+22)+";160H"+spam[i])
     }
+  }
+}
 
-  out += fmt.Sprint(core)
-  return play, out
+func showCoreMobs(play Player) (Player) {
+  for i := 0;i < len(play.Fights.Oppose);i++ {
+    if play.Fights.Oppose[i].Rezz <= 0 {
+      play.Fights.Oppose[i].Name = play.Fights.Oppose[i].Corpse
+    }
+  }
+  return play
 }
 
 func showCoreBoard(play Player) string {

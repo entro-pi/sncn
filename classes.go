@@ -68,7 +68,7 @@ func Brutalizer() Class {
   stab.Level = 1
   stab.Usage = 'e'
   stab.Dam = 15
-  stab.Sound = 17
+  stab.Sound = 9
   brutal.Skills[0] = stab
 
   return brutal
@@ -86,7 +86,7 @@ func Shaman() Class {
   shake.Level = 1
   shake.Usage = 'q'
   shake.Dam = 15
-  shake.Sound = 12
+  shake.Sound = 17
   shaman.Spells[0] = shake
 
   return shaman

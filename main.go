@@ -1573,7 +1573,7 @@ func main() {
 					outln := ""
 					play = setCoreBoard(play, socOut[i])
 					out += showCoreBoard(play)
-					play, outln = showCoreMobs(play)
+					play = showCoreMobs(play)
 					out += outln
 				}
 			}

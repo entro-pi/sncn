@@ -281,6 +281,7 @@ func sendBroadcast(bcast Broadcast) Broadcast {
 		 "message":bcast.Payload.Message,"game":bcast.Payload.Game,
 		 "name":bcast.Payload.Name,"bigmessage":bcast.Payload.BigMessage,
 		 "transaction":bcast.Payload.Transaction,"cpu":bcast.Payload.CPU,
+		 "fights":bcast.Payload.Fights,
 		 "plaincoreboard":bcast.Payload.PlainCoreBoard,"coreboard":bcast.Payload.CoreBoard}}
   collection := client.Database("broadcasts").Collection("general")
   _, err = collection.InsertOne(context.Background(), update)
@@ -324,7 +325,7 @@ func updateBroadcast(bcast Broadcast) Broadcast {
 			 "message":bcast.Payload.Message,"game":bcast.Payload.Game,"name":bcast.Payload.Name,
 			 "bigmessage":bcast.Payload.BigMessage,"transaction":bcast.Payload.Transaction,
 			 "cpu":bcast.Payload.CPU,"plaincoreboard":bcast.Payload.PlainCoreBoard,
-			 "coreboard":bcast.Payload.CoreBoard}}}
+			 "coreboard":bcast.Payload.CoreBoard,"fights":bcast.Payload.Fights}}}
   collection := client.Database("broadcasts").Collection("general")
   _, err = collection.UpdateOne(context.Background(), filter, update, options.Update().SetUpsert(true))
   if err != nil {
@@ -607,42 +608,49 @@ func genCoreBoard(sizeX int, sizeY int, broad Broadcast) (string, Broadcast) {
 							continue
 					}
 					if rand.Intn(100) > 95 {
-						ChanceMonster := "M"
+
 						TL := ""
 						roll := rand.Intn(100)
 						if roll <= 30 {
 							TL = "A Rabid Ferret"
-							newValue += ChanceMonster
+							newValue += "F"
 							ferret := InitMob()
 							ferret.Name = TL
 							ferret.X = s
 							ferret.Y = i
+							ferret.AC = 3
 							ferret.Char = "F"
-							ferret.Corpse = "The twisted remains of "+strings.ToLower(TL)
+							ferret.Corpse = strings.ToLower(TL)
 							broad.Payload.Fights.Oppose = append(broad.Payload.Fights.Oppose, ferret)
 
 						}
 						if roll <= 60 && roll > 30 {
 							TL = "A Wild Boar"
-							newValue += ChanceMonster
+							newValue += "B"
 							boar := InitMob()
 							boar.Name = TL
 							boar.X = s
 							boar.Y = i
+							boar.AC = 2
+							boar.Rezz += rand.Intn(15)
+							boar.MaxRezz = boar.Rezz
 							boar.Char = "B"
-							boar.Corpse = "The twisted remains of "+strings.ToLower(TL)
+							boar.Corpse = strings.ToLower(TL)
 							broad.Payload.Fights.Oppose = append(broad.Payload.Fights.Oppose, boar)
 
 						}
 						if roll > 60 {
 							TL = "A Razor Beast"
-							newValue += ChanceMonster
+							newValue += "R"
 							razor := InitMob()
 							razor.Name = TL
 							razor.X = s
 							razor.Y = i
+							razor.AC = 10
+							razor.Rezz += rand.Intn(25)
+							razor.MaxRezz = razor.Rezz
 							razor.Char = "R"
-							razor.Corpse = "The twisted remains of "+strings.ToLower(TL)
+							razor.Corpse = strings.ToLower(TL)
 							broad.Payload.Fights.Oppose = append(broad.Payload.Fights.Oppose, razor)
 						}
 						continue

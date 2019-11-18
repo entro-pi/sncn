@@ -40,15 +40,20 @@ import (
          defer term.Close()
 //         TL, out := "", ""
          _, out := "", ""
-         var damMsg []string
+         //var damMsg []string
          fmt.Print("ESC button to quit")
+    //     fmt.Print(play.Fights)
          play.Battling = true
 //         showCoreBoard(play)
          play.Won = 0
          play.Found = 0
 
+           var battleSpamList []string
  keyPressListenerLoop:
          for {
+           usedQSpellSkill := false
+           usedESpellSkill := false
+
                 switch ev := term.PollEvent(); ev.Type {
             case term.EventKey:
                     switch ev.Key {
@@ -57,8 +62,9 @@ import (
                             play.Found = 0
                             break keyPressListenerLoop
                     default:
-                              usedQSpellSkill := false
-                              usedESpellSkill := false
+                              clearBigBroad()
+                              play = showCoreMobs(play)
+                              showBattleSpam(battleSpamList)
                               damage := 0
                               techUsed := 0
                               battleSpam := ""
@@ -78,15 +84,18 @@ import (
                               case 'e':
                                 usedESpellSkill = true
                               case 'c':
-                                if play.Won >= len(play.Fights.Oppose) {
-                                  fmt.Printf("\033[38:2:175:150:0mSlew %v monsters, clearing the core.\033[0m", play.Won)
-                                  play.Won = 0
+                                play = calculateWon(play)
+                                if play.Fights.Won >= len(play.Fights.Oppose) {
+                                  fmt.Printf("\033[38:2:175:150:0mSlew %v monsters, clearing the core.\033[0m", play.Fights.Won)
+                                  play.Won += play.Fights.Won
+                                  play.Fights.Won = 0
+
                                   fmt.Printf("\n\033[38:2:175:150:0mRe-joining social space.\033[0m")
                                   time.Sleep(5*time.Second)
                                   break keyPressListenerLoop
                                 }else {
-                                  fmt.Printf("Slew \033[38:2:200:0:0m%v\033[0m monsters.", play.Won)
-                                  fmt.Printf("Gathered \033[38:2:175:150:0m%v\033[0m tiaras", play.Found)
+                                  fmt.Printf("Slew \033[38:2:200:0:0m%v\033[0m monsters.", play.Fights.Won)
+                                  fmt.Printf("Gathered \033[38:2:175:150:0m%v\033[0m tiaras", play.Fights.Found)
                                 }
                               }
                               playY := strconv.Itoa(play.TarY+22)
@@ -113,90 +122,103 @@ import (
                                     play.Target = prepend+"\033[48:2:150:0:150m \033[0m"
                                   }
 
-                                  out = ""
-                                  out += showBattle(damMsg)
+                                //  out = ""
+                              //    out += showBattle(damMsg)
                       //            out += showDesc(play.CurrentRoom)
                         //       		out += DescribePlayer(play)
                           //     		_, outln := showChat(play)
                             //      out += outln
                                		out += showCoreBoard(play)
-                                  outln := ""
-                               		_, outln = showCoreMobs(play)
-                                  out += outln
+                                  showBattleSpam(battleSpamList)
+//                                  out += fmt.Sprint("\033[100;41H"+battleSpam)
+                                  //outln := ""
+                            //   		_, outln = showCoreMobs(play)
+                                  //out += outln
 
                                		//ShowOoc(response, play)
                                   //updateChat(play, response)
 
                                   TL, outChar := determine(play)
+
                                   if usedESpellSkill && len(TL) > 1 {
                                     if play.ESlotSkill.Name != "" {
-                                      sounds[play.ESlotSkill.Sound] <- true
-                                      var mob Mobile
                                       for i := 0;i < len(play.Fights.Oppose);i++ {
                                         if play.Fights.Oppose[i].X == play.TarX && play.Fights.Oppose[i].Y == play.TarY {
-                                          mob = play.Fights.Oppose[i]
+                                            var blank Spell
+                                            blank.Name = ""
+                                            battleSpam, damage, techUsed = resolve(blank, play.ESlotSkill, play.Fights.Oppose[i], play.Tech)
+                                            play.Fights.Oppose[i].Rezz -=  damage
+                                            play.Fights.Oppose[i].MaxRezz -=  damage
+                                            battleSpamList = append(battleSpamList, battleSpam)
+
+                                            if damage > 0 {
+                                              sounds[play.ESlotSkill.Sound] <- true
+                                            }
                                         }
-                                      }
-                                      if len(mob.Name) > 1{
-                                        var blank Spell
-                                        blank.Name = ""
-                                        battleSpam, damage, techUsed = resolve(blank, play.ESlotSkill, mob, play.Tech)
-                                        mob.Rezz -=  damage
-                                      }
+                                  }
+
                                     }
                                     if play.ESlotSpell.Name != "" {
-                                      sounds[play.ESlotSpell.Sound] <- true
-                                      var mob Mobile
                                       for i := 0;i < len(play.Fights.Oppose);i++ {
                                         if play.Fights.Oppose[i].X == play.TarX && play.Fights.Oppose[i].Y == play.TarY {
-                                          mob = play.Fights.Oppose[i]
-                                        }
-                                      }
-                                      if len(mob.Name) > 1 {
+
                                         var blank Skill
                                         blank.Name = ""
-                                        battleSpam, damage, techUsed = resolve(play.ESlotSpell, blank, mob, play.Tech)
-                                        mob.Rezz -=  damage
+                                        battleSpam, damage, techUsed = resolve(play.ESlotSpell, blank, play.Fights.Oppose[i], play.Tech)
+                                        play.Fights.Oppose[i].Rezz -=  damage
+                                        play.Fights.Oppose[i].MaxRezz -=  damage
+                                        battleSpamList = append(battleSpamList, battleSpam)
+
+                                        if damage > 0 {
+                                          sounds[play.ESlotSpell.Sound] <- true
+                                        }
+                                    }
                                       }
                                     }
                                   }
                                   if usedQSpellSkill && len(TL) > 1 {
                                     if play.QSlotSkill.Name != "" {
                                       sounds[play.QSlotSkill.Sound] <- true
-                                      var mob Mobile
                                       for i := 0;i < len(play.Fights.Oppose);i++ {
                                         if play.Fights.Oppose[i].X == play.TarX && play.Fights.Oppose[i].Y == play.TarY {
-                                          mob = play.Fights.Oppose[i]
-                                        }
-                                      }
-                                      if len(mob.Name) > 1 {
                                         var blank Spell
                                         blank.Name = ""
-                                        battleSpam, damage, techUsed = resolve(blank, play.ESlotSkill, mob, play.Tech)
-                                        mob.Rezz -=  damage
-                                      }
+                                        battleSpam, damage, techUsed = resolve(blank, play.ESlotSkill, play.Fights.Oppose[i], play.Tech)
+                                        play.Fights.Oppose[i].Rezz -=  damage
+                                        play.Fights.Oppose[i].MaxRezz -=  damage
+                                        battleSpamList = append(battleSpamList, battleSpam)
+
+                                        if damage > 0 {
+                                          sounds[play.QSlotSkill.Sound] <- true
+                                        }
+                                    }
+                                    }
                                     }
                                     if play.QSlotSpell.Name != "" {
-                                      sounds[play.QSlotSpell.Sound] <- true
-                                      var mob Mobile
                                       for i := 0;i < len(play.Fights.Oppose);i++ {
                                         if play.Fights.Oppose[i].X == play.TarX && play.Fights.Oppose[i].Y == play.TarY {
-                                          mob = play.Fights.Oppose[i]
-                                        }
-                                      }
-                                      if len(mob.Name) > 1 {
+
                                         var blank Skill
                                         blank.Name = ""
-                                        battleSpam, damage, techUsed = resolve(play.ESlotSpell, blank, mob, play.Tech)
-                                        mob.Rezz -=  damage
+                                        battleSpam, damage, techUsed = resolve(play.ESlotSpell, blank, play.Fights.Oppose[i], play.Tech)
+                                        play.Fights.Oppose[i].Rezz -=  damage
+                                        play.Fights.Oppose[i].MaxRezz -=  damage
+//                                        fmt.Println(play.Fights.Oppose[i].MaxRezz)
+                                        battleSpamList = append(battleSpamList, battleSpam)
+
+                                        if damage > 0 {
+                                          sounds[play.QSlotSpell.Sound] <- true
+                                        }
 
                                       }
-                                    }
-                                  }
-                                  play.Tech -= techUsed
+                                      }
 
-                                  fmt.Print(battleSpam)
+                                    }
+                                    fmt.Println(battleSpamList)
+                                    play.Tech -= techUsed
+                                    }
                                   fmt.Print(out)
+
                                   fmt.Printf(outChar+play.Target+TL)
 
                                		fmt.Printf("\033[51;0H")
@@ -214,33 +236,56 @@ import (
  play.Battling = false
  return play
 }
+func calculateWon(play Player) Player {
+  play.Fights.Won = 0
+  for i := 0;i < len(play.Fights.Oppose);i++ {
+    if play.Fights.Oppose[i].Rezz <= 0 {
+      play.Fights.Won++
+    }
+  }
+  return play
+}
 func resolve(spell Spell, skill Skill, mob Mobile, tech int) (string, int, int) {
   spam := ""
   damage := 0
+  if mob.Rezz <= 0 {
+    spam = fmt.Sprintln("You have reduced \033[38:2:200:0:0m"+mob.Name+" to a rotting corpse\033[0m.")
+    //fmt.Println(spam)
+    return spam, 0, 0
+  }
   if len(spell.Name) > 1 {
     if spell.TechUsage > tech {
+      fmt.Printf("You don't have enough Tech to perform that action!")
+
       return "You don't have enough Tech to perform that action!", 0, 0
     }else {
-      roll := rand.Intn(20)
+      roll := rand.Intn(200)
       if roll >= mob.AC {
         damage = rand.Intn(spell.Dam)+2
-        spam += fmt.Sprintln("Your \033[38:2:200:0:0m"+spell.Name+"\033[0m does \033[38:2:20:75:75m"+strconv.Itoa(damage)+"\033[0m to "+mob.Name)
+        spam = fmt.Sprintln("Your \033[38:2:200:0:0m"+spell.Name+"\033[0m does \033[38:2:20:75:75m"+strconv.Itoa(damage)+"\033[0m to "+mob.Name)
+        //fmt.Println(spam)
+        return spam, damage, spell.TechUsage
       }else {
-        spam += fmt.Sprintln("You fail to damage "+mob.Name)
+        spam = fmt.Sprintln("You fail to damage "+mob.Name)
       }
       return spam, damage, spell.TechUsage
     }
   }
   if len(skill.Name) > 1 {
-    roll := rand.Intn(20)
+    roll := rand.Intn(200)
     if roll > mob.AC {
       damage := rand.Intn(skill.Dam)+1
-      spam += fmt.Sprintln("Your \033[38:2:200:0:0m"+skill.Name+"\033[0m does \033[38:2:20:75:75m"+strconv.Itoa(damage)+"\033[0m to "+mob.Name)
+      spam = fmt.Sprintln("Your \033[38:2:200:0:0m"+skill.Name+"\033[0m does \033[38:2:20:75:75m"+strconv.Itoa(damage)+"\033[0m to "+mob.Name)
+      //fmt.Println(spam)
+      return spam, damage, 0
     }else {
-      spam += fmt.Sprintln("You fail to damage "+mob.Name)
+      //fmt.Println("You fail to damage " + mob.Name)
+      spam = fmt.Sprintln("You fail to damage "+mob.Name)
     }
     return spam, damage, 0
   }
+
+
   return "", 0, 0
 }
 func determine(play Player) (string, string) {
@@ -256,7 +301,13 @@ func determine(play Player) (string, string) {
            TL = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
            }
      }
-    case "M":
+   case "M":
+     fallthrough
+  case "F":
+    fallthrough
+   case "B":
+     fallthrough
+   case "R":
       for i := 0;i < len(play.Fights.Oppose);i++ {
         if play.TarX == play.Fights.Oppose[i].X && play.TarY == play.Fights.Oppose[i].Y {
           TL = play.Fights.Oppose[i].Name
@@ -266,22 +317,9 @@ func determine(play Player) (string, string) {
           out = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                       ")
 
         }
-      }
 
 
 
-     TL = "A Rabid Ferret"
-     for bat := 0;bat < len(play.Fights.Oppose);bat++ {
-       if play.Fights.Oppose[bat].X == play.TarX && play.Fights.Oppose[bat].Y == play.TarY {
-         if strings.Contains(play.Fights.Oppose[bat].Char, "C") {
-            out = fmt.Sprint("\033[19;53H\033[48;2;175;0;0m<<<DEAD\033[48;2;5;0;150m"+TL+"\033[48;2;175;0;0mDEAD>>>\033[0m                      ")
-             TL = "The twisted remains of a rabid ferret"
-             break
-           }
-       }else {
-           out = fmt.Sprint("\033[19;53H\033[48;2;175;0;150m<<<"+TL+">>>\033[0m                      ")
-
-           }
      }
     case "D":
      TL = "A Large Steel Door"
