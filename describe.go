@@ -589,6 +589,13 @@ func DescribePlayer(play Player) string {
   }else {
     out += fmt.Sprintln("")
   }
+  if len(play.QSlotSpell.Name) > 1 {
+    out += fmt.Sprintln("\033[38:2:150:150:5m'q'\033[0m = "+play.QSlotSpell.Name)
+  }else if len(play.QSlotSkill.Name) > 1 {
+    out += fmt.Sprintln("\033[38:2:150:10:105m'q'\033[0m = "+play.QSlotSkill.Name)
+  }else {
+    out += fmt.Sprintln("")
+  }
 
   out += fmt.Sprintln("<<====", play.BankAccount.Amount, "====>>")
   out += fmt.Sprintln("\033[38:2:200:0:0mHas slain "+strconv.Itoa(play.Slain)+" monsters\033[0m")

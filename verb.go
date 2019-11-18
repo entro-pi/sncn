@@ -608,12 +608,43 @@ func genCoreBoard(sizeX int, sizeY int, broad Broadcast) (string, Broadcast) {
 					}
 					if rand.Intn(100) > 95 {
 						ChanceMonster := "M"
-						newValue += ChanceMonster
-						ferret := InitMob()
-						ferret.X = s
-						ferret.Y = i
-						ferret.Char = "F"
-						broad.Payload.Fights.Oppose = append(broad.Payload.Fights.Oppose, ferret)
+						TL := ""
+						roll := rand.Intn(100)
+						if roll <= 30 {
+							TL = "A Rabid Ferret"
+							newValue += ChanceMonster
+							ferret := InitMob()
+							ferret.Name = TL
+							ferret.X = s
+							ferret.Y = i
+							ferret.Char = "F"
+							ferret.Corpse = "The twisted remains of "+strings.ToLower(TL)
+							broad.Payload.Fights.Oppose = append(broad.Payload.Fights.Oppose, ferret)
+
+						}
+						if roll <= 60 && roll > 30 {
+							TL = "A Wild Boar"
+							newValue += ChanceMonster
+							boar := InitMob()
+							boar.Name = TL
+							boar.X = s
+							boar.Y = i
+							boar.Char = "B"
+							boar.Corpse = "The twisted remains of "+strings.ToLower(TL)
+							broad.Payload.Fights.Oppose = append(broad.Payload.Fights.Oppose, boar)
+
+						}
+						if roll > 60 {
+							TL = "A Razor Beast"
+							newValue += ChanceMonster
+							razor := InitMob()
+							razor.Name = TL
+							razor.X = s
+							razor.Y = i
+							razor.Char = "R"
+							razor.Corpse = "The twisted remains of "+strings.ToLower(TL)
+							broad.Payload.Fights.Oppose = append(broad.Payload.Fights.Oppose, razor)
+						}
 						continue
 					}else {
 						newValue += string(value[s])

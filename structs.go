@@ -235,6 +235,8 @@ type Player struct {
 	TargetLong string
 	ESlotSpell Spell
 	ESlotSkill Skill
+	QSlotSpell Spell
+	QSlotSkill Skill
 	//ToBuy will have to either be an ItemHash
 	//Or a vnum
 	ToBuy int
@@ -275,10 +277,12 @@ type Fight struct {
 }
 type Mobile struct {
 	Name string
+	Corpse string
 	LongName string
 	ItemSpawn []int
 	Rep string
 	MaxRezz int
+	AC int
 	Rezz int
 	Tech int
 	Aggro bool

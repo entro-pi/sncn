@@ -1160,8 +1160,13 @@ func main() {
 				newSkillSpell := strings.Split(input, "set eskill ")[1]
 				for i := 0;i < len(play.Classes);i++ {
 					if len(play.Classes[i].Skills) > 0 {
-						if strings.Contains(play.Classes[i].Skills[i].Name, newSkillSpell) {
-							play.ESlotSkill = play.Classes[i].Skills[i]
+						for c := 0;c < len(play.Classes[i].Skills);c++ {
+							if strings.Contains(play.Classes[i].Skills[c].Name, newSkillSpell) {
+								play.ESlotSkill = play.Classes[i].Skills[c]
+								var blank Spell
+								blank.Name = ""
+								play.ESlotSpell = blank
+							}
 						}
 					}
 				}
@@ -1170,8 +1175,45 @@ func main() {
 				newSkillSpell := strings.Split(input, "set espell ")[1]
 				for i := 0;i < len(play.Classes);i++ {
 					if len(play.Classes[i].Spells) > 0 {
-						if strings.Contains(play.Classes[i].Spells[i].Name, newSkillSpell) {
-							play.ESlotSpell = play.Classes[i].Spells[i]
+						for c := 0;c < len(play.Classes[i].Spells);c++ {
+							if strings.Contains(play.Classes[i].Spells[c].Name, newSkillSpell) {
+								play.ESlotSpell = play.Classes[i].Spells[c]
+								var blank Skill
+								blank.Name = ""
+								play.ESlotSkill = blank
+							}
+						}
+					}
+				}
+			}
+		}
+		if strings.HasPrefix(input, "set q") {
+			if len(strings.Split(input , "set qskill ")) >= 2 {
+				newSkillSpell := strings.Split(input, "set qskill ")[1]
+				for i := 0;i < len(play.Classes);i++ {
+					if len(play.Classes[i].Skills) > 0 {
+						for c := 0;c < len(play.Classes[i].Skills);c++ {
+							if strings.Contains(play.Classes[i].Skills[c].Name, newSkillSpell) {
+								play.QSlotSkill = play.Classes[i].Skills[c]
+								var blank Spell
+								blank.Name = ""
+								play.QSlotSpell = blank
+							}
+						}
+					}
+				}
+			}
+			if len(strings.Split(input , "set qspell ")) >= 2 {
+				newSkillSpell := strings.Split(input, "set qspell ")[1]
+				for i := 0;i < len(play.Classes);i++ {
+					if len(play.Classes[i].Spells) > 0 {
+						for c := 0;c < len(play.Classes[i].Spells);c++ {
+							if strings.Contains(play.Classes[i].Spells[c].Name, newSkillSpell) {
+								play.QSlotSpell = play.Classes[i].Spells[c]
+								var blank Skill
+								blank.Name = ""
+								play.QSlotSkill = blank
+							}
 						}
 					}
 				}

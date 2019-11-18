@@ -103,7 +103,6 @@ func InitMob() Mobile {
   var mob Mobile
   mob.Name = "rabid ferret"
   mob.LongName = "A rabid ferret charges towards you!"
-  mob.MaxRezz = 3
   mob.Rezz = 3
   mob.Tech = 2
   mob.Aggro = false

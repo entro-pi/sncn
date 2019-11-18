@@ -18,8 +18,11 @@ type Spell struct {
 	TechUsage int
 	Usage rune
 	Level int
+  DamType string
 	Consumed bool
 	Name string
+  Sound int
+  Dam int
 }
 
 type Skill struct {
@@ -28,6 +31,7 @@ type Skill struct {
 	Level int
 	Usage rune
 	Dam int
+  Sound int
 }
 
 func listClasses() []Class {
@@ -35,6 +39,7 @@ func listClasses() []Class {
 
   //add classes here to populate the game logic with them
   totalClasses = append(totalClasses, Brutalizer())
+  totalClasses = append(totalClasses, Shaman())
   return totalClasses
 }
 func listMyClasses(play Player) string {
@@ -63,7 +68,26 @@ func Brutalizer() Class {
   stab.Level = 1
   stab.Usage = 'e'
   stab.Dam = 15
+  stab.Sound = 17
   brutal.Skills[0] = stab
 
   return brutal
+}
+func Shaman() Class {
+  var shaman Class
+  shaman.Level = 0
+  shaman.Name = "Shaman"
+  shaman.Skills = make([]Skill, 10, 10)
+  shaman.Spells = make([]Spell, 10, 10)
+
+  var shake Spell
+  shake.Name = "shake"
+  shake.DamType = "blud"
+  shake.Level = 1
+  shake.Usage = 'q'
+  shake.Dam = 15
+  shake.Sound = 12
+  shaman.Spells[0] = shake
+
+  return shaman
 }
