@@ -7,10 +7,30 @@ import (
   "time"
   "strconv"
   term "github.com/nsf/termbox-go"
+  zmq "github.com/pebbe/zmq4"
 )
  func reset() {
          term.Sync() // cosmestic purpose
  }
+
+func inBattle(play Player) {
+  in, err := zmq.NewSocket(zmq.SUB)
+  if err != nil {
+    panic(err)
+  }
+  err = in.Connect(play.hostname)
+  if err != nil {
+    panic(err)
+  }
+  in.SetSubscribe(play.Name)
+  for {
+    input, err := in.Recv(0)
+    if err != nil {
+      fmt.Println("Error in the receiving socket!")
+    }
+  }
+
+}
 
  func battle(play Player, sounds [31]chan bool) Player {
    target := "tc:1|1"

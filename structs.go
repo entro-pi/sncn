@@ -219,6 +219,7 @@ type InventoryBank struct {
   SlotTenAmount int
 }
 type Player struct {
+	hostname string
 	Name string
 	Title string
 	ItemBank InventoryBank

@@ -67,7 +67,6 @@ func main() {
 //	chats = 0
 	grapevines = 0
 	var play Player
-	var hostname string
 	var response *zmq.Socket
 	chatBoxes := true
 //	grape := true
@@ -76,141 +75,61 @@ func main() {
 	var dug []Space
 	play.CoreShow = false
 	out := ""
-	if len(os.Args) > 1 {
-		if os.Args[1] == "--init" {
-			//TODO testing suite - one test will be randomly generating 10,000 Spaces
-			//and seeing if the system can take it
-			descString := "The absence of light is blinding.\nThree large telephone poles illuminate a small square."
-			for len(strings.Split(descString, "\n")) < 8 {
-				descString += "\n"
-			}
-			InitZoneSpaces("0-5", "The Void", descString)
-			descString = "I wonder what day is recycling day.\nEven the gods create trash."
-			for len(strings.Split(descString, "\n")) < 8 {
-				descString += "\n"
-			}
-			InitZoneSpaces("5-15", "Midgaard", descString)
-			populated = PopulateAreas()
-			play = InitPlayer("FSM", "noodles")
-			addPfile(play)
-			savePfile(play)
-			createMobiles("Noodles")
-			fmt.Print("\033[38:2:0:250:0mAll tests passed and world has been initialzed\n\033[0mYou may now start with --login.")
-			os.Exit(1)
-		}else if os.Args[1] == "--guest" {
-			//Continue on
-			populated = PopulateAreas()
-			play = InitPlayer("Wallace", "gromit")
-			savePfile(play)
-			fmt.Print("In client loop")
-			fmt.Printf("\033[51;0H")
-		}else if os.Args[1] == "--login" {
-			//Continue on
-			user, pword := LoginSC()
 
-			populated = PopulateAreas()
-			play = InitPlayer(user, pword)
-			//just hang on to the password for now
-			fmt.Sprint(pword)
-			savePfile(play)
-			fmt.Print("In client loop")
-			input := "go to 1"
-			//this is pretty incomprehensible
-			//TODO
-			splitCommand := strings.Split(input, "to")
-			stripped := strings.TrimSpace(splitCommand[1])
-			inp, err := strconv.Atoi(stripped)
-			if err != nil {
-				fmt.Print("Error converting a stripped string")
-			}
-			for i := 0;i < len(populated);i++ {
-				if inp == populated[i].Vnum {
-					play.CurrentRoom = populated[i]
-					fmt.Print(populated[i].Vnum, populated[i].Vnums, populated[i].Zone)
-					out += showDesc(play.CurrentRoom)
-					out += DescribePlayer(play)
-					fmt.Printf("\033[0;0H\033[38:2:0:255:0mPASS\033[0m")
-					break
-				}else {
-					fmt.Printf("\033[0;0H\033[38:2:255:0:0mERROR\033[0m")
-				}
-			}
-			//log the character in
+	//TODO move these to after authentication
+	user, pword := LoginSC()
 
-/*			response.Recv(0)
-			_, err = response.Send(user + ":=:" + pword, 0)
-			if err != nil {
-				panic(err)
-			}
-			playBytes, err := response.RecvBytes(0)
-			if err != nil {
-				panic(err)
-			}
-			err = bson.Unmarshal(playBytes, &play)
-			if err != nil || play.PlayerHash == "2" {
-				panic(err)
-			}*/
-			savePfile(play)
-			play = lookupPlayerByHash(play.PlayerHash)
-			fmt.Print(play.PlayerHash)
-			fmt.Printf("\033[51;0H")
-		}else if os.Args[1] == "--builder" {
-			//Continue on
-			populated = PopulateAreas()
-			play = InitPlayer("FlyingSpaghettiMonster", "monster")
-			savePfile(play)
+	populated = PopulateAreas()
+	mobiles = PopulateAreaMobiles()
 
-			fmt.Print("Builder log-in")
+	fmt.Print("Core login procedure started")
+	response, _ = zmq.NewSocket(zmq.REQ)
 
-			fmt.Printf("\033[51;0H")
-		}	else if strings.Contains(os.Args[1], "--connect-core") {
-				//TODO move these to after authentication
-				user, pword := LoginSC()
+	defer response.Close()
+	//Preferred way to connec
+	play.hostname = "tcp://snowcrashnetwork.vineyard.haus:7777"
+	InitiateHost := "tcp://snowcrashnetwork.vineyard.haus:7776"
 
-				populated = PopulateAreas()
-				mobiles = PopulateAreaMobiles()
-
-				fmt.Print("Core login procedure started")
-				response, _ = zmq.NewSocket(zmq.REQ)
-
-				defer response.Close()
-				//Preferred way to connec
-				hostname = "tcp://snowcrashnetwork.vineyard.haus:7777"
-
-				err := response.Connect(hostname)
-				if err != nil {
-					panic(err)
-				}
-				fmt.Printf("\033[51;0H")
-				user = strings.TrimSpace(user)
-				pword = strings.TrimSpace(pword)
-				fmt.Println(hash(user+pword))
-//				_, err = response.Send(user+":=:"+pword, 0)
-	//			if err != nil {
-		//			panic(err)
-			//	}
-				//playBytes, err := response.RecvBytes(0)
-				//if err != nil {
-			//		panic(err)
-			//	}
-				//play = InitPlayer(user, pword)
-			//	savePfile(play)
-
-				play = lookupPlayer(user, pword)
-//				err = bson.Unmarshal(playBytes, &play)
-				if err != nil || play.PlayerHash == "2"{
-					fmt.Print("\033[38:2:150:0:150mAuthorization failed\033[0m")
-					os.Exit(1)
-				}
-			}else {
-			fmt.Println("Unrecognized flag")
-			os.Exit(1)
-		}
- }else {
-		fmt.Println("Use --init to build and launch the world, --user to just connect.")
-		fmt.Println("--builder for a building session")
+	initiate, err := zmq.NewSocket(zmq.REQ)
+	if err != nil {
+		panic(err)
+	}
+	err = initiate.Connect(InitiateHost)
+	if err != nil {
+		panic(err)
+	}
+	_, err = initiate.Send("ACCEPT:"+play.PlayerHash, 0)
+	res, err := initiate.Recv(0)
+	if res != "ACCEPTED"+play.Name {
+		fmt.Println("\033[38:2:150:0:0mConnection refused.\033[0m")
 		os.Exit(1)
 	}
+	err = response.Connect(play.hostname)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("\033[51;0H")
+	user = strings.TrimSpace(user)
+	pword = strings.TrimSpace(pword)
+	fmt.Println(hash(user+pword))
+//				_, err = response.Send(user+":=:"+pword, 0)
+//			if err != nil {
+//			panic(err)
+//	}
+	//playBytes, err := response.RecvBytes(0)
+	//if err != nil {
+//		panic(err)
+//	}
+	//play = InitPlayer(user, pword)
+//	savePfile(play)
+
+	play = lookupPlayer(user, pword)
+//				err = bson.Unmarshal(playBytes, &play)
+	if err != nil || play.PlayerHash == "2"{
+		fmt.Print("\033[38:2:150:0:150mAuthorization failed\033[0m")
+		os.Exit(1)
+	}
+
 	connected := make(chan bool)
 
 	if len(os.Args) >= 2 {
