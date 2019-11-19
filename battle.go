@@ -13,7 +13,7 @@ import (
          term.Sync() // cosmestic purpose
  }
 
-func inBattle(play Player) {
+func inBattle(play Player, outgoing chan []byte) {
   in, err := zmq.NewSocket(zmq.SUB)
   if err != nil {
     panic(err)
@@ -23,20 +23,37 @@ func inBattle(play Player) {
     panic(err)
   }
   in.SetSubscribe(play.Name)
+  round := time.Now()
+  var delta time.Time
+  delta = time.Now()
   for {
+    delta = time.Now()
+    deltaDur := round.Sub(delta)
+    if deltaDur.Seconds() > 3 {
+      fmt.Println("tick")
+      round = time.Now()
+    }
+    input := ""
     input, err := in.Recv(0)
     if err != nil {
       fmt.Println("Error in the receiving socket!")
     }
+    //remember to add some other checks here
+    if len(input) != 0 {
+      outgoing <- []byte(input)
+    }
+
   }
 
 }
 
- func battle(play Player, sounds [31]chan bool) Player {
+
+ func battle(play Player, sounds [31]chan bool, incoming chan []byte) Player {
    target := "tc:1|1"
    targetXY := "1|1"
    tarX, tarY := 0, 0
    //sounds[12] <- true
+   inBattle(play, incoming)
          err := term.Init()
          if err != nil {
                  panic(err)
@@ -73,7 +90,13 @@ func inBattle(play Player) {
          for {
            usedQSpellSkill := false
            usedESpellSkill := false
-
+           select {
+           case incomingString := <-incoming:
+             fmt.Println(incomingString)
+             //deal damage
+           default:
+             //do nothing
+           }
                 switch ev := term.PollEvent(); ev.Type {
             case term.EventKey:
                     switch ev.Key {

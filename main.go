@@ -32,6 +32,7 @@ const (
 
 func main() {
 
+	inputChannel := make(chan []byte)
 	inp := 0
 	currentInput := "default0"
 	numSoundsnames, err := os.Open("dat/sounds")
@@ -1314,7 +1315,7 @@ func main() {
 		}
 		if input == "dive" {
 			if len(play.CoreBoard) > 5 {
-				battle(play, sounds)
+				battle(play, sounds, inputChannel)
 			}
 
 		}

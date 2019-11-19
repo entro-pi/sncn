@@ -1121,6 +1121,8 @@ func savePfile(play Player) {
 		 "equipped":play.Equipped,"coreboard": play.CoreBoard,
 		 "bankaccount":bson.M{"owner":play.Name,"amount":play.BankAccount.Amount},
 		  "str": play.Str, "int": play.Int, "dex": play.Dex, "wis": play.Wis,
+			"battling":play.Battling,"battlingmob":play.BattlingMob,"rezz":play.Rezz,
+			"tech":play.Tech,
 			 "con":play.Con, "cha":play.Cha, "classes": play.Classes }}, options.Update().SetUpsert(true))
 	if err != nil {
 		panic(err)

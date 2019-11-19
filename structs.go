@@ -218,6 +218,12 @@ type InventoryBank struct {
   SlotTen InventoryItem
   SlotTenAmount int
 }
+type Action struct {
+	Affects Player
+	From Mobile
+	Damage int
+	DamMsg string
+}
 type Player struct {
 	hostname string
 	Name string
@@ -250,8 +256,11 @@ type Player struct {
 	CoreShow bool
 	Channels []string
 	Battling bool
+	BattlingMob Mobile
 	Profile string
 	Session string
+	Attack int
+	Defend int
 
 	Slain int
 	Hoarded int
@@ -290,6 +299,8 @@ type Mobile struct {
 	Tech int
 	Aggro bool
 	Align int
+	Attack float64
+	Defend float64
 	Vnum int
 	X int
 	Y int
