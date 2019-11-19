@@ -78,10 +78,8 @@ func main() {
 	out := ""
 
 	//TODO move these to after authentication
-	user, pword := LoginSC()
+	playerName, pword := LoginSC()
 
-	populated = PopulateAreas()
-	mobiles = PopulateAreaMobiles()
 
 	fmt.Print("Core login procedure started")
 	response, _ = zmq.NewSocket(zmq.REQ)
@@ -95,24 +93,32 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer initiate.Close()
 	err = initiate.Connect(InitiateHost)
 	if err != nil {
 		panic(err)
 	}
-	_, err = initiate.Send("ACCEPT:"+play.PlayerHash, 0)
+
+	playerName = strings.TrimSpace(playerName)
+	pword = strings.TrimSpace(pword)
+	fmt.Println(hash(playerName+pword))
+	fmt.Println("Sending login packet")
+	_, err = initiate.Send("ACCEPT:"+hash(playerName+pword), 0)
+	fmt.Println("Awaiting reponse")
 	res, err := initiate.Recv(0)
-	if res != "ACCEPTED"+play.Name {
+	if res != "ACCEPTED"+playerName {
+		fmt.Println(res)
 		fmt.Println("\033[38:2:150:0:0mConnection refused.\033[0m")
 		os.Exit(1)
+	}else {
+		fmt.Println("Connection accepted.")
 	}
 	err = response.Connect(play.hostname)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("\033[51;0H")
-	user = strings.TrimSpace(user)
-	pword = strings.TrimSpace(pword)
-	fmt.Println(hash(user+pword))
+	fmt.Println(hash(playerName+pword))
 //				_, err = response.Send(user+":=:"+pword, 0)
 //			if err != nil {
 //			panic(err)
@@ -124,7 +130,7 @@ func main() {
 	//play = InitPlayer(user, pword)
 //	savePfile(play)
 
-	play = lookupPlayer(user, pword)
+	play = lookupPlayer(playerName, pword)
 //				err = bson.Unmarshal(playBytes, &play)
 	if err != nil || play.PlayerHash == "2"{
 		fmt.Print("\033[38:2:150:0:150mAuthorization failed\033[0m")
@@ -713,7 +719,6 @@ func main() {
 				panic(err)
 			}
 			fmt.Println("\033[38:2:255:0:0m", result, "\033[0m")
-			populated = PopulateAreas()
 		}
 
 
