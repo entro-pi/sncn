@@ -35,11 +35,13 @@ func lookupPlayerByHash(playerHash string) Player {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
+
   if err != nil {
     panic(err)
   }
-  ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+  ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
   err = client.Connect(ctx)
   if err != nil {
     panic(err)
@@ -76,11 +78,13 @@ func lookupPlayer(name string, pass string) Player {
   user := scanner.Text()
   scanner.Scan()
   passCred := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+passCred+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+passCred+"@localhost"))
+
   if err != nil {
     panic(err)
   }
-  ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+  ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
   err = client.Connect(ctx)
   if err != nil {
     panic(err)
@@ -117,11 +121,12 @@ func getBroadcasts() []Broadcast {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
+
 	if err != nil {
 		panic(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
 		panic(err)
@@ -157,11 +162,12 @@ func updateChat() []Broadcast {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
+
 	if err != nil {
 		panic(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
 		panic(err)
@@ -267,11 +273,12 @@ func sendBroadcast(bcast Broadcast) Broadcast {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
+
   if err != nil {
     panic(err)
   }
-  ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+  ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
   err = client.Connect(ctx)
   if err != nil {
     panic(err)
@@ -310,11 +317,12 @@ func updateBroadcast(bcast Broadcast) Broadcast {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
+
   if err != nil {
     panic(err)
   }
-  ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+  ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
   err = client.Connect(ctx)
   if err != nil {
     panic(err)
@@ -1016,11 +1024,12 @@ func createChat(message string, play Player) {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
+
 	if err != nil {
 		panic(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
 		panic(err)
@@ -1050,11 +1059,12 @@ func createMobiles(name string) {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
+
 	if err != nil {
 		panic(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
 		panic(err)
@@ -1075,11 +1085,12 @@ func addPfile(play Player) {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
+
 	if err != nil {
 		panic(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
 		panic(err)
@@ -1104,11 +1115,12 @@ func savePfile(play Player) {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
+
 	if err != nil {
 		panic(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
 		panic(err)
@@ -1142,11 +1154,12 @@ func savePinv(play Player) {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
+
 	if err != nil {
 		panic(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
 		panic(err)
@@ -1181,11 +1194,12 @@ func savePeq(play Player) {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
+
 	if err != nil {
 		panic(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
 		panic(err)

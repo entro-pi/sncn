@@ -86,8 +86,8 @@ func main() {
 
 	defer response.Close()
 	//Preferred way to connec
-	play.hostname = "tcp://snowcrashnetwork.vineyard.haus:7777"
-	InitiateHost := "tcp://snowcrashnetwork.vineyard.haus:7776"
+	play.hostname = "tcp://127.0.0.1:7777"
+	InitiateHost := "tcp://127.0.0.1:7776"
 
 	initiate, err := zmq.NewSocket(zmq.REQ)
 	if err != nil {
@@ -173,7 +173,7 @@ func main() {
 		updateWho(play, true)
 	}*/
 	fmt.Sprint(mobiles)
-
+	populated = PopulateAreas()
 	fmt.Println("Loading graphics...")
 	photos := loadImages()
 	//Show the screen first off
@@ -304,7 +304,7 @@ func main() {
 						  user := scanner.Text()
 						  scanner.Scan()
 						  pass := scanner.Text()
-						  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+						  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
 							if err != nil {
 								panic(err)
 							}
@@ -439,7 +439,7 @@ func main() {
 			  user := scanner.Text()
 			  scanner.Scan()
 			  pass := scanner.Text()
-			  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+			  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
 				if err != nil {
 					panic(err)
 				}
@@ -699,7 +699,7 @@ func main() {
 		  user := scanner.Text()
 		  scanner.Scan()
 		  pass := scanner.Text()
-		  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+		  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
 			if err != nil {
 				panic(err)
 			}

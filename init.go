@@ -127,7 +127,7 @@ func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
   user := scanner.Text()
   scanner.Scan()
   pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@cloud-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
+  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://"+user+":"+pass+"@localhost"))
 	if err != nil {
 		panic(err)
 	}
