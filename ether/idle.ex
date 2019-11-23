@@ -40,9 +40,10 @@ end
 defmodule Connector do
 
 	def connect do
-		{creds} = File.read!("creds")
-		{creds} = String.trim(creds)
-		{ok, connection} = AMQP.Connection.open(creds)
+		creds = File.read!("creds")
+		
+		cred = creds |> String.trim("\n")
+		{ok, connection} = AMQP.Connection.open(cred)
 		{:ok, channel} = AMQP.Channel.open(connection)
 
 		AMQP.Queue.declare(channel, "input", auto_delete: true, durable: true)
