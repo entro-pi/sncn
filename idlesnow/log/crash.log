@@ -1,0 +1,17 @@
+2019-11-22 20:36:32 =CRASH REPORT====
+  crasher:
+    initial call: application_master:init/4
+    pid: <0.311.0>
+    registered_name: []
+    exception exit: {{bad_return,{{'Elixir.Gossip',start,[normal,[]]},{'EXIT',{#{'__exception__' => true,'__struct__' => 'Elixir.Protocol.UndefinedError',description => <<>>,protocol => 'Elixir.Enumerable',value => nil},[{'Elixir.Enumerable','impl_for!',1,[{file,"/builddir/build/BUILD/elixir-1.8.1/lib/elixir/lib/enum.ex"},{line,1}]},{'Elixir.Enumerable',reduce,3,[{file,"/builddir/build/BUILD/elixir-1.8.1/lib/elixir/lib/enum.ex"},{line,141}]},{'Elixir.Enum',reject,2,[{file,"lib/enum.ex"},{line,3015}]},{'Elixir.Gossip','check_configured_modules!',0,[{file,"lib/gossip.ex"},{line,44}]},{'Elixir.Gossip',start,2,[{file,"lib/gossip.ex"},{line,30}]},{application_master,start_it_old,4,[{file,"application_master.erl"},{line,277}]}]}}}},[{application_master,init,4,[{file,"application_master.erl"},{line,138}]},{proc_lib,init_p_do_apply,3,[{file,"proc_lib.erl"},{line,249}]}]}
+    ancestors: [<0.310.0>]
+    message_queue_len: 1
+    messages: [{'EXIT',<0.312.0>,normal}]
+    links: [<0.310.0>,<0.43.0>]
+    dictionary: []
+    trap_exit: true
+    status: running
+    heap_size: 987
+    stack_size: 27
+    reductions: 193
+  neighbours:

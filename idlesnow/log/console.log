@@ -1,0 +1,10 @@
+2019-11-22 20:36:32.162 [info] <0.43.0> Application logger started on node nonode@nohost
+2019-11-22 20:36:32.164 [info] <0.43.0> Application elixir_uuid started on node nonode@nohost
+2019-11-22 20:36:32.168 [info] <0.43.0> Application telemetry started on node nonode@nohost
+2019-11-22 20:36:32.169 [info] <0.43.0> Application poison started on node nonode@nohost
+2019-11-22 20:36:32.267 [info] <0.43.0> Application tzdata started on node nonode@nohost
+2019-11-22 20:36:32.271 [info] <0.43.0> Application gettext started on node nonode@nohost
+2019-11-22 20:36:32.272 [info] <0.43.0> Application combine started on node nonode@nohost
+2019-11-22 20:36:32.275 [info] <0.43.0> Application timex started on node nonode@nohost
+2019-11-22 20:36:32.278 [info] <0.43.0> Application websockex started on node nonode@nohost
+2019-11-22 20:36:32.281 [error] <0.311.0> CRASH REPORT Process <0.311.0> with 0 neighbours exited with reason: #{'__exception__' => true,'__struct__' => 'Elixir.Protocol.UndefinedError',description => <<>>,protocol => 'Elixir.Enumerable',value => nil} in 'Elixir.Enumerable':'impl_for!'/1 line 1 in application_master:init/4 line 138
