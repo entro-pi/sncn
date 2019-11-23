@@ -32,7 +32,7 @@ defmodule Listener do
 			|> Kernel.*(1000)
 			|> :timer.sleep
 			IO.puts " [x] Done."
-
+			AMQP.Basic.ack(channel, meta.delivery_tag)
 			wait_for_messages(channel)
 		end
 	end
