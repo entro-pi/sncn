@@ -42,8 +42,10 @@ defmodule Connector do
 	def connect do
 		creds = File.read!("creds")
 		
-		cred = creds |> String.trim("\n")
-		{ok, connection} = AMQP.Connection.open(cred)
+		cred = creds |> String.split("\n")
+		userCred = Enum.at(cred, 0)
+		passCred = Enum.at(cred, 1)
+		{ok, connection} = AMQP.Connection.open(username: userCred, password: passCred)
 		{:ok, channel} = AMQP.Channel.open(connection)
 
 		AMQP.Queue.declare(channel, "input", auto_delete: true, durable: true)
