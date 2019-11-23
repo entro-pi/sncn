@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"bufio"
 	"os"
 	"io/ioutil"
@@ -28,6 +29,21 @@ func getConnectionString() string {
 }
 
 func main() {
+
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("Enter your command")
+	for scanner.Scan() {
+
+		input := scanner.Text()
+		//Should probably do some error checking before
+		//passing it along
+		doInput(input)
+		fmt.Print("Enter your command")
+		
+	}
+}
+
+func doInput(input string) {
 	connection := getConnectionString()
 	conn, err := amqp.Dial(connection)
 
@@ -42,16 +58,16 @@ func main() {
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-		"hello", //name
+		"input", //name
 		false, // durable
-		false, //delete when used
+		true, //delete when used
 		false, //exclusive
 		false, //no-wait
 		nil, //arguments
 	)
 	failOnError(err, "Failed to declare a queue")
 
-	body := "Hello World!"
+	body := input
 	err = ch.Publish(
 	"", //exchange
 	q.Name, // routing key
