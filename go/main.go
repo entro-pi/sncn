@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"fmt"
 	"bufio"
 	"os"
@@ -32,6 +33,7 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("Enter your command")
+	go watch()
 	for scanner.Scan() {
 
 		input := scanner.Text()
@@ -83,8 +85,9 @@ func doInput(input string) {
 }
 
 
-func watch() {
 
+func watch() {
+	var broadcastContainer []string
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -105,6 +108,8 @@ func watch() {
 	            if event.Op&fsnotify.Write == fsnotify.Write {
 	                log.Println("\033[48:2:150:0:150mmodified file:", event.Name,"\033[0m")
 	            }
+		if event.Name == "../pot/broadcast" {
+			broadcastContainer = nil
 			file, err := os.Open(event.Name)
 			if err != nil {
 				panic(err)
@@ -113,14 +118,53 @@ func watch() {
 			if err != nil {
 				panic(err)
 			}
-			log.Print(string(contents))
-
+			var lines []string
+			lines = nil
+			
+			lines = strings.Split(string(contents), "\n")
+			lineIn := strings.Split(string(contents), "\n")
+			if len(lines) >= 20 {
+				lines = nil
+				for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
+					lines = append(lines, lineIn[i])
+				}
+			}
+//			var broadcastContainer []Broadcast
+			col := 0
+			row := 0
+			colVal := 53
+			rowVal := 0
+			for i := 0;i < len(lines);i++ {
+				var newBroad Broadcast
+				newBroad.Payload.Message = lines[i]
+				newBroadPayload := AssembleBroadside(newBroad, rowVal, colVal)
+				broadcastContainer = append(broadcastContainer, newBroadPayload)
+				if row >= 5 {
+					row = 0
+					rowVal = 0
+				}
+				if col < 3 {
+					col++
+					colVal += 30
+				}else {
+					row++
+					rowVal += 4
+					col = 0
+					colVal = 53
+				}
+			}
+			//log.Print(string(contents))
+		}
 
 	        case err, ok := <-watcher.Errors:
 	            if !ok {
 	                return
 	            }
 	            log.Println("error:", err)
+		default:
+			for i := 0;i < len(broadcastContainer);i++ {
+				fmt.Print(broadcastContainer[i])
+			}
 	        }
 	    }
 	}()
