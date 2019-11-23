@@ -40,8 +40,8 @@ end
 defmodule Connector do
 
 	def connect do
-
-		{ok, connection} = AMQP.Connection.open("amqp://guest:guest@localhost")
+		{creds} = File.read!("creds")
+		{ok, connection} = AMQP.Connection.open(creds)
 		{:ok, channel} = AMQP.Channel.open(connection)
 
 		AMQP.Queue.declare(channel, "input", auto_delete: true, durable: true)
