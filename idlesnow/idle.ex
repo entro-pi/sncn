@@ -24,7 +24,7 @@ Application.ensure_started(:amqp_client)
 defmodule Listen do
 	def wait_for_messages do
 		receive do
-			{:auto_delete, true, :basic_deliver, payload, _meta} ->
+			{:basic_deliver, payload, _meta} ->
 			IO.puts " [x] Received #{payload}"
 
 			wait_for_messages()

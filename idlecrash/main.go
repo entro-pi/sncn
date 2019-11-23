@@ -60,7 +60,7 @@ func doInput(input string) {
 	q, err := ch.QueueDeclare(
 		"input", //name
 		false, // durable
-		true, //delete when used
+		false, //delete when used
 		false, //exclusive
 		false, //no-wait
 		nil, //arguments
