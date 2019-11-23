@@ -24,7 +24,7 @@ Application.ensure_started(:amqp_client)
 defmodule Listener do
 	def wait_for_messages(channel) do
 		receive do
-			{:basic_deliver, payload, _meta} ->
+			{:basic_deliver, payload, meta} ->
 			IO.puts " [x] Received #{payload}"
 			payload
 			|> to_char_list
@@ -32,7 +32,7 @@ defmodule Listener do
 			|> Kernel.*(1000)
 			|> :timer.sleep
 			IO.puts " [x] Done."
-
+			AMQP.Basic.ack(channel, meta.delivery_tag)
 			wait_for_messages(channel)
 		end
 	end
@@ -44,8 +44,9 @@ defmodule Connector do
 		{ok, connection} = AMQP.Connection.open("amqp://guest:guest@localhost")
 		{:ok, channel} = AMQP.Channel.open(connection)
 
-		AMQP.Queue.declare(channel, "input", auto_delete: true)
-		AMQP.Basic.consume(channel, "input", nil, no_ack: true)
+		AMQP.Queue.declare(channel, "input", auto_delete: true, durable: true)
+		AMQP.Basic.qos(channel, prefetch_count: 1)
+		AMQP.Basic.consume(channel, "input", nil, no_ack: false, persistent: true)
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
 
