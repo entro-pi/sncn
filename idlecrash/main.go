@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"os"
 	"io/ioutil"
 	"log"
@@ -14,8 +15,21 @@ func failOnError(err error, msg string) {
 	}
 }
 
+func getConnectionString() string {
+	f, err := os.Open("creds")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	scanner.Scan()
+	scanned := scanner.Text()
+	return scanned
+}
+
 func main() {
-	conn, err := amqp.Dial("amqp://guest:guest@dev.snowcrash.network:5672/")
+	connection := getConnectionString()
+	conn, err := amqp.Dial(connection)
 
 	failOnError(err, "Failed to connect to RabbitMQ")
 
