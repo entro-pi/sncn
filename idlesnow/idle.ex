@@ -21,13 +21,19 @@ defmodule Heart do
 end
 Application.ensure_started(:amqp_client)
 
-defmodule Listen do
-	def wait_for_messages do
+defmodule Listener do
+	def wait_for_messages(channel) do
 		receive do
 			{:basic_deliver, payload, _meta} ->
 			IO.puts " [x] Received #{payload}"
+			payload
+			|> to_char_list
+			|> Enum.count(fn x -> x == ?. end)
+			|> Kernel.*(1000)
+			|> :timer.sleep
+			IO.puts " [x] Done."
 
-			wait_for_messages()
+			wait_for_messages(channel)
 		end
 	end
 end

@@ -39,7 +39,7 @@ func main() {
 		//passing it along
 		doInput(input)
 		fmt.Print("Enter your command")
-		
+
 	}
 }
 
@@ -60,7 +60,7 @@ func doInput(input string) {
 	q, err := ch.QueueDeclare(
 		"input", //name
 		false, // durable
-		false, //delete when used
+		true, //delete when used
 		false, //exclusive
 		false, //no-wait
 		nil, //arguments
