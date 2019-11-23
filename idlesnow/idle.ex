@@ -49,6 +49,6 @@ defmodule Connector do
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
 
-		Listen.wait_for_messages(channel)
+		Listener.wait_for_messages(channel)
 	end
 end
