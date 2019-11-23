@@ -45,7 +45,7 @@ defmodule Connector do
 		{:ok, channel} = AMQP.Channel.open(connection)
 
 		AMQP.Queue.declare(channel, "input", auto_delete: true, durable: true)
-		AMQP.qos(channel, prefetch_count: 1)
+		AMQP.Basic.qos(channel, prefetch_count: 1)
 		AMQP.Basic.consume(channel, "input", nil, no_ack: false, persistent: true)
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
