@@ -24,7 +24,7 @@ Application.ensure_started(:amqp_client)
 defmodule Listener do
 	def wait_for_messages(channel) do
 		receive do
-			{:basic_deliver, payload, _meta} ->
+			{:basic_deliver, payload, meta} ->
 			IO.puts " [x] Received #{payload}"
 			payload
 			|> to_char_list
