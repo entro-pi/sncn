@@ -44,8 +44,8 @@ defmodule Connector do
 		{ok, connection} = AMQP.Connection.open("amqp://guest:guest@localhost")
 		{:ok, channel} = AMQP.Channel.open(connection)
 
-		AMQP.Queue.declare(channel, "input", auto_delete: true)
-		AMQP.Basic.consume(channel, "input", nil, no_ack: true)
+		AMQP.Queue.declare(channel, "input", auto_delete: true, durable: true)
+		AMQP.Basic.consume(channel, "input", nil, no_ack: false, persistent: true)
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
 
