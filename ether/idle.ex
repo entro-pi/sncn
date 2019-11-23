@@ -41,6 +41,7 @@ defmodule Connector do
 
 	def connect do
 		{creds} = File.read!("creds")
+		{creds} = String.trim(creds)
 		{ok, connection} = AMQP.Connection.open(creds)
 		{:ok, channel} = AMQP.Channel.open(connection)
 
