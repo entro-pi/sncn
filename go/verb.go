@@ -354,13 +354,18 @@ func AssembleBroadside(broadside Broadcast, row int, col int) (string) {
 		for len(inWord) < 90 {
 			inWord += " "+inWord+" "
 		}
+	}else if len(inWord) < 30 {
+		inWord = " "+inWord
+		for len(inWord) < 90 {
+			inWord = " "+inWord+" "
+		}
 	}else {
 		inWord = " "+inWord
 		for len(inWord) < 90 {
 			inWord = inWord + " "
 		}
 	}
-	wor := inWord[0:29]
+	wor := inWord[0:30]
 	word := inWord[29:59]
 	words := inWord[59:89]
 
@@ -368,9 +373,9 @@ func AssembleBroadside(broadside Broadcast, row int, col int) (string) {
 
 	row++
 	if broadside.Payload.Selected {
-		cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;200;25;150m ",numString, wor[len(numString):], "\033[48;2;200;25;150m \033[0m")
+		cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;200;25;150m ", wor, "\033[48;2;200;25;150m \033[0m")
 	}else {
-		cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m \033[48;2;10;10;20m",numString, wor[len(numString):], "\033[48;2;20;255;50m \033[0m")
+		cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m \033[48;2;10;10;20m", wor, "\033[48;2;20;255;50m \033[0m")
 	}
 
 	row++

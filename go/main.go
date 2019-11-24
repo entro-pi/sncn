@@ -36,13 +36,13 @@ func main() {
 	fmt.Print("Initializing a player")
 	play := InitPlayer("dorp", "norp")
 //	go actOn() //for receiving in Go
-	go watch()
+	go watch(play)
 	for scanner.Scan() {
 		input := "broadcast:"+scanner.Text()
 		//Should probably do some error checking before
 		//passing it along
 		doPlayer(input, play)
-		doWatch(input)
+		doWatch(input, play)
 		doInput(input)
 //		fmt.Print("Enter your command")
 
@@ -142,10 +142,11 @@ func actOn() {
 		//		log.Printf("Received a message: %s", d.Body)
 				message := string(d.Body)
 				if strings.HasPrefix(message, "broadcast:") {
+					var blank Player
 					if !strings.Contains(message, "!:::tick:::!") {
-						doWatch(string(d.Body))
+						doWatch(string(d.Body), blank)
 					}else {
-						doWatch("!:::tick:::!")
+						doWatch("!:::tick:::!", blank)
 					}
 				}
 				if err != nil {
@@ -160,7 +161,7 @@ func actOn() {
 	}
 }
 
-func watch() {
+func watch(play Player) {
 	var broadcastContainer []string
 
 	watcher, err := fsnotify.NewWatcher()
@@ -212,6 +213,8 @@ func watch() {
 			for i := 0;i < len(lines);i++ {
 					var newBroad Broadcast
 					newBroad.Payload.Message = lines[i]
+					newBroad.Payload.Name = play.Name
+					newBroad.Payload.Game = "snowcrash.network"
 					if len(newBroad.Payload.Message) > 89 {
 						newBroad.Payload.Message = lines[i][:89]
 					}
@@ -263,7 +266,7 @@ func watch() {
 	}
 	<-done
 }
-func doWatch(input string) string {
+func doWatch(input string, play Player) string {
 	var broadcastContainer []string
 
 	inputList := strings.Split(input, ":")
@@ -307,6 +310,8 @@ func doWatch(input string) string {
 				continue
 			}
 			var newBroad Broadcast
+			newBroad.Payload.Name = play.Name
+			newBroad.Payload.Game = "snowcrash.network"
 			newBroad.Payload.Message = lines[i]
 			if len(newBroad.Payload.Message) > 24 {
 				newBroad.Payload.Message = lines[i][:24]
