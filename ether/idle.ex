@@ -21,6 +21,35 @@ defmodule Heart do
 end
 Application.ensure_started(:amqp_client)
 
+defmodule PlayerWatcher do
+	def doThings do
+		IO.puts("do things to the player!")
+	end
+	def start_connection do
+		IO.puts("This is where the connection is started and passed along")
+		IO.puts("spawn connection")
+		{:ok, conn} = Mongo.start_link(name: :mongo, database: "pfiles", pool_size: 2)
+		PlayerWatcher.watch(conn, "Weasel")
+	end
+	def lookup(conn, playerHash) do
+		IO.puts("occasionally the poller does stuff")
+		cursor = Mongo.find(conn, "Players", %{"$and" =>[%{name: playerHash}]})
+		|> Enum.to_list()
+		|> IO.inspect
+	end
+	def watch(conn, playerHash) do
+		IO.puts("This is where the server sets up the player's connection to the database")
+		PlayerWatcher.lookup(conn, playerHash)
+	end
+	def unwatch do
+		IO.puts("Save the pFile, and close the connection")
+		
+	end
+end
+PlayerWatcher.start_connection
+
+
+
 defmodule Listener do
 	def wait_for_messages(channel) do
 		receive do
@@ -66,7 +95,8 @@ defmodule Listener do
 		userCred = Enum.at(cred, 0)
 		passCred = Enum.at(cred, 1)
 		hostname = Enum.at(cred, 2)
-		{ok, connection} = AMQP.Connection.open(host: hostname, username: userCred, password: passCred)
+		vhost = Enum.at(cred, 3)
+		{ok, connection} = AMQP.Connection.open(virtual_host: vhost, host: hostname, username: userCred, password: passCred)
 		{:ok, channel} = AMQP.Channel.open(connection)
 
 		AMQP.Queue.declare(channel, "input", auto_delete: true, durable: true)
