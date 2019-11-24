@@ -125,12 +125,10 @@ func actOn() {
 		go func() {
 			for d := range msgs {
 				log.Printf("Received a message: %s", d.Body)
-				f, err := os.Open("../pot/broadcast")
+				doWatch(string(d.Body))
 				if err != nil {
 					panic(err)
 				}
-				defer f.Close()
-				f.WriteString(string(d.Body))
 			}
 
 		}()
@@ -228,4 +226,65 @@ func watch() {
 	    log.Fatal(err)
 	}
 	<-done
+}
+func doWatch(input string) {
+	var broadcastContainer []string
+
+	inputList := strings.Split(input, ":")
+
+
+    for {
+	if inputList[0] == "broadcast" {
+		broadcastContainer = nil
+
+		file, err := os.Open("../pot/broadcast")
+		if err != nil {
+			panic(err)
+		}
+		contents, err := ioutil.ReadAll(file)
+		if err != nil {
+			panic(err)
+		}
+		var lines []string
+		lines = nil
+		
+		lines = strings.Split(string(contents), "\n")
+		lineIn := strings.Split(string(contents), "\n")
+		if len(lines) >= 20 {
+			lines = nil
+			for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
+				lines = append(lines, lineIn[i])
+			}
+		}
+//			var broadcastContainer []Broadcast
+		col := 0
+		row := 0
+		colVal := 53
+		rowVal := 0
+		for i := 0;i < len(lines);i++ {
+			var newBroad Broadcast
+			newBroad.Payload.Message = lines[i]
+			newBroadPayload := AssembleBroadside(newBroad, rowVal, colVal)
+			broadcastContainer = append(broadcastContainer, newBroadPayload)
+			if row >= 5 {
+				row = 0
+				rowVal = 0
+			}
+			if col < 3 {
+				col++
+				colVal += 30
+			}else {
+				row++
+				rowVal += 4
+				col = 0
+				colVal = 53
+			}
+		}
+		//log.Print(string(contents))
+
+	for i := 0;i < len(broadcastContainer);i++ {
+		fmt.Print(broadcastContainer[i])
+	}
+    }
+}
 }
