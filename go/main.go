@@ -33,17 +33,28 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("Enter your command")
-	go actOn()
-	go watch()
+	fmt.Print("Initializing a player")
+	play := InitPlayer("dorp", "norp")
+//	go actOn() //for receiving in Go
+//	go watch()
 	for scanner.Scan() {
-
 		input := "broadcast:"+scanner.Text()
 		//Should probably do some error checking before
 		//passing it along
+		doPlayer(input, play)
+		doWatch(input)
 		doInput(input)
 		fmt.Print("Enter your command")
 
 	}
+}
+
+func doPlayer(input string, play Player) {
+	play = decompEq(play)
+	play = decompInv(play)
+	DescribePlayer(play)
+	describeEquipment(play)
+	describeInventory(play)
 }
 
 func doInput(input string) {
@@ -233,7 +244,6 @@ func doWatch(input string) {
 	inputList := strings.Split(input, ":")
 
 
-    for {
 	if inputList[0] == "broadcast" {
 		broadcastContainer = nil
 
@@ -250,7 +260,7 @@ func doWatch(input string) {
 		
 		lines = strings.Split(string(contents), "\n")
 		lineIn := strings.Split(string(contents), "\n")
-		if len(lines) >= 20 {
+		if len(lines) >= 21 {
 			lines = nil
 			for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
 				lines = append(lines, lineIn[i])
@@ -286,5 +296,4 @@ func doWatch(input string) {
 		fmt.Print(broadcastContainer[i])
 	}
     }
-}
 }
