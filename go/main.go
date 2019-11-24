@@ -32,7 +32,7 @@ func getConnectionString() string {
 func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Print("Enter your command")
+//	fmt.Print("Enter your command")
 	fmt.Print("Initializing a player")
 	play := InitPlayer("dorp", "norp")
 //	go actOn() //for receiving in Go
@@ -44,7 +44,9 @@ func main() {
 		doPlayer(input, play)
 		doWatch(input)
 		doInput(input)
-		fmt.Print("Enter your command")
+//		fmt.Print("Enter your command")
+
+		fmt.Print("\033[26;53H\n")
 
 	}
 }
@@ -91,7 +93,8 @@ func doInput(input string) {
 		ContentType: "text/plain",
 		Body: []byte(body),
 	})
-	log.Printf(" [x] Sent %s", body)
+//	fmt.Print("\033[26;53H\n")
+//	log.Printf(" [x] Sent %s", body)
 	failOnError(err, "Failed to publish a message")
 
 }
@@ -135,7 +138,8 @@ func actOn() {
 	        failOnError(err, "Failed to register a consumer")
 		go func() {
 			for d := range msgs {
-				log.Printf("Received a message: %s", d.Body)
+		//		fmt.Print("\033[26;53H\n")
+		//		log.Printf("Received a message: %s", d.Body)
 				message := string(d.Body)
 				if strings.HasPrefix(message, "broadcast:") {
 					if !strings.Contains(message, "!:::tick:::!") {
@@ -174,9 +178,10 @@ func watch() {
 	            if !ok {
 	                return
 	            }
-	            log.Print("event:", event)
+	           // fmt.Print("\033[26;53H\n")
+		  //  log.Print("event:", event)
 	            if event.Op&fsnotify.Write == fsnotify.Write {
-	                log.Print("\033[48:2:150:0:150mmodified file:", event.Name,"\033[0m")
+	        //        log.Print("\033[48:2:150:0:150mmodified file:", event.Name,"\033[0m")
 	            }
 		if event.Name == "../pot/broadcast" {
 			broadcastContainer = nil
@@ -206,6 +211,9 @@ func watch() {
 			for i := 0;i < len(lines);i++ {
 					var newBroad Broadcast
 					newBroad.Payload.Message = lines[i]
+					if len(newBroad.Payload.Message) > 24 {
+						newBroad.Payload.Message = lines[i][:24]
+					}
 					if strings.Contains(lines[i], "!:::tick:::!") {
 						continue
 					}
@@ -229,13 +237,16 @@ func watch() {
 				for i := 0;i < len(broadcastContainer);i++ {
 					fmt.Print(broadcastContainer[i])
 				}
+				fmt.Print("\033[26;53H\n")
+
 				//log.Print(string(contents))
 			}
 	        case err, ok := <-watcher.Errors:
 	            if !ok {
 	                return
 	            }
-	            log.Print("error:", err)
+	            	fmt.Print("\033[26;53H\n")
+			log.Print("error:", err)
 		default:
 //			for i := 0;i < len(broadcastContainer);i++ {
 //				fmt.Print(broadcastContainer[i])
@@ -295,6 +306,9 @@ func doWatch(input string) string {
 			}
 			var newBroad Broadcast
 			newBroad.Payload.Message = lines[i]
+			if len(newBroad.Payload.Message) > 24 {
+				newBroad.Payload.Message = lines[i][:24]
+			}
 			newBroadPayload := AssembleBroadside(newBroad, rowVal, colVal)
 			broadcastContainer = append(broadcastContainer, newBroadPayload)
 			if row >= 5 {
@@ -316,5 +330,7 @@ func doWatch(input string) string {
 	for i := 0;i < len(broadcastContainer);i++ {
 		fmt.Print(broadcastContainer[i])
 	}
+	fmt.Print("\033[26;53H\n")
+
 	return ""
 }
