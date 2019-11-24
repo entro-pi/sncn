@@ -25,6 +25,16 @@ defmodule Listener do
 	def wait_for_messages(channel) do
 		receive do
 			{:basic_deliver, payload, meta} ->
+			IO.puts " rabbit receivied #{payload}"
+			payload |> File.write!(payload)
+			IO.puts "written to file"
+			AMQP.Basic.ack(channel, meta.delivery_tag)
+			wait_for_messages(channel)
+		end
+	end
+	def wait_for_dotdot_messages(channel) do
+		receive do
+			{:basic_deliver, payload, meta} ->
 			IO.puts " [x] Received #{payload}"
 			payload
 			|> to_char_list
@@ -33,7 +43,7 @@ defmodule Listener do
 			|> :timer.sleep
 			IO.puts " [x] Done."
 			AMQP.Basic.ack(channel, meta.delivery_tag)
-			wait_for_messages(channel)
+			wait_for_dotdot_messages(channel)
 		end
 	end
 	def listen do
