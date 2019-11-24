@@ -83,7 +83,7 @@ func doInput(input string) {
 	)
 	failOnError(err, "Failed to declare a queue")
 
-	body := input
+	body := "broadcast:"+input
 	err = ch.Publish(
 	"", //exchange
 	q.Name, // routing key
@@ -200,6 +200,7 @@ func watch() {
 			if len(lines) >= 20 {
 				lines = nil
 				for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
+					lineIn[i] = strings.ReplaceAll(lineIn[i], "broadcast:", "")
 					lines = append(lines, lineIn[i])
 				}
 			}
@@ -288,10 +289,11 @@ func doWatch(input string) string {
 		lines = nil
 		
 		lines = strings.Split(string(contents), "\n")
-		lineIn := strings.Split(string(contents), "\n")
+		lineIn := strings.Split(string(contents), "\n")	
 		if len(lines) >= 21 {
 			lines = nil
 			for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
+				lineIn[i] = strings.ReplaceAll(lineIn[i], "broadcast:", "")
 				lines = append(lines, lineIn[i])
 			}
 		}
