@@ -130,7 +130,7 @@ func actOn() {
 					panic(err)
 				}
 				defer f.Close()
-				f.WriteString("\n")
+				f.WriteString(string(d.Body))
 			}
 
 		}()
