@@ -49,6 +49,15 @@ defmodule Listener do
 			wait_for_dotdot_messages(channel)
 		end
 	end
+	def tick(channel) do
+		determine = [0, 1, 2, 3, 4, 5]
+		Enum.random(determine)
+		|> Kernel.*(1000)
+		|> :timer.sleep
+		AMQP.Basic.publish(channel, "", "input", "tick!")
+		IO.puts "tick!"
+		Listener.tick(channel)
+	end
 	def listen do
 	
 		creds = File.read!("creds")
@@ -65,7 +74,7 @@ defmodule Listener do
 		AMQP.Basic.consume(channel, "input", nil, no_ack: false, persistent: true)
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
-
+		Listener.tick(channel)
 		Listener.wait_for_messages(channel)
 	end
 end
