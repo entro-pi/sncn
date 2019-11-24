@@ -21,6 +21,71 @@ defmodule Heart do
 end
 Application.ensure_started(:amqp_client)
 
+defmodule Player do
+	use TypeStruct
+
+	defstruct Object,
+	 name: String.t \\ "A nyancat",
+	 longname: String.t \\ "A poptart kitten",
+	 vnum: integer \\ 2, zone: String.t \\ "zem",
+	 ownerhash: String.t \\ "1234",
+	worth: integer \\ 1,
+	 slot: integer \\ 0,
+	 x: integer \\ 0, 
+	y: integer \\ 0,
+	 owned: bool \\ false
+
+	defstruct EquipmentItem, item: Object, number: integer \\ 0
+	defstruct InventoryItem, item: Object, number: integer \\ 0
+	
+	defstruct InventoryBank, slotone: InventoryItem, slotoneamount: integer \\ 0,
+			slottwo: InventoryItem, slottwoamount: integer \\ 0,
+			slotthree: InventoryItem, slotthreeamount: integer \\ 0,
+			slotfour: InventoryItem, slotfouramount: integer \\ 0,
+			slotfive: InventoryItem, slotfiveamount: integer \\ 0,
+			slotsix: InventoryItem, slotsixamount: integer \\ 0,
+			slotseven: InventoryItem, slotsevenamount: integer \\ 0,
+			sloteight: InventoryItem, sloteightamount: integer \\ 0,
+			slotnine: InventoryItem, slotnineamount: integer \\ 0,
+			slotten: InventoryItem, slottenamount: integer \\ 0
+        defstruct EquipmentBank, slotone: EquipmentItem, slotoneamount: integer \\ 0,
+                	slottwo: EquipmentItem, slottwoamount: integer \\ 0,
+                	slotthree: EquipmentItem, slotthreeamount: integer \\ 0,
+                	slotfour: EquipmentItem, slotfouramount: integer \\ 0,
+                	slotfive: EquipmentItem, slotfiveamount: integer \\ 0,
+                	slotsix: EquipmentItem, slotsixamount: integer \\ 0,
+                	slotseven: EquipmentItem, slotsevenamount: integer \\ 0,
+                	sloteight: EquipmentItem, sloteightamount: integer \\ 0,
+                	slotnine: EquipmentItem, slotnineamount: integer \\ 0,
+                	slotten: EquipmentItem, slottenamount: integer \\ 0
+	defstruct Play, name: String.t \\ "dorp", hostname: String.t \\ "dev.snowcrash.network", title: String.t \\ "The Unknown",
+		itembank: Player.InventoryBank, equipmentbank: Player.EquipmentBank,
+		str: integer \\ 1, int: integer \\ 1, dex: integer \\ 1,
+		wis: integer \\ 1, con: integer \\ 1, cha: integer \\ 1
+	def init do
+		nyan = %Object{}
+		ibank = %InventoryBank{slotone: nyan, slottwo: nyan, slotthree: nyan, slotfour: nyan, slotfive: nyan,
+					slotsix: nyan, slotseven: nyan, sloteight: nyan, slotnine: nyan, slotten: nyan}
+		
+                eqbank = %EquipmentBank{slotone: nyan, slottwo: nyan, slotthree: nyan, slotfour: nyan, slotfive: nyan,
+                                        slotsix: nyan, slotseven: nyan, sloteight: nyan, slotnine: nyan, slotten: nyan}
+		play = %Player.Play{itembank: ibank, equipmentbank: eqbank}
+	end
+        def init(name) do
+                nyan = %Object{}
+                ibank = %InventoryBank{slotone: nyan, slottwo: nyan, slotthree: nyan, slotfour: nyan, slotfive: nyan,
+                                        slotsix: nyan, slotseven: nyan, sloteight: nyan, slotnine: nyan, slotten: nyan}
+
+                eqbank = %EquipmentBank{slotone: nyan, slottwo: nyan, slotthree: nyan, slotfour: nyan, slotfive: nyan,
+                                        slotsix: nyan, slotseven: nyan, sloteight: nyan, slotnine: nyan, slotten: nyan}
+                play = %Player.Play{name: name, itembank: ibank, equipmentbank: eqbank}
+        end
+
+
+
+end
+
+
 defmodule PlayerWatcher do
 	def doThings do
 		IO.puts("do things to the player!")
@@ -35,7 +100,7 @@ defmodule PlayerWatcher do
 		IO.puts("occasionally the poller does stuff")
 		cursor = Mongo.find(conn, "Players", %{"$and" =>[%{name: playerHash}]})
 		|> Enum.to_list()
-		|> IO.inspect
+	
 	end
 	def watch(conn, playerHash) do
 		IO.puts("This is where the server sets up the player's connection to the database")

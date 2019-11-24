@@ -49,7 +49,7 @@ type Object struct {
 	Vnum int
 	Zone string
 	OwnerHash string
-	Value int
+	Worth int
 	Slot int
 	X int
 	Y int

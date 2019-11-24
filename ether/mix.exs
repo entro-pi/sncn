@@ -15,7 +15,7 @@ defmodule Idlesnow.MixProject do
   def application do
     [
       application: [
-	:amqp, :amqp_client, :logger, :gossip, :mongodb, :poolboy
+	:amqp, :amqp_client, :logger, :gossip, :mongodb, :poolboy, :type_struct
 	]
     ]
   end
@@ -24,6 +24,7 @@ defmodule Idlesnow.MixProject do
   defp deps do
     [
 	#{:gossip, "~> 0.6"},
+	{:type_struct, ">= 0.0.0"},
 	{:mongodb, ">= 0.0.0"},
 	{:poolboy, ">= 0.0.0"},
 	{:amqp_client, "~> 3.7.11"},
