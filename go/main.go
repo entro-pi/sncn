@@ -37,7 +37,7 @@ func main() {
 	go watch()
 	for scanner.Scan() {
 
-		input := scanner.Text()
+		input := "broadcast:"+scanner.Text()
 		//Should probably do some error checking before
 		//passing it along
 		doInput(input)
