@@ -61,7 +61,26 @@ defmodule Player do
 	defstruct Play, name: String.t \\ "dorp", hostname: String.t \\ "dev.snowcrash.network", title: String.t \\ "The Unknown",
 		itembank: Player.InventoryBank, equipmentbank: Player.EquipmentBank,
 		str: integer \\ 1, int: integer \\ 1, dex: integer \\ 1,
-		wis: integer \\ 1, con: integer \\ 1, cha: integer \\ 1
+		wis: integer \\ 1, con: integer \\ 1, cha: integer \\ 1,
+		inventory: [InventoryItem] \\ [], Equipped: [EquipmentItem] \\ [],
+		coreboard: String.t \\ "", plaincoreboard: String.t \\ "",
+		currentroom: Space \\ nil, playerhash: String.t \\ "",
+		classes: [Classes] \\ [], level: Float.t \\ 0.0,
+		target: String.t \\ "", targetlong: String.t \\ "",
+		eslotspell: Spell \\ nil, eslotskill: Skill \\ nil,
+		qslotspell: Spell \\ nil, qslotskill: Skill \\ nil,
+		tobuy: integer \\ 0, bankaccount: Account \\ nil,
+		tarx: integer \\ 0, tary: integer \\ 0,
+		oldx: integer \\ 0, oldy: integer \\ 0,
+		cpu: String.t \\ "", coreshow: bool \\ false,
+		channels: [String.t] \\ [], battling: bool \\ false,
+		battlingmob: Mobile \\ nil, session: String.t \\ "",
+		attack: integer \\ 0, defend: integer \\ 0,
+		slain: integer \\ 0, hoarded: integer \\ 0,
+		maxrezz: integer \\ 10, rezz: integer \\ 10,
+		maxtech: integer \\ 5, tech: integer \\ 5,
+		fights: Fight \\ nil, won: integer \\ 0, found: integer \\ 0
+
 	def init do
 		nyan = %Object{}
 		ibank = %InventoryBank{slotone: nyan, slottwo: nyan, slotthree: nyan, slotfour: nyan, slotfive: nyan,
@@ -80,7 +99,7 @@ defmodule Player do
                                         slotsix: nyan, slotseven: nyan, sloteight: nyan, slotnine: nyan, slotten: nyan}
                 play = %Player.Play{name: name, itembank: ibank, equipmentbank: eqbank}
         end
-
+	
 
 
 end

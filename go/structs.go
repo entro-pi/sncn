@@ -257,7 +257,6 @@ type Player struct {
 	Channels []string
 	Battling bool
 	BattlingMob Mobile
-	Profile string
 	Session string
 	Attack int
 	Defend int
