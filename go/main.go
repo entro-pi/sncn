@@ -36,7 +36,7 @@ func main() {
 	fmt.Print("Initializing a player")
 	play := InitPlayer("dorp", "norp")
 //	go actOn() //for receiving in Go
-//	go watch()
+	go watch()
 	for scanner.Scan() {
 		input := "broadcast:"+scanner.Text()
 		//Should probably do some error checking before
@@ -136,7 +136,10 @@ func actOn() {
 		go func() {
 			for d := range msgs {
 				log.Printf("Received a message: %s", d.Body)
-				doWatch(string(d.Body))
+				message := string(d.Body)
+				if strings.HasPrefix(message, "broadcast:") {
+					doWatch(string(d.Body))
+				}
 				if err != nil {
 					panic(err)
 				}
@@ -216,6 +219,9 @@ func watch() {
 					colVal = 53
 				}
 			}
+			for i := 0;i < len(broadcastContainer);i++ {
+				fmt.Print(broadcastContainer[i])
+			}
 			//log.Print(string(contents))
 		}
 
@@ -225,9 +231,10 @@ func watch() {
 	            }
 	            log.Println("error:", err)
 		default:
-			for i := 0;i < len(broadcastContainer);i++ {
-				fmt.Print(broadcastContainer[i])
-			}
+//			for i := 0;i < len(broadcastContainer);i++ {
+//				fmt.Print(broadcastContainer[i])
+//			}
+			//DO NOTHING
 	        }
 	    }
 	}()
