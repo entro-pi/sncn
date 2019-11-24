@@ -212,8 +212,8 @@ func watch() {
 			for i := 0;i < len(lines);i++ {
 					var newBroad Broadcast
 					newBroad.Payload.Message = lines[i]
-					if len(newBroad.Payload.Message) > 24 {
-						newBroad.Payload.Message = lines[i][:24]
+					if len(newBroad.Payload.Message) > 89 {
+						newBroad.Payload.Message = lines[i][:89]
 					}
 					if strings.Contains(lines[i], "!:::tick:::!") {
 						continue

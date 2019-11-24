@@ -349,8 +349,16 @@ func AssembleBroadside(broadside Broadcast, row int, col int) (string) {
 	var cel string
 	colString := strconv.Itoa(col)
 	inWord := broadside.Payload.Message
-	for len(inWord) < 90 {
-		inWord += " "+inWord+" "
+	if len(inWord) < 15 {
+		inWord = " "+inWord
+		for len(inWord) < 90 {
+			inWord += " "+inWord+" "
+		}
+	}else {
+		inWord = " "+inWord
+		for len(inWord) < 90 {
+			inWord = inWord + " "
+		}
 	}
 	wor := inWord[0:29]
 	word := inWord[29:59]
