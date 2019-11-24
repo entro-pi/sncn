@@ -36,10 +36,8 @@ defmodule Listener do
 			wait_for_messages(channel)
 		end
 	end
-end
-defmodule Connector do
-
-	def connect do
+	def listen do
+	
 		creds = File.read!("creds")
 		
 		cred = creds |> String.split("\n")

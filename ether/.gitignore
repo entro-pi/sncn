@@ -23,4 +23,5 @@ erl_crash.dump
 idlesnow-*.tar
 
 creds
+idSecret*
 /log/*

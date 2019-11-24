@@ -15,7 +15,7 @@ defmodule Idlesnow.MixProject do
   def application do
     [
       application: [
-	:amqp, :amqp_client, :logger
+	:amqp, :amqp_client, :logger, :gossip
 	]
     ]
   end
@@ -23,7 +23,7 @@ defmodule Idlesnow.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-	# {:gossip, "~> 1.4"},
+	#{:gossip, "~> 0.6"},
 	{:amqp_client, "~> 3.7.11"},
 	{:amqp, "~> 1.3"},
       # {:dep_from_hexpm, "~> 0.3.0"},
