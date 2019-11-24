@@ -3,19 +3,19 @@ defmodule Heart do
 		IO.puts("Hello!"<>lang)
 	end
 	def notify(mess, mes) do
-		{:ok, file} = File.open("../pot/broadcasts", [:read, :write])
-		{:ok, oldcontents } = File.read("../pot/broadcasts")
+		{:ok, file} = File.open("../pot/broadcast", [:read, :write])
+		{:ok, oldcontents } = File.read("../pot/broadcast")
 		IO.binwrite(file, [mess, "DOOT", mes])
 		File.close(file)
 	end
 	def notify(mess) do
-		{:ok, file} = File.open("../pot/broadcasts", [:read, :write])
-		{:ok, oldcontents } = File.read("../pot/broadcasts")
-		IO.binwrite(file, oldcontents <> mess)
+		{:ok, file} = File.open("../pot/broadcast", [:read, :write])
+		{:ok, oldcontents } = File.read("../pot/broadcast")
+		IO.binwrite(file, oldcontents <> "broadcast:" <> mess <> "\n")
 		File.close(file)
 	end
 	def see do
-		File.read("../pot/broadcasts")
+		File.read("../pot/broadcast")
 	end
 
 end
@@ -26,7 +26,10 @@ defmodule Listener do
 		receive do
 			{:basic_deliver, payload, meta} ->
 			IO.puts " rabbit receivied #{payload}"
-			payload |> File.write!(payload)
+			{:ok, file} = File.open("../pot/broadcast", [:read, :write])
+			{:ok, oldcontents } = File.read("../pot/broadcast")
+			IO.binwrite(file, oldcontents <> "broadcast:" <> payload <> "\n")
+			File.close(file)
 			IO.puts "written to file"
 			AMQP.Basic.ack(channel, meta.delivery_tag)
 			wait_for_messages(channel)
