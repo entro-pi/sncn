@@ -33,6 +33,7 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("Enter your command")
+	go actOn()
 	go watch()
 	for scanner.Scan() {
 
