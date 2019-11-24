@@ -26,11 +26,13 @@ defmodule Listener do
 		receive do
 			{:basic_deliver, payload, meta} ->
 			IO.puts " rabbit receivied #{payload}"
-			{:ok, file} = File.open("../pot/broadcast", [:read, :write])
-			{:ok, oldcontents } = File.read("../pot/broadcast")
-			IO.binwrite(file, oldcontents <> "broadcast:" <> payload <> "\n")
-			File.close(file)
-			IO.puts "written to file"
+			unless String.match?(payload, "!:::tick:::!") do
+				{:ok, file} = File.open("../pot/broadcast", [:read, :write])
+				{:ok, oldcontents } = File.read("../pot/broadcast")
+				IO.binwrite(file, oldcontents <> "broadcast:" <> payload <> "\n")
+				File.close(file)
+				IO.puts "written to file"
+			end
 			AMQP.Basic.ack(channel, meta.delivery_tag)
 			wait_for_messages(channel)
 		end
@@ -54,7 +56,7 @@ defmodule Listener do
 		Enum.random(determine)
 		|> Kernel.*(1000)
 		|> :timer.sleep
-		AMQP.Basic.publish(channel, "", "input", "tick!")
+		AMQP.Basic.publish(channel, "", "input", "!:::tick:::!")
 		IO.puts "tick!"
 		Listener.tick(channel)
 	end

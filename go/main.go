@@ -138,7 +138,11 @@ func actOn() {
 				log.Printf("Received a message: %s", d.Body)
 				message := string(d.Body)
 				if strings.HasPrefix(message, "broadcast:") {
-					doWatch(string(d.Body))
+					if !strings.Contains(message, "!:::tick:::!") {
+						doWatch(string(d.Body))
+					}else {
+						doWatch("!:::tick:::!")
+					}
 				}
 				if err != nil {
 					panic(err)
@@ -170,9 +174,9 @@ func watch() {
 	            if !ok {
 	                return
 	            }
-	            log.Println("event:", event)
+	            log.Print("event:", event)
 	            if event.Op&fsnotify.Write == fsnotify.Write {
-	                log.Println("\033[48:2:150:0:150mmodified file:", event.Name,"\033[0m")
+	                log.Print("\033[48:2:150:0:150mmodified file:", event.Name,"\033[0m")
 	            }
 		if event.Name == "../pot/broadcast" {
 			broadcastContainer = nil
@@ -186,7 +190,6 @@ func watch() {
 			}
 			var lines []string
 			lines = nil
-			
 			lines = strings.Split(string(contents), "\n")
 			lineIn := strings.Split(string(contents), "\n")
 			if len(lines) >= 20 {
@@ -201,35 +204,38 @@ func watch() {
 			colVal := 53
 			rowVal := 0
 			for i := 0;i < len(lines);i++ {
-				var newBroad Broadcast
-				newBroad.Payload.Message = lines[i]
-				newBroadPayload := AssembleBroadside(newBroad, rowVal, colVal)
-				broadcastContainer = append(broadcastContainer, newBroadPayload)
-				if row >= 5 {
-					row = 0
-					rowVal = 0
-				}
-				if col < 3 {
-					col++
-					colVal += 30
-				}else {
-					row++
-					rowVal += 4
-					col = 0
-					colVal = 53
-				}
-			}
-			for i := 0;i < len(broadcastContainer);i++ {
-				fmt.Print(broadcastContainer[i])
-			}
-			//log.Print(string(contents))
-		}
+					var newBroad Broadcast
+					newBroad.Payload.Message = lines[i]
+					if strings.Contains(lines[i], "!:::tick:::!") {
+						continue
+					}
 
+					newBroadPayload := AssembleBroadside(newBroad, rowVal, colVal)
+					broadcastContainer = append(broadcastContainer, newBroadPayload)
+					if row >= 5 {
+						row = 0
+						rowVal = 0
+					}
+					if col < 3 {
+						col++
+						colVal += 30
+					}else {
+						row++
+						rowVal += 4
+						col = 0
+						colVal = 53
+					}
+				}
+				for i := 0;i < len(broadcastContainer);i++ {
+					fmt.Print(broadcastContainer[i])
+				}
+				//log.Print(string(contents))
+			}
 	        case err, ok := <-watcher.Errors:
 	            if !ok {
 	                return
 	            }
-	            log.Println("error:", err)
+	            log.Print("error:", err)
 		default:
 //			for i := 0;i < len(broadcastContainer);i++ {
 //				fmt.Print(broadcastContainer[i])
@@ -245,12 +251,17 @@ func watch() {
 	}
 	<-done
 }
-func doWatch(input string) {
+func doWatch(input string) string {
 	var broadcastContainer []string
 
 	inputList := strings.Split(input, ":")
 
+	if strings.Contains(input, "!:::tick:::!") {
+		fmt.Println("\033[48:2:200:0:0mERROR\033[0m")
+		return ""
 
+		//do nothing but draw messages already there
+	}
 	if inputList[0] == "broadcast" {
 		broadcastContainer = nil
 
@@ -279,6 +290,9 @@ func doWatch(input string) {
 		colVal := 53
 		rowVal := 0
 		for i := 0;i < len(lines);i++ {
+			if strings.Contains(lines[i], "!:::tick:::!") {
+				continue
+			}
 			var newBroad Broadcast
 			newBroad.Payload.Message = lines[i]
 			newBroadPayload := AssembleBroadside(newBroad, rowVal, colVal)
@@ -298,9 +312,9 @@ func doWatch(input string) {
 			}
 		}
 		//log.Print(string(contents))
-
+	}
 	for i := 0;i < len(broadcastContainer);i++ {
 		fmt.Print(broadcastContainer[i])
 	}
-    }
+	return ""
 }
