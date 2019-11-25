@@ -134,8 +134,12 @@ defmodule Pfiles.Pfile do
                 field :fights, :string
 		field :won, :integer
 		field :found, :integer
-
-
-
 	end
+	import Ecto.Changeset
+	def changeset(player, params \\ %{}) do
+		player
+		|>cast(params, [:name])
+		|>validate_required([:name])
+	end
+
 end
