@@ -4,6 +4,7 @@ defmodule Idlesnow.MixProject do
   def project do
     [
       app: :idlesnow,
+	ecto_repos: [Pfiles.Repo],
       version: "0.1.0",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
@@ -15,7 +16,8 @@ defmodule Idlesnow.MixProject do
   def application do
     [
       application: [
-	:amqp, :amqp_client, :logger, :gossip, :mongodb, :poolboy, :type_struct
+	:amqp, :amqp_client, :logger, :gossip,
+	:json, :ecto_sql, :postgrex
 	]
     ]
   end
@@ -24,11 +26,12 @@ defmodule Idlesnow.MixProject do
   defp deps do
     [
 	#{:gossip, "~> 0.6"},
+	{:ecto_sql, "~> 3.2"},
+	{:postgrex, ">= 0.0.0"},
+	{:json, "~> 1.2"},
 	{:type_struct, ">= 0.0.0"},
-	{:mongodb, ">= 0.0.0"},
-	{:poolboy, ">= 0.0.0"},
 	{:amqp_client, "~> 3.7.11"},
-	{:amqp, "~> 1.3"},
+	{:amqp, "~> 1.3"}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]

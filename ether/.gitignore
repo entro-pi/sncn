@@ -25,3 +25,4 @@ idlesnow-*.tar
 creds
 idSecret*
 /log/*
+config/*
