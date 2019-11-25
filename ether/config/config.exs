@@ -2,11 +2,17 @@
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
 
-config :idlesnow, Pfiles.Repo,
-  database: "pfiles",
-  username: "postgres",
-  password: "r4bbits4l4d",
-  hostname: "localhost"
+config :ether, ecto_repos: [Ether.Repo]
+
+config :ether, Ether.Repo,
+	adapter: Ecto.Adapters.Postgres,
+	pool: Ecto.Adapters.SQL.Sandbox,
+	host: "localhost",
+	port: "5432",
+	database: "pfiles",
+	username: "postgres",
+	password: "m00N",
+	url: "ecto://postgres:m00N@localhost/pfiles"
 
 # This configuration is loaded before any dependency and is restricted
 # to this project. If another project depends on this project, this
@@ -16,11 +22,11 @@ config :idlesnow, Pfiles.Repo,
 
 # You can configure your application as:
 #
-#     config :idlesnow, key: :value
+#     config :ether, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:idlesnow, :key)
+#     Application.get_env(:ether, :key)
 #
 # You can also configure a third-party app:
 #

@@ -1,10 +1,10 @@
-defmodule Idlesnow.MixProject do
+defmodule Ether.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :idlesnow,
-	ecto_repos: [Pfiles.Repo],
+      app: :ether,
+	ecto_repos: [Ether.Repo],
       version: "0.1.0",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
@@ -18,7 +18,9 @@ defmodule Idlesnow.MixProject do
       application: [
 	:amqp, :amqp_client, :logger, :gossip,
 	:json, :ecto_sql, :postgrex
-	]
+	],
+	mod: {Ether.Application, []}
+
     ]
   end
 
