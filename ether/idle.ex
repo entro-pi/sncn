@@ -290,12 +290,8 @@ defmodule EquipmentBank do
 end
 end
 
-
-
 defmodule Pfiles.Pfile do
-
 	use Ecto.Schema
-
 	schema "pfiles" do
         field :name, :string
 	 field :hostname, :string

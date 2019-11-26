@@ -17,7 +17,7 @@ defmodule Ether.MixProject do
     [
       application: [
 	:amqp, :amqp_client, :logger, :gossip,
-	:jason, :ecto_sql, :postgrex
+	:jason, :json, :ecto_sql, :postgrex
 	],
 	mod: {Ether.Application, []}
 
@@ -30,6 +30,7 @@ defmodule Ether.MixProject do
 	#{:gossip, "~> 0.6"},
 	{:ecto_sql, "~> 3.2"},
 	{:postgrex, ">= 0.0.0"},
+	{:json, ">= 0.0.0"},
 	{:jason, ">= 0.0.0"},
 	{:type_struct, ">= 0.0.0"},
 	{:amqp_client, "~> 3.7.11"},
