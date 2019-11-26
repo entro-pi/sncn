@@ -39,11 +39,27 @@ defmodule PlayerWatcher do
 		IO.puts("spawn connection")
 		{:ok, conn} = Postgrex.start_link(database: dataCred, hostname: hostCred, username: userCred, password: passCred)
 	end
+	def create_table_broadcasts(conn) do
+		Postgrex.query!(conn, "CREATE TABLE broadcasts (message varchar(255));", [])
+	end
+	def create_table_pfiles(conn) do
+		Postgrex.query!(conn, "CREATE TABLE pfiles (ID serial NOT NULL PRIMARY KEY, pfile json NOT NULL);", [])
+	end
+	def insert_broadcast(conn, msg) do
+		Postgrex.query!(conn, "INSERT INTO broadcasts (message) VALUES ('"<>msg<>"')", [])
+	end
+	def get_all_broadcasts(conn) do
+		Postgrex.query!(conn, "SELECT * FROM broadcasts", [])
+	end
 	def create_table_pfiles(conn) do
 		Postgrex.query!(conn, "CREATE TABLE pfiles (name varchar(255));", [])
 	end
 	def add_p_file(conn, play) do
-		Postgrex.query!(conn, "INSERT INTO pfiles (name) VALUES ('"<>play.name<>"')", [])
+		{:ok, encodedPlayer} = JSON.encode(play)
+		Postgrex.query!(conn, "INSERT INTO pfiles (pfile) VALUES ('"<>encodedPlayer<>"')", [])
+	end
+	def find_p_files(conn) do
+		Postgrex.query!(conn, "SELECT * FROM pfiles", [])
 	end
 	def change_p_file(conn, change) do
 		Postgrex.query!(conn, "UPDATE pfiles SET name = '"<>change<>"'", [])
@@ -136,10 +152,40 @@ defmodule Listener do
 end
 
 defmodule Test do
-	def upload do
+	def test_define_types do
+		Postgrex.Types.define(Ether.PostgrexTypes, [Pfiles.Pfile], [])
+		{:ok, conn} = PlayerWatcher.start_connection(types: Pfiles.Pfile)
+	end
+	def test_create_pfiles_table do
+		{:ok, conn} = PlayerWatcher.start_connection
+		PlayerWatcher.create_table_pfiles(conn)
+	end
+	def test_create_broadcast_table do
+		{:ok, conn} = PlayerWatcher.start_connection
+		PlayerWatcher.create_table_broadcasts(conn)		
+	end
+	def test_find_p_files do
+		{:ok, conn} = PlayerWatcher.start_connection
+		PlayerWatcher.find_p_files(conn)
+	end
+	def test_insert_broadcast(msg) do
+		{:ok, conn} = PlayerWatcher.start_connection
+		PlayerWatcher.insert_broadcast(conn, msg)
+	end
+	def test_find_broadcasts do
+		{:ok, conn} = PlayerWatcher.start_connection
+		PlayerWatcher.get_all_broadcasts(conn)
+	end
+	def test_upload do
 		weasel = %Pfiles.Pfile{name: "Weasel"}
-		Ecto.Changeset.cast(weasel, %{"name" => "Wallace"}, [])
-		|> Ecto.Ether.insert		
+		{:ok, conn} = PlayerWatcher.start_connection
+		PlayerWatcher.add_p_file(conn, weasel)
+		
+	end
+	def test_upload(playername) do
+		weasel = %Pfiles.Pfile{name: playername}
+		{:ok, conn} = PlayerWatcher.start_connection
+		PlayerWatcher.add_p_file(conn, weasel)
 	end
 	def test(name) do
 		play = %Pfiles.Pfile{name: name, oldx: 0, oldy: 0, tarx: 0, tary: 0, maxrezz: 20, rezz: 10, maxtech: 10, tech: 5}
@@ -247,6 +293,7 @@ end
 
 
 defmodule Pfiles.Pfile do
+
 	use Ecto.Schema
 
 	schema "pfiles" do
@@ -298,12 +345,6 @@ defmodule Pfiles.Pfile do
                 field :fights, :string
 		field :won, :integer
 		field :found, :integer
-	end
-	import Ecto.Changeset
-	def changeset(player, params \\ %{}) do
-		player
-		|>cast(params, [:name])
-		|>validate_required([:name])
 	end
 
 end
