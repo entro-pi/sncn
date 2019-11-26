@@ -95,7 +95,6 @@ func InitObject() Object {
   obj.Name = "a golden tiara"
   obj.LongName = "A golden tiara lies here."
   obj.Vnum = 1
-  obj.Value = 1
   obj.Owned = false
   return obj
 }

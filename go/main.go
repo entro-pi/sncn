@@ -31,23 +31,47 @@ func getConnectionString() string {
 
 func main() {
 
-	scanner := bufio.NewScanner(os.Stdin)
-//	fmt.Print("Enter your command")
-	fmt.Print("Initializing a player")
-	play := InitPlayer("dorp", "norp")
-//	go actOn() //for receiving in Go
-	go watch(play)
-	for scanner.Scan() {
-		input := "broadcast:"+scanner.Text()
-		//Should probably do some error checking before
-		//passing it along
-		doPlayer(input, play)
-		doWatch(input, play)
-		doInput(input)
-//		fmt.Print("Enter your command")
+	if len(os.Args) == 2 {
+	if os.Args[1] == "--main" {
+			scanner := bufio.NewScanner(os.Stdin)
+		//	fmt.Print("Enter your command")
+			fmt.Print("Initializing a player")
+			play := InitPlayer("dorp", "norp")
+		//	go actOn() //for receiving in Go
+			go watch(play)
+			for scanner.Scan() {
+				input := "broadcast:"+scanner.Text()
+				//Should probably do some error checking before
+				//passing it along
+				doPlayer(input, play)
+				doWatch(input, play)
+				doInput(input)
+		//		fmt.Print("Enter your command")
 
-		fmt.Print("\033[26;53H\n")
+				fmt.Print("\033[26;53H\n")
 
+			}
+	}
+	if os.Args[1] == "--secondary" {
+			scanner := bufio.NewScanner(os.Stdin)
+		//	fmt.Print("Enter your command")
+			fmt.Print("Initializing a player")
+			play := InitPlayer("dorp", "norp")
+		//	go actOn() //for receiving in Go
+			go watch(play)
+			for scanner.Scan() {
+				input := "broadcast:"+scanner.Text()
+				//Should probably do some error checking before
+				//passing it along
+				doPlayer(input, play)
+				doWatch(input, play)
+				doInput(input)
+		//		fmt.Print("Enter your command")
+
+				fmt.Print("\033[26;53H\n")
+
+			}
+		}
 	}
 }
 
