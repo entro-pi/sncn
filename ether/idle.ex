@@ -43,7 +43,13 @@ defmodule PlayerWatcher do
 		Postgrex.query!(conn, "CREATE TABLE pfiles (name varchar(255));", [])
 	end
 	def add_p_file(conn, play) do
-		Postgrex.query!(conn, "INSERT INTO pfiles (name) VALUES ('weasel')", [])
+		Postgrex.query!(conn, "INSERT INTO pfiles (name) VALUES ('"<>play.name<>"')", [])
+	end
+	def change_p_file(conn, change) do
+		Postgrex.query!(conn, "UPDATE pfiles SET name = '"<>change<>"'", [])
+	end
+	def find_p_file(conn, name) do
+		Postgrex.query!(conn, "SELECT * FROM pfiles WHERE name = '"<>name<>"'", [])
 	end
 	def save_p_file(conn, play) do
 	end
@@ -130,9 +136,174 @@ defmodule Listener do
 end
 
 defmodule Test do
-	def test do
+	def upload do
 		weasel = %Pfiles.Pfile{name: "Weasel"}
+		Ecto.Changeset.cast(weasel, %{"name" => "Wallace"}, [])
+		|> Ecto.Ether.insert		
+	end
+	def test(name) do
+		play = %Pfiles.Pfile{name: name, oldx: 0, oldy: 0, tarx: 0, tary: 0, maxrezz: 20, rezz: 10, maxtech: 10, tech: 5}
+		{:ok, conn} = PlayerWatcher.start_connection
+		PlayerWatcher.add_p_file(conn, play)
+	end
+	def test_change(newname) do
+		{:ok, conn} = PlayerWatcher.start_connection
+		PlayerWatcher.change_p_file(conn, newname)
+	end
+	def test_find(name) do
+		{:ok, conn} = PlayerWatcher.start_connection
+		PlayerWatcher.find_p_file(conn, name)
+	end
+
+	def test do
+		weasel = %Pfiles.Pfile{name: "Weasel", oldx: 0, oldy: 0, tarx: 0, tary: 0, maxrezz: 20, rezz: 10, maxtech: 10, tech: 5}
 		{:ok, conn} = PlayerWatcher.start_connection
 		PlayerWatcher.add_p_file(conn, weasel)
 	end
+end
+
+defmodule Object do
+	use Ecto.Schema
+        schema "object" do
+	field :name, :string
+        field :longname, :string
+        field :vnum, :integer
+	field :zone, :string
+        field :ownerhash, :string
+        field :worth, :integer
+        field :slot, :integer
+        field :x, :integer
+        field :y, :integer
+        field :owned, :boolean
+	end
+end
+
+defmodule EquipmentItem do
+	use Ecto.Schema
+	schema "equipmentitem" do
+	belongs_to :item, Object
+	field :number, :integer
+        end
+end
+
+defmodule InventoryItem do
+	use Ecto.Schema
+        schema "inventoryitem"do
+	belongs_to :item, Object
+	field :number, :integer
+	end
+end
+defmodule InventoryBank do
+        use Ecto.Schema
+        schema "inventorybank" do
+         belongs_to :slotone, InventoryItem
+         field :slotoneamount, :integer
+         belongs_to :slottwo, InventoryItem
+         field :slottwoamount, :integer
+         belongs_to :slotthree, InventoryItem
+         field :slotthreeamount, :integer
+         belongs_to :slotfour, InventoryItem
+         field :slotfouramount, :integer
+         belongs_to :slotfive, InventoryItem
+         field :slotfiveamount, :integer
+         belongs_to :slotsix, InventoryItem
+         field :slotsixamount, :integer
+         belongs_to :slotseven, InventoryItem
+         field :slotsevenamount, :integer
+         belongs_to :sloteight, InventoryItem
+         field :sloteightamount, :integer
+         belongs_to :slotnine, InventoryItem
+         field :slotnineamount, :integer
+         belongs_to :slotten, InventoryItem
+         field :slottenamount, :integer
+end
+end
+defmodule EquipmentBank do
+        use Ecto.Schema
+        schema "equipmentbank" do
+         belongs_to :slotone, EquipmentItem
+         field :slotoneamount, :integer
+         belongs_to :slottwo, EquipmentItem
+         field :slottwoamount, :integer
+         belongs_to :slotthree, EquipmentItem
+         field :slotthreeamount, :integer
+         belongs_to :slotfour, EquipmentItem
+         field :slotfouramount, :integer
+         belongs_to :slotfive, EquipmentItem
+         field :slotfiveamount, :integer
+         belongs_to :slotsix, EquipmentItem
+         field :slotsixamount, :integer
+         belongs_to :slotseven, EquipmentItem
+         field :slotsevenamount, :integer
+         belongs_to :sloteight, EquipmentItem
+         field :sloteightamount, :integer
+         belongs_to :slotnine, EquipmentItem
+         field :slotnineamount, :integer
+         belongs_to :slotten, EquipmentItem
+         field :slottenamount, :integer
+end
+end
+
+
+
+defmodule Pfiles.Pfile do
+	use Ecto.Schema
+
+	schema "pfiles" do
+        field :name, :string
+	 field :hostname, :string
+	 field :title, :string
+                belongs_to :itembank, InventoryBank
+	belongs_to  :equipmentbank, EquipmentBank
+                field :str, :integer
+		field :int, :integer
+		field :dex, :integer
+                field :wis, :integer
+		field :con, :integer
+		field :cha, :integer
+                belongs_to :inventory, Elixir.List
+		belongs_to :Equipped, Elixir.List
+                field :coreboard, :string
+		field :plaincoreboard, :string
+                field :currentroom, :string
+		field :playerhash, :string
+                field :classes, :string
+		field :level, :integer 
+                field :target, :string
+		field  :targetlong, :string
+                field :eslotspell, :string
+		field :eslotskill, :string
+                field :qslotspell, :string
+		field :qslotskill, :string
+                field :tobuy, :integer
+		field :bankaccount, :string
+                field :tarx, :integer
+		field :tary, :integer
+                field :oldx, :integer
+		field :oldy, :integer
+                field :cpu, :string
+		field :coreshow, :boolean
+                field :channels, :string
+		field :battling, :boolean
+                field :battlingmob, :string
+		field :session, :string
+                field :attack, :integer
+		field :defend, :integer
+                field :slain, :integer
+		field :hoarded, :integer
+                field :maxrezz, :integer
+		field :rezz, :integer
+                field :maxtech, :integer
+		field :tech, :integer
+                field :fights, :string
+		field :won, :integer
+		field :found, :integer
+	end
+	import Ecto.Changeset
+	def changeset(player, params \\ %{}) do
+		player
+		|>cast(params, [:name])
+		|>validate_required([:name])
+	end
+
 end

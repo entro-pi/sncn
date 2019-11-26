@@ -9,10 +9,10 @@ config :ether, Ether.Repo,
 	pool: Ecto.Adapters.SQL.Sandbox,
 	host: "localhost",
 	port: "5432",
-	database: "pfiles",
-	username: "postgres",
-	password: "m00N",
-	url: "ecto://postgres:m00N@localhost/pfiles"
+	database: "entropy_pfiles",
+	username: "entropy_weasel",
+	password: "dxelopCHMA",
+	url: "ecto://entropy_weasel:dxelopCHMA@localhost/entropy_pfiles"
 
 # This configuration is loaded before any dependency and is restricted
 # to this project. If another project depends on this project, this
