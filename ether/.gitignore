@@ -26,3 +26,4 @@ creds
 idSecret*
 /log/*
 config/*
+postcreds

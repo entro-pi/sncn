@@ -26,9 +26,21 @@ defmodule PlayerWatcher do
 		IO.puts("do things to the player!")
 	end
 	def start_connection do
+                creds = File.read!("postcreds")
+
+                cred = creds |> String.split("\n")
+                dataCred = Enum.at(cred, 0)
+		hostCred = Enum.at(cred, 1)
+                userCred = Enum.at(cred, 2)
+                passCred = Enum.at(cred, 3)
+		
+
 		IO.puts("This is where the connection is started and passed along")
 		IO.puts("spawn connection")
-		{:ok, conn} = Postgrex.start_link(database: "pfiles", hostname: "localhost", username: "postgres")
+		{:ok, conn} = Postgrex.start_link(database: dataCred, hostname: hostCred, username: userCred, password: passCred)
+	end
+	def create_table_pfiles(conn) do
+		Postgrex.query!(conn, "CREATE TABLE pfiles (name varchar(255));", [])
 	end
 	def add_p_file(conn, play) do
 		Postgrex.query!(conn, "INSERT INTO pfiles (name) VALUES ('weasel')", [])
