@@ -51,15 +51,20 @@ defmodule PlayerWatcher do
 	def get_all_broadcasts(conn) do
 		Postgrex.query!(conn, "SELECT * FROM broadcasts", [])
 	end
-	def create_table_pfiles(conn) do
-		Postgrex.query!(conn, "CREATE TABLE pfiles (name varchar(255));", [])
+	def get_all_chars(conn) do
+		{:ok, result} = Postgrex.query!(conn, "SELECT pfile FROM pfiles", [])
+		IO.puts Enum.at(result.row, 0).name
 	end
 	def add_p_file(conn, play) do
 		{:ok, encodedPlayer} = JSON.encode(play)
-		Postgrex.query!(conn, "INSERT INTO pfiles (pfile) VALUES ('"<>encodedPlayer<>"')", [])
+		Postgrex.query!(conn, "INSERT INTO pfiles (pfile) VALUES ('"<>encodedPlayer<>"');", [])
 	end
 	def find_p_files(conn) do
-		Postgrex.query!(conn, "SELECT * FROM pfiles", [])
+		query = "select array_to_json(array_agg(pfile))::text from pfiles"
+		{:ok, resultJson} = Postgrex.query(conn, query, [])
+		resultString = List.flatten(hd(resultJson.rows))
+		resultDecoded = Poison.decode!(resultString, as: [%Pfiles.Pfile{}])
+		IO.puts(Enum.at(resultDecoded, 0).name)
 	end
 	def change_p_file(conn, change) do
 		Postgrex.query!(conn, "UPDATE pfiles SET name = '"<>change<>"'", [])
@@ -152,9 +157,13 @@ defmodule Listener do
 end
 
 defmodule Test do
+	def test_get_all_chars do
+		{:ok, conn} = PlayerWatcher.start_connection
+		PlayerWatcher.get_all_chars(conn)
+	end
 	def test_define_types do
-		Postgrex.Types.define(Ether.PostgrexTypes, [Pfiles.Pfile], [])
-		{:ok, conn} = PlayerWatcher.start_connection(types: Pfiles.Pfile)
+		Postgrex.Types.define(Ether.PostgrexTypes, [%Pfiles.Pfile{}], [])
+		{:ok, conn} = PlayerWatcher.start_connection(types: %Pfiles.Pfile{})
 	end
 	def test_create_pfiles_table do
 		{:ok, conn} = PlayerWatcher.start_connection
