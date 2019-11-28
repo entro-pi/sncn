@@ -42,8 +42,8 @@ defmodule PlayerWatcher do
 	def create_table_broadcasts(conn) do
 		Postgrex.query!(conn, "CREATE TABLE broadcasts (message varchar(255));", [])
 	end
-	def create_table_pfiles(conn) do
-		Postgrex.query!(conn, "CREATE TABLE pfiles (ID serial NOT NULL PRIMARY KEY, pfile json NOT NULL);", [])
+	def create_table_pfile(conn) do
+		Postgrex.query!(conn, "CREATE TABLE players (ID serial NOT NULL PRIMARY KEY, pfile json NOT NULL);", [])
 	end
 	def insert_broadcast(conn, msg) do
 		Postgrex.query!(conn, "INSERT INTO broadcasts (message) VALUES ('"<>msg<>"')", [])
@@ -52,25 +52,25 @@ defmodule PlayerWatcher do
 		Postgrex.query!(conn, "SELECT * FROM broadcasts", [])
 	end
 	def get_all_chars(conn) do
-		{:ok, result} = Postgrex.query!(conn, "SELECT pfile FROM pfiles", [])
+		{:ok, result} = Postgrex.query!(conn, "SELECT pfile FROM players", [])
 		IO.puts Enum.at(result.row, 0).name
 	end
 	def add_p_file(conn, play) do
 		{:ok, encodedPlayer} = JSON.encode(play)
-		Postgrex.query!(conn, "INSERT INTO pfiles (pfile) VALUES ('"<>encodedPlayer<>"');", [])
+		Postgrex.query!(conn, "INSERT INTO players (pfile) VALUES ('"<>encodedPlayer<>"');", [])
 	end
 	def find_p_files(conn) do
-		query = "select array_to_json(array_agg(pfile))::text from pfiles"
+		query = "select array_to_json(array_agg(pfile))::text from players"
 		{:ok, resultJson} = Postgrex.query(conn, query, [])
 		resultString = List.flatten(hd(resultJson.rows))
 		resultDecoded = Poison.decode!(resultString, as: [%Pfiles.Pfile{}])
 		IO.puts(Enum.at(resultDecoded, 0).name)
 	end
 	def change_p_file(conn, change) do
-		Postgrex.query!(conn, "UPDATE pfiles SET name = '"<>change<>"'", [])
+		Postgrex.query!(conn, "UPDATE players SET name = '"<>change<>"'", [])
 	end
 	def find_p_file(conn, name) do
-		Postgrex.query!(conn, "SELECT * FROM pfiles WHERE name = '"<>name<>"'", [])
+		Postgrex.query!(conn, "SELECT * FROM players WHERE name = '"<>name<>"'", [])
 	end
 	def save_p_file(conn, play) do
 	end
@@ -165,9 +165,9 @@ defmodule Test do
 		Postgrex.Types.define(Ether.PostgrexTypes, [%Pfiles.Pfile{}], [])
 		{:ok, conn} = PlayerWatcher.start_connection(types: %Pfiles.Pfile{})
 	end
-	def test_create_pfiles_table do
+	def test_create_pfile_table do
 		{:ok, conn} = PlayerWatcher.start_connection
-		PlayerWatcher.create_table_pfiles(conn)
+		PlayerWatcher.create_table_pfile(conn)
 	end
 	def test_create_broadcast_table do
 		{:ok, conn} = PlayerWatcher.start_connection

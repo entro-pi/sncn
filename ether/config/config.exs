@@ -2,9 +2,7 @@
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
 
-config :ether, ecto_repos: [Ether.Repo]
-
-config :ether, Ether.Repo,
+config :ether, Pfiles.Repo,
 	adapter: Ecto.Adapters.Postgres,
 	pool: Ecto.Adapters.SQL.Sandbox,
 	host: "localhost",
@@ -13,6 +11,8 @@ config :ether, Ether.Repo,
 	username: "entropy_weasel",
 	password: "dxelopCHMA",
 	url: "ecto://entropy_weasel:dxelopCHMA@localhost/entropy_pfiles"
+
+config :ether, ecto_repos: [Pfiles.Repo]
 
 # This configuration is loaded before any dependency and is restricted
 # to this project. If another project depends on this project, this
