@@ -38,7 +38,7 @@ func main() {
 			fmt.Print("Initializing a player")
 			play := InitPlayer("dorp", "norp")
 		//	go actOn() //for receiving in Go
-			go watch(play)
+//			go watch(play)
 			for scanner.Scan() {
 				input := "broadcast:"+scanner.Text()
 				//Should probably do some error checking before
@@ -98,6 +98,14 @@ func doInput(input string) {
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
+		"doot", //name
+		true, // durable
+		false, //delete when used
+		false, //exclusive
+		false, //no-wait
+		nil, //arguments
+	)
+/*	q, err := ch.QueueDeclare(
 		"input", //name
 		true, // durable
 		true, //delete when used
@@ -105,12 +113,32 @@ func doInput(input string) {
 		false, //no-wait
 		nil, //arguments
 	)
-	failOnError(err, "Failed to declare a queue")
+*/	failOnError(err, "Failed to declare a queue")
+
+	err = ch.ExchangeDeclare(
+	"broadcasts", //name
+	"fanout", //type
+	false, //durable
+	false, //auto-delted
+	false, //internal
+	false, //no wait
+	nil, //arguments
+	)
+	failOnError(err, "Failed to declare an exchange")
+
+	err = ch.QueueBind(
+		q.Name, //queue name
+		"", //routing key
+		"broadcasts",//exchange
+		false,
+		nil,
+	)
+	failOnError(err, "Failed to bind a queue")
 
 	body := "broadcast:"+input
 	err = ch.Publish(
-	"", //exchange
-	q.Name, // routing key
+	"broadcasts", //exchange
+	"", // routing key
 	false, //mandatory
 	false, //immediate
 	amqp.Publishing {
@@ -138,15 +166,36 @@ func actOn() {
 
         defer ch.Close()
 
+	err = ch.ExchangeDeclare(
+		"broadcasts",//name
+		"fanout",//type
+		true, //durable
+		false, //auto-deleted
+		false, //internal
+		false, //no wait
+		nil, //args
+	)
+	failOnError(err, "Failed to declare an exchange")
+
         q, err := ch.QueueDeclare(
-                "input", //name
+                "doot", //name
                 true, // durable
-                true, //delete when used
+                false, //delete when used
                 false, //exclusive
                 false, //no-wait
                 nil, //arguments
         )
         failOnError(err, "Failed to declare a queue")
+
+	err = ch.QueueBind(
+		q.Name, //queue name
+		"", //routing key
+		"broadcasts", //exchange
+		false,
+		nil,
+	)
+	failOnError(err, "Failed to bind a queue")
+
 	forever := make(chan bool)
 	for {
 

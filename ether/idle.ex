@@ -110,6 +110,19 @@ defmodule Listener do
 			wait_for_messages(channel)
 		end
 	end
+	def wait_for_messages_not_basic(channel) do
+		receive do
+			{:basic_deliver, payload, meta} ->
+			IO.puts " rabbit receivied #{payload}"
+			{:ok, file} = File.open("../pot/broadcast", [:read, :write])
+			{:ok, oldcontents } = File.read("../pot/broadcast")
+			IO.binwrite(file, oldcontents <> "broadcast:" <> payload <> "\n")
+			File.close(file)
+			IO.puts "written to file"
+			AMQP.Basic.ack(channel, meta.delivery_tag)
+			wait_for_messages_not_basic(channel)
+		end
+	end
 	def wait_for_dotdot_messages(channel) do
 		receive do
 			{:basic_deliver, payload, meta} ->
@@ -149,6 +162,26 @@ defmodule Listener do
 		AMQP.Queue.declare(channel, "input", auto_delete: true, durable: true)
 		AMQP.Basic.qos(channel, prefetch_count: 1)
 		AMQP.Basic.consume(channel, "input", nil, no_ack: false, persistent: true)
+
+		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
+		spawn(Listener.wait_for_messages(channel))
+		spawn(Listener.tick(channel))
+	end
+	def listenFanOut do
+	
+		creds = File.read!("creds")
+		
+		cred = creds |> String.split("\n")
+		userCred = Enum.at(cred, 0)
+		passCred = Enum.at(cred, 1)
+		hostname = Enum.at(cred, 2)
+		vhost = Enum.at(cred, 3)
+		{:ok, connection} = AMQP.Connection.open(virtual_host: vhost, host: hostname, username: userCred, password: passCred)
+		{:ok, channel} = AMQP.Channel.open(connection)
+		AMQP.Exchange.declare(channel, "broadcasts", :fanout)
+		AMQP.Queue.declare(channel, "doot", auto_delete: false, durable: true, exclusive: false)
+		AMQP.Queue.bind(channel, "doot", "broadcasts")
+		AMQP.Basic.consume(channel, "doot", nil, no_ack: false)
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
 		spawn(Listener.wait_for_messages(channel))

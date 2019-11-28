@@ -27,3 +27,4 @@ idSecret*
 /log/*
 config/*
 postcreds
+devcreds
