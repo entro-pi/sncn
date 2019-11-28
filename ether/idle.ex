@@ -179,9 +179,9 @@ defmodule Listener do
 		{:ok, connection} = AMQP.Connection.open(virtual_host: vhost, host: hostname, username: userCred, password: passCred)
 		{:ok, channel} = AMQP.Channel.open(connection)
 		AMQP.Exchange.declare(channel, "broadcasts", :fanout)
-		AMQP.Queue.declare(channel, "doot", auto_delete: false, durable: true, exclusive: false)
-		AMQP.Queue.bind(channel, "doot", "broadcasts")
-		AMQP.Basic.consume(channel, "doot", nil, no_ack: false)
+		{:ok, %{queue: queue_name}} = AMQP.Queue.declare(channel, "", auto_delete: false, durable: true, exclusive: false)
+		AMQP.Queue.bind(channel, queue_name, "broadcasts")
+		AMQP.Basic.consume(channel, queue_name, nil, no_ack: false)
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
 		spawn(Listener.wait_for_messages(channel))
