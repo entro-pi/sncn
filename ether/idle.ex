@@ -112,7 +112,7 @@ defmodule Listener do
 	end
 	def wait_for_messages_not_basic(channel) do
 		receive do
-			{:basic_deliver, payload, meta} ->
+			{:deliver, payload, meta} ->
 			IO.puts " rabbit receivied #{payload}"
 			{:ok, file} = File.open("../pot/broadcast", [:read, :write])
 			{:ok, oldcontents } = File.read("../pot/broadcast")
