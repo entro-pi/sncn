@@ -87,6 +87,22 @@ func doInput(input string) {
 	connection := getConnectionString()
 	conn, err := amqp.Dial(connection)
 
+	left, right, both := false, false, false
+
+	//Determine if we're sending to anyone in particular
+	inputArray := strings.Split(input, ":")
+	if len(inputArray) <= 2 {
+		inputArray = append(inputArray, ":broadcasts")
+	}
+	if inputArray[1] == "left" {
+
+		left = true
+	}else if inputArray[1] == "right" {
+		right = true
+	}else {
+		both = true
+	}
+
 	failOnError(err, "Failed to connect to RabbitMQ")
 
 	defer conn.Close()
@@ -99,6 +115,22 @@ func doInput(input string) {
 
 	q, err := ch.QueueDeclare(
 		"doot", //name
+		true, // durable
+		false, //delete when used
+		false, //exclusive
+		false, //no-wait
+		nil, //arguments
+	)
+	qleft, err := ch.QueueDeclare(
+		"left", //name
+		true, // durable
+		false, //delete when used
+		false, //exclusive
+		false, //no-wait
+		nil, //arguments
+	)
+	qright, err := ch.QueueDeclare(
+		"right", //name
 		true, // durable
 		false, //delete when used
 		false, //exclusive
@@ -125,6 +157,26 @@ func doInput(input string) {
 	nil, //arguments
 	)
 	failOnError(err, "Failed to declare an exchange")
+	err = ch.ExchangeDeclare(
+	"broadcastsLeft", //name
+	"direct", //type
+	false, //durable
+	false, //auto-delted
+	false, //internal
+	false, //no wait
+	nil, //arguments
+	)
+	failOnError(err, "Failed to declare an exchange")
+	err = ch.ExchangeDeclare(
+	"broadcastsRight", //name
+	"direct", //type
+	false, //durable
+	false, //auto-delted
+	false, //internal
+	false, //no wait
+	nil, //arguments
+	)
+	failOnError(err, "Failed to declare an exchange")
 
 	err = ch.QueueBind(
 		q.Name, //queue name
@@ -133,18 +185,61 @@ func doInput(input string) {
 		false,
 		nil,
 	)
+	
+	err = ch.QueueBind(
+		qleft.Name, //queue name
+		"left", //routing key
+		"broadcastsLeft",//exchange
+		false,
+		nil,
+	)
+	
+	err = ch.QueueBind(
+		qright.Name, //queue name
+		"right", //routing key
+		"broadcastsRight",//exchange
+		false,
+		nil,
+	)
+	
 	failOnError(err, "Failed to bind a queue")
 
-	body := "broadcast:"+input
-	err = ch.Publish(
-	"broadcasts", //exchange
-	"", // routing key
-	false, //mandatory
-	false, //immediate
-	amqp.Publishing {
-		ContentType: "text/plain",
-		Body: []byte(body),
-	})
+	body := "broadcast:"+inputArray[2]
+	if left {
+
+		err = ch.Publish(
+		"broadcastsLeft", //exchange
+		"left", // routing key
+		false, //mandatory
+		false, //immediate
+		amqp.Publishing {
+			ContentType: "text/plain",
+			Body: []byte(body),
+		})
+	}
+	if right {
+		err = ch.Publish(
+		"broadcastsRight", //exchange
+		"right", // routing key
+		false, //mandatory
+		false, //immediate
+		amqp.Publishing {
+			ContentType: "text/plain",
+			Body: []byte(body),
+		})
+	}else if both {
+		err = ch.Publish(
+		"broadcasts", //exchange
+		"", // routing key
+		false, //mandatory
+		false, //immediate
+		amqp.Publishing {
+			ContentType: "text/plain",
+			Body: []byte(body),
+		})
+
+	}
+
 //	fmt.Print("\033[26;53H\n")
 //	log.Printf(" [x] Sent %s", body)
 	failOnError(err, "Failed to publish a message")
