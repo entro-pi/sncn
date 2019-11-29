@@ -60,9 +60,10 @@ func main() {
 		//	go actOn() //for receiving in Go
 			go watch(play)
 			for scanner.Scan() {
-				input := "broadcast:"+scanner.Text()
+				input := scanner.Text()
 				//Should probably do some error checking before
 				//passing it along
+				play, input = parseInput(play, input)
 				doPlayer(input, play)
 				doWatch(input, play)
 				doInput(input)
@@ -73,6 +74,26 @@ func main() {
 			}
 		}
 	}
+}
+
+func parseInput(play Player, input string) (Player, string) {
+
+	fmt.Println("INPUT IS ",input)
+	if strings.HasPrefix(input, "generate") {
+		value := strings.Split(input, " ")[1]
+		fmt.Println(value)
+		switch value {
+		case "1":
+			fmt.Println("generating a tiara")
+			object := InitObject()
+			play.Inventory[0].Item = object
+			play.Inventory[0].Number++
+		default:
+			input += "broadcast:"
+		}
+	}
+
+	return play, input
 }
 
 func doPlayer(input string, play Player) {
