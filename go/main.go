@@ -77,19 +77,28 @@ func main() {
 }
 
 func parseInput(play Player, input string) (Player, string) {
+	var value []string
 
 	fmt.Println("INPUT IS ",input)
 	if strings.HasPrefix(input, "generate") {
-		value := strings.Split(input, " ")[1]
-		fmt.Println(value)
-		switch value {
-		case "1":
-			fmt.Println("generating a tiara")
-			object := InitObject()
-			play.Inventory[0].Item = object
-			play.Inventory[0].Number++
-		default:
-			input += "broadcast:"
+		if len(strings.Split(input, " ")) > 1 {
+			value = strings.Split(input, " ")
+		}else {
+			for len(value) < 2 {
+				value = append(value, "broadcast: ")
+			}
+		}
+		for i := 0;i < len(value);i++ {
+			fmt.Println("VALUE IS :",value[1])
+			switch value[i] {
+			case "1":
+				fmt.Println("generating a tiara")
+				object := InitObject()
+				play.Inventory[0].Item = object
+				play.Inventory[0].Number++
+			default:
+				input += "broadcast:"
+			}
 		}
 	}
 
@@ -224,8 +233,10 @@ func doInput(input string) {
 	)
 	
 	failOnError(err, "Failed to bind a queue")
-
-	body := "broadcast:"+inputArray[2]
+	for i := 0;i < len(inputArray);i++ {
+		input += inputArray[i]
+	}
+	body := "broadcast:"+input
 	if left {
 
 		err = ch.Publish(
