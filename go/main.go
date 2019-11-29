@@ -40,14 +40,17 @@ func main() {
 		//	go actOn() //for receiving in Go
 //			go watch(play)
 			for scanner.Scan() {
-				input := "broadcast:"+scanner.Text()
+				input := scanner.Text()
 				//Should probably do some error checking before
 				//passing it along
-				doPlayer(input, play)
-				doWatch(input, play)
-				doInput(input, play)
-		//		fmt.Print("Enter your command")
-
+				if len(strings.Split(input, ":")) <= 1 {
+					continue
+				}else {
+					doPlayer(input, play)
+					doWatch(input, play)
+					doInput(input, play)
+			//		fmt.Print("Enter your command")
+				}
 				fmt.Print("\033[26;53H\n")
 
 			}
@@ -57,18 +60,21 @@ func main() {
 		//	fmt.Print("Enter your command")
 			fmt.Print("Initializing a player")
 			play := InitPlayer("dorp", "norp")
-		//	go actOn() //for receiving in Go
+			go actOn(play) //for receiving in Go
 			go watch(play)
 			for scanner.Scan() {
 				input := scanner.Text()
 				//Should probably do some error checking before
 				//passing it along
-				play, input = parseInput(play, input)
-				doPlayer(input, play)
-				doWatch(input, play)
-				doInput(input, play)
-		//		fmt.Print("Enter your command")
-
+				if len(strings.Split(input, ":")) <= 1 {
+					continue
+				}else {
+					play, input = parseInput(play, input)
+					doPlayer(input, play)
+					doWatch(input, play)
+					doInput(input, play)
+			//		fmt.Print("Enter your command")
+				}
 				fmt.Print("\033[26;53H\n")
 
 			}
@@ -121,12 +127,12 @@ func doInput(input string, play Player) {
 
 	//Determine if we're sending to anyone in particular
 	inputArray := strings.Split(input, ":")
-	if len(inputArray) <= 2 {
-		inputArray = append(inputArray, ":broadcasts")
+	if len(inputArray) < 2 {
+		inputArray = append(inputArray, ":")
 	}
 	if inputArray[1] == play.Name {
 		direct = true
-		fmt.Println(direct, play.Name)
+		fmt.Println("\033[48:2:0:0:120m",direct, play.Name,"\033[0m")
 	}
 
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -138,16 +144,21 @@ func doInput(input string, play Player) {
 	failOnError(err, "Failed to open a channel")
 
 	defer ch.Close()
+	chDirect, err := conn.Channel()
+
+	failOnError(err, "Failed to open a channel")
+
+	defer chDirect.Close()
 
 	q, err := ch.QueueDeclare(
-		"doot", //name
+		"", //name
 		true, // durable
 		false, //delete when used
 		false, //exclusive
 		false, //no-wait
 		nil, //arguments
 	)
-	qdirect, err := ch.QueueDeclare(
+	qdirect, err := chDirect.QueueDeclare(
 		play.Name, //name
 		true, // durable
 		false, //delete when used
@@ -175,7 +186,7 @@ func doInput(input string, play Player) {
 	nil, //arguments
 	)
 	failOnError(err, "Failed to declare an exchange")
-	err = ch.ExchangeDeclare(
+	err = chDirect.ExchangeDeclare(
 	"broadcasts"+play.Name, //name
 	"direct", //type
 	false, //durable
@@ -194,22 +205,21 @@ func doInput(input string, play Player) {
 		nil,
 	)
 	
-	err = ch.QueueBind(
+	err = chDirect.QueueBind(
 		qdirect.Name, //queue name
 		play.Name, //routing key
 		"broadcasts"+play.Name,//exchange
 		false,
 		nil,
 	)
-	
+	body := ""
 	failOnError(err, "Failed to bind a queue")
 	for i := 0;i < len(inputArray);i++ {
-		input += inputArray[i]
+		body += inputArray[i]
 	}
-	body := "broadcast:"+input
 	if direct {
 
-		err = ch.Publish(
+		err = chDirect.Publish(
 		"broadcasts"+play.Name, //exchange
 		play.Name, // routing key
 		false, //mandatory
@@ -238,7 +248,7 @@ func doInput(input string, play Player) {
 }
 
 
-func actOn() {
+func actOn(play Player) {
         connection := getConnectionString()
         conn, err := amqp.Dial(connection)
 
@@ -251,11 +261,26 @@ func actOn() {
         failOnError(err, "Failed to open a channel")
 
         defer ch.Close()
+        chDirect, err := conn.Channel()
+
+        failOnError(err, "Failed to open a channel")
+
+        defer chDirect.Close()
 
 	err = ch.ExchangeDeclare(
 		"broadcasts",//name
 		"fanout",//type
-		true, //durable
+		false, //durable
+		false, //auto-deleted
+		false, //internal
+		false, //no wait
+		nil, //args
+	)
+	failOnError(err, "Failed to declare an exchange")
+	err = chDirect.ExchangeDeclare(
+		play.Name,//name
+		"direct",//type
+		false, //durable
 		false, //auto-deleted
 		false, //internal
 		false, //no wait
@@ -264,8 +289,17 @@ func actOn() {
 	failOnError(err, "Failed to declare an exchange")
 
         q, err := ch.QueueDeclare(
-                "doot", //name
-                true, // durable
+                "", //name
+                false, // durable
+                false, //delete when used
+                false, //exclusive
+                false, //no-wait
+                nil, //arguments
+        )
+        failOnError(err, "Failed to declare a queue")
+        qplayer, err := chDirect.QueueDeclare(
+                "", //name
+                false, // durable
                 false, //delete when used
                 false, //exclusive
                 false, //no-wait
@@ -281,24 +315,42 @@ func actOn() {
 		nil,
 	)
 	failOnError(err, "Failed to bind a queue")
+	err = chDirect.QueueBind(
+		qplayer.Name, //queue name
+		play.Name, //routing key
+		"broadcasts"+play.Name, //exchange
+		false,
+		nil,
+	)
+	failOnError(err, "Failed to bind a queue")
+
+	msgs, err := ch.Consume(
+		q.Name, //queue
+		"",
+		true, //auto-ack
+		false, //exclusive
+		false, //no-local
+		false, //no-wait
+		nil, //args
+	)
+	failOnError(err, "Failed to register a consumer")
+	tells, err := chDirect.Consume(
+		qplayer.Name, //queue
+		play.Name,
+		true, //auto-ack
+		false, //exclusive
+		false, //no-local
+		false, //no-wait
+		nil, //args
+	)
+        failOnError(err, "Failed to register a consumer")
 
 	forever := make(chan bool)
 	for {
-
-	        msgs, err := ch.Consume(
-			q.Name, //queue
-			"",
-			true, //auto-ack
-			false, //exclusive
-			false, //no-local
-			false, //no-wait
-			nil, //args
-		)
-	        failOnError(err, "Failed to register a consumer")
 		go func() {
 			for d := range msgs {
-		//		fmt.Print("\033[26;53H\n")
-		//		log.Printf("Received a message: %s", d.Body)
+				fmt.Print("\033[26;53H\n")
+				log.Printf("\033[38:2:0:150:150mReceived a message: %s\033[0m", d.Body)
 				message := string(d.Body)
 				if strings.HasPrefix(message, "broadcast:") {
 					var blank Player
@@ -312,7 +364,24 @@ func actOn() {
 					panic(err)
 				}
 			}
-
+		}()
+		go func() {
+			for tell := range tells {
+				fmt.Print("\033[26;53H\n")
+				log.Printf("\033[38:2:150:150:0mReceived a tell: %s\033[0m", tell.Body)
+				message := string(tell.Body)
+				if strings.HasPrefix(message, "broadcast:") {
+					var blank Player
+					if !strings.Contains(message, "!:::tick:::!") {
+						doWatch(string(tell.Body), blank)
+					}else {
+						doWatch("!:::tick:::!", blank)
+					}
+				}
+				if err != nil {
+					panic(err)
+				}
+			}
 		}()
 		<-forever
 

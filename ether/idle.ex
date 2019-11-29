@@ -181,14 +181,18 @@ defmodule Listener do
 		AMQP.Exchange.declare(channel, "broadcasts", :fanout)
 		{:ok, %{queue: queue_name}} = AMQP.Queue.declare(channel, "", auto_delete: false, durable: true, exclusive: false)
 		AMQP.Queue.bind(channel, queue_name, "broadcasts")
-		AMQP.Queue.bind(channel, queue_name, "broadcastsRight")
-		AMQP.Queue.bind(channel, queue_name, "broadcastsLeft")
 		AMQP.Basic.consume(channel, queue_name, nil, no_ack: false)
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
 		spawn(Listener.wait_for_messages(channel))
-		spawn(Listener.tick(channel))
 	end
+	def listening(playername) do
+		spawn(Listener.listenFanOut(playername))
+		spawn(Listener.listenFanOut)
+		spawn(Listener.listenFanOut(playername))
+
+	end
+
 	def listenFanOut(playername) do
 	
 		creds = File.read!("creds")
