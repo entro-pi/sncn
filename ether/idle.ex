@@ -181,6 +181,48 @@ defmodule Listener do
 		AMQP.Exchange.declare(channel, "broadcasts", :fanout)
 		{:ok, %{queue: queue_name}} = AMQP.Queue.declare(channel, "", auto_delete: false, durable: true, exclusive: false)
 		AMQP.Queue.bind(channel, queue_name, "broadcasts")
+		AMQP.Queue.bind(channel, queue_name, "broadcastsRight")
+		AMQP.Queue.bind(channel, queue_name, "broadcastsLeft")
+		AMQP.Basic.consume(channel, queue_name, nil, no_ack: false)
+
+		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
+		spawn(Listener.wait_for_messages(channel))
+		spawn(Listener.tick(channel))
+	end
+	def listenFanOutLeft do
+	
+		creds = File.read!("creds")
+		
+		cred = creds |> String.split("\n")
+		userCred = Enum.at(cred, 0)
+		passCred = Enum.at(cred, 1)
+		hostname = Enum.at(cred, 2)
+		vhost = Enum.at(cred, 3)
+		{:ok, connection} = AMQP.Connection.open(virtual_host: vhost, host: hostname, username: userCred, password: passCred)
+		{:ok, channel} = AMQP.Channel.open(connection)
+		AMQP.Exchange.declare(channel, "broadcastsLeft", :direct)
+		{:ok, %{queue: queue_name}} = AMQP.Queue.declare(channel, "", auto_delete: false, durable: true, exclusive: false)
+		AMQP.Queue.bind(channel, queue_name, "broadcastsLeft")
+		AMQP.Basic.consume(channel, queue_name, nil, no_ack: false)
+
+		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
+		spawn(Listener.wait_for_messages(channel))
+		spawn(Listener.tick(channel))
+	end
+	def listenFanOutRight do
+	
+		creds = File.read!("creds")
+		
+		cred = creds |> String.split("\n")
+		userCred = Enum.at(cred, 0)
+		passCred = Enum.at(cred, 1)
+		hostname = Enum.at(cred, 2)
+		vhost = Enum.at(cred, 3)
+		{:ok, connection} = AMQP.Connection.open(virtual_host: vhost, host: hostname, username: userCred, password: passCred)
+		{:ok, channel} = AMQP.Channel.open(connection)
+		AMQP.Exchange.declare(channel, "broadcastsRight", :direct)
+		{:ok, %{queue: queue_name}} = AMQP.Queue.declare(channel, "", auto_delete: false, durable: true, exclusive: false)
+		AMQP.Queue.bind(channel, queue_name, "broadcastsRight")
 		AMQP.Basic.consume(channel, queue_name, nil, no_ack: false)
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
