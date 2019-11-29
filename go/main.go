@@ -45,7 +45,7 @@ func main() {
 				//passing it along
 				doPlayer(input, play)
 				doWatch(input, play)
-				doInput(input)
+				doInput(input, play)
 		//		fmt.Print("Enter your command")
 
 				fmt.Print("\033[26;53H\n")
@@ -66,7 +66,7 @@ func main() {
 				play, input = parseInput(play, input)
 				doPlayer(input, play)
 				doWatch(input, play)
-				doInput(input)
+				doInput(input, play)
 		//		fmt.Print("Enter your command")
 
 				fmt.Print("\033[26;53H\n")
@@ -113,24 +113,20 @@ func doPlayer(input string, play Player) {
 	describeInventory(play)
 }
 
-func doInput(input string) {
+func doInput(input string, play Player) {
 	connection := getConnectionString()
 	conn, err := amqp.Dial(connection)
 
-	left, right, both := false, false, false
+	direct := false
 
 	//Determine if we're sending to anyone in particular
 	inputArray := strings.Split(input, ":")
 	if len(inputArray) <= 2 {
 		inputArray = append(inputArray, ":broadcasts")
 	}
-	if inputArray[1] == "left" {
-
-		left = true
-	}else if inputArray[1] == "right" {
-		right = true
-	}else {
-		both = true
+	if inputArray[1] == play.Name {
+		direct = true
+		fmt.Println(direct, play.Name)
 	}
 
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -151,16 +147,8 @@ func doInput(input string) {
 		false, //no-wait
 		nil, //arguments
 	)
-	qleft, err := ch.QueueDeclare(
-		"left", //name
-		true, // durable
-		false, //delete when used
-		false, //exclusive
-		false, //no-wait
-		nil, //arguments
-	)
-	qright, err := ch.QueueDeclare(
-		"right", //name
+	qdirect, err := ch.QueueDeclare(
+		play.Name, //name
 		true, // durable
 		false, //delete when used
 		false, //exclusive
@@ -188,17 +176,7 @@ func doInput(input string) {
 	)
 	failOnError(err, "Failed to declare an exchange")
 	err = ch.ExchangeDeclare(
-	"broadcastsLeft", //name
-	"direct", //type
-	false, //durable
-	false, //auto-delted
-	false, //internal
-	false, //no wait
-	nil, //arguments
-	)
-	failOnError(err, "Failed to declare an exchange")
-	err = ch.ExchangeDeclare(
-	"broadcastsRight", //name
+	"broadcasts"+play.Name, //name
 	"direct", //type
 	false, //durable
 	false, //auto-delted
@@ -217,17 +195,9 @@ func doInput(input string) {
 	)
 	
 	err = ch.QueueBind(
-		qleft.Name, //queue name
-		"left", //routing key
-		"broadcastsLeft",//exchange
-		false,
-		nil,
-	)
-	
-	err = ch.QueueBind(
-		qright.Name, //queue name
-		"right", //routing key
-		"broadcastsRight",//exchange
+		qdirect.Name, //queue name
+		play.Name, //routing key
+		"broadcasts"+play.Name,//exchange
 		false,
 		nil,
 	)
@@ -237,29 +207,18 @@ func doInput(input string) {
 		input += inputArray[i]
 	}
 	body := "broadcast:"+input
-	if left {
+	if direct {
 
 		err = ch.Publish(
-		"broadcastsLeft", //exchange
-		"left", // routing key
+		"broadcasts"+play.Name, //exchange
+		play.Name, // routing key
 		false, //mandatory
 		false, //immediate
 		amqp.Publishing {
 			ContentType: "text/plain",
 			Body: []byte(body),
 		})
-	}
-	if right {
-		err = ch.Publish(
-		"broadcastsRight", //exchange
-		"right", // routing key
-		false, //mandatory
-		false, //immediate
-		amqp.Publishing {
-			ContentType: "text/plain",
-			Body: []byte(body),
-		})
-	}else if both {
+	}else {
 		err = ch.Publish(
 		"broadcasts", //exchange
 		"", // routing key

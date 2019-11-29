@@ -189,7 +189,7 @@ defmodule Listener do
 		spawn(Listener.wait_for_messages(channel))
 		spawn(Listener.tick(channel))
 	end
-	def listenFanOutLeft do
+	def listenFanOut(playername) do
 	
 		creds = File.read!("creds")
 		
@@ -200,30 +200,11 @@ defmodule Listener do
 		vhost = Enum.at(cred, 3)
 		{:ok, connection} = AMQP.Connection.open(virtual_host: vhost, host: hostname, username: userCred, password: passCred)
 		{:ok, channel} = AMQP.Channel.open(connection)
-		AMQP.Exchange.declare(channel, "broadcastsLeft", :direct)
-		AMQP.Queue.declare(channel, "left", auto_delete: false, durable: true, exclusive: false)
-		AMQP.Queue.bind(channel, "left", "broadcastsLeft")
-		AMQP.Basic.consume(channel, "left", nil, no_ack: false)
-
-		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
-		spawn(Listener.wait_for_messages(channel))
-		spawn(Listener.tick(channel))
-	end
-	def listenFanOutRight do
-	
-		creds = File.read!("creds")
-		
-		cred = creds |> String.split("\n")
-		userCred = Enum.at(cred, 0)
-		passCred = Enum.at(cred, 1)
-		hostname = Enum.at(cred, 2)
-		vhost = Enum.at(cred, 3)
-		{:ok, connection} = AMQP.Connection.open(virtual_host: vhost, host: hostname, username: userCred, password: passCred)
-		{:ok, channel} = AMQP.Channel.open(connection)
-		AMQP.Exchange.declare(channel, "broadcastsRight", :direct)
-		AMQP.Queue.declare(channel, "right", auto_delete: false, durable: true, exclusive: false)
-		AMQP.Queue.bind(channel, "right", "broadcastsRight")
-		AMQP.Basic.consume(channel, "right", nil, no_ack: false)
+		IO.puts("broadcasts"<>playername)
+		AMQP.Exchange.declare(channel, "broadcasts"<>playername, :direct)
+		AMQP.Queue.declare(channel, playername, auto_delete: false, durable: true, exclusive: false)
+		AMQP.Queue.bind(channel, playername, "broadcasts"<>playername)
+		AMQP.Basic.consume(channel, playername, nil, no_ack: false)
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
 		spawn(Listener.wait_for_messages(channel))
