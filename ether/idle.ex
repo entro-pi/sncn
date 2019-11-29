@@ -201,9 +201,9 @@ defmodule Listener do
 		{:ok, connection} = AMQP.Connection.open(virtual_host: vhost, host: hostname, username: userCred, password: passCred)
 		{:ok, channel} = AMQP.Channel.open(connection)
 		AMQP.Exchange.declare(channel, "broadcastsLeft", :direct)
-		{:ok, %{queue: queue_name}} = AMQP.Queue.declare(channel, "", auto_delete: false, durable: true, exclusive: false)
-		AMQP.Queue.bind(channel, queue_name, "broadcastsLeft")
-		AMQP.Basic.consume(channel, queue_name, nil, no_ack: false)
+		AMQP.Queue.declare(channel, "left", auto_delete: false, durable: true, exclusive: false)
+		AMQP.Queue.bind(channel, "left", "broadcastsLeft")
+		AMQP.Basic.consume(channel, "left", nil, no_ack: false)
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
 		spawn(Listener.wait_for_messages(channel))
@@ -221,9 +221,9 @@ defmodule Listener do
 		{:ok, connection} = AMQP.Connection.open(virtual_host: vhost, host: hostname, username: userCred, password: passCred)
 		{:ok, channel} = AMQP.Channel.open(connection)
 		AMQP.Exchange.declare(channel, "broadcastsRight", :direct)
-		{:ok, %{queue: queue_name}} = AMQP.Queue.declare(channel, "", auto_delete: false, durable: true, exclusive: false)
-		AMQP.Queue.bind(channel, queue_name, "broadcastsRight")
-		AMQP.Basic.consume(channel, queue_name, nil, no_ack: false)
+		AMQP.Queue.declare(channel, "right", auto_delete: false, durable: true, exclusive: false)
+		AMQP.Queue.bind(channel, "right", "broadcastsRight")
+		AMQP.Basic.consume(channel, "right", nil, no_ack: false)
 
 		IO.puts " [*] Waiting for messages. To exit press CTRL+C, CTRL+C"
 		spawn(Listener.wait_for_messages(channel))
