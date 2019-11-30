@@ -30,7 +30,7 @@ func getConnectionString() string {
 }
 
 func main() {
-
+	fileChange := make(chan bool)
 	if len(os.Args) == 2 {
 	if os.Args[1] == "--main" {
 			scanner := bufio.NewScanner(os.Stdin)
@@ -47,8 +47,8 @@ func main() {
 					continue
 				}else {
 					doPlayer(input, play)
-					doWatch(input, play)
-					doInput(input, play)
+					go doWatch(input, play, fileChange)
+					go doInput(input, play, fileChange)
 			//		fmt.Print("Enter your command")
 				}
 				fmt.Print("\033[26;53H\n")
@@ -60,8 +60,8 @@ func main() {
 		//	fmt.Print("Enter your command")
 			fmt.Print("Initializing a player")
 			play := InitPlayer("dorp", "norp")
-			go actOn(play) //for receiving in Go
-			go watch(play)
+			go actOn(play, fileChange) //for receiving in Go
+			go watch(play, fileChange)
 			for scanner.Scan() {
 				input := scanner.Text()
 				//Should probably do some error checking before
@@ -71,8 +71,9 @@ func main() {
 				}else {
 					play, input = parseInput(play, input)
 					doPlayer(input, play)
-					doWatch(input, play)
-					doInput(input, play)
+					go watch(play, fileChange)
+					go doInput(input, play, fileChange)
+					go doWatch(input, play, fileChange)
 			//		fmt.Print("Enter your command")
 				}
 				fmt.Print("\033[26;53H\n")
@@ -119,7 +120,7 @@ func doPlayer(input string, play Player) {
 	describeInventory(play)
 }
 
-func doInput(input string, play Player) {
+func doInput(input string, play Player, fileChange chan bool) {
 	connection := getConnectionString()
 	conn, err := amqp.Dial(connection)
 
@@ -218,7 +219,8 @@ func doInput(input string, play Player) {
 		body += inputArray[i]
 	}
 	if direct {
-
+		body = strings.ReplaceAll(body, "broadcast", "tell")
+		fileChange <- true
 		err = chDirect.Publish(
 		"broadcasts"+play.Name, //exchange
 		play.Name, // routing key
@@ -248,7 +250,7 @@ func doInput(input string, play Player) {
 }
 
 
-func actOn(play Player) {
+func actOn(play Player, fileChange chan bool) {
         connection := getConnectionString()
         conn, err := amqp.Dial(connection)
 
@@ -352,12 +354,25 @@ func actOn(play Player) {
 				fmt.Print("\033[26;53H\n")
 				log.Printf("\033[38:2:0:150:150mReceived a message: %s\033[0m", d.Body)
 				message := string(d.Body)
-				if strings.HasPrefix(message, "broadcast:") {
+				if strings.HasPrefix(message, "broadcast") {
 					var blank Player
 					if !strings.Contains(message, "!:::tick:::!") {
-						doWatch(string(d.Body), blank)
+						f, err := os.OpenFile("../pot/broadcast", os.O_APPEND|os.O_WRONLY, 0644) 
+						if err != nil {
+							panic(err)
+						}
+						//strip the thingies out
+						message = strings.ReplaceAll(message, "broadcast", "")
+						_, err = f.WriteString(message+"\n")
+						if err != nil {
+							panic(err)
+						}
+						f.Close()
+						fileChange <- true
+
+						doWatch(string(d.Body), blank, fileChange)
 					}else {
-						doWatch("!:::tick:::!", blank)
+						doWatch("!:::tick:::!", blank, fileChange)
 					}
 				}
 				if err != nil {
@@ -370,12 +385,27 @@ func actOn(play Player) {
 				fmt.Print("\033[26;53H\n")
 				log.Printf("\033[38:2:150:150:0mReceived a tell: %s\033[0m", tell.Body)
 				message := string(tell.Body)
-				if strings.HasPrefix(message, "broadcast:") {
+				if strings.HasPrefix(message, "tell") {
 					var blank Player
 					if !strings.Contains(message, "!:::tick:::!") {
-						doWatch(string(tell.Body), blank)
+						f, err := os.OpenFile("../pot/broadcast", os.O_APPEND|os.O_WRONLY, 0644) 
+						if err != nil {
+							panic(err)
+						}
+						//strip the thingies out
+						message = strings.ReplaceAll(message, "tell", "\033[48:2:75:10:0mtell\033[0m")
+
+						_, err = f.WriteString(message+"\n")
+						if err != nil {
+							panic(err)
+						}
+						f.Close()
+						fileChange <- true
+						fileChange <- true
+
+						doWatch(string(tell.Body), blank, fileChange)
 					}else {
-						doWatch("!:::tick:::!", blank)
+						doWatch("!:::tick:::!", blank, fileChange)
 					}
 				}
 				if err != nil {
@@ -389,7 +419,9 @@ func actOn(play Player) {
 	}
 }
 
-func watch(play Player) {
+
+
+func watch(play Player, fileChange chan bool) {
 	var broadcastContainer []string
 
 	watcher, err := fsnotify.NewWatcher()
@@ -403,6 +435,68 @@ func watch(play Player) {
 	go func() {
 	    for {
 	        select {
+
+	        case <-fileChange:
+			broadcastContainer = nil
+			file, err := os.Open("../pot/broadcast")
+			if err != nil {
+				panic(err)
+			}
+			defer file.Close()
+			contents, err := ioutil.ReadAll(file)
+			if err != nil {
+				panic(err)
+			}
+			var lines []string
+			lines = nil
+			lines = strings.Split(string(contents), "\n")
+			lineIn := strings.Split(string(contents), "\n")
+			if len(lines) >= 20 {
+				lines = nil
+				for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
+					lineIn[i] = strings.ReplaceAll(lineIn[i], "broadcast:", "")
+					lines = append(lines, lineIn[i])
+				}
+			}
+//			var broadcastContainer []Broadcast
+			col := 0
+			row := 0
+			colVal := 53
+			rowVal := 0
+			for i := 0;i < len(lines);i++ {
+					var newBroad Broadcast
+					newBroad.Payload.Message = lines[i]
+					newBroad.Payload.Name = play.Name
+					newBroad.Payload.Game = "snowcrash.network"
+					if len(newBroad.Payload.Message) > 89 {
+						newBroad.Payload.Message = lines[i][:89]
+					}
+					if strings.Contains(lines[i], "!:::tick:::!") {
+						continue
+					}
+
+					newBroadPayload := AssembleBroadside(newBroad, rowVal, colVal)
+					broadcastContainer = append(broadcastContainer, newBroadPayload)
+					if row >= 5 {
+						row = 0
+						rowVal = 0
+					}
+					if col < 3 {
+						col++
+						colVal += 30
+					}else {
+						row++
+						rowVal += 4
+						col = 0
+						colVal = 53
+					}
+				}
+				for i := 0;i < len(broadcastContainer);i++ {
+					fmt.Print(broadcastContainer[i])
+				}
+				fmt.Print("\033[26;53H\n")
+
+				//log.Print(string(contents))
 	        case event, ok := <-watcher.Events:
 	            if !ok {
 	                return
@@ -418,6 +512,7 @@ func watch(play Player) {
 			if err != nil {
 				panic(err)
 			}
+			defer file.Close()
 			contents, err := ioutil.ReadAll(file)
 			if err != nil {
 				panic(err)
@@ -494,9 +589,13 @@ func watch(play Player) {
 	}
 	<-done
 }
-func doWatch(input string, play Player) string {
+func doWatch(input string, play Player, fileChange chan bool) string {
 	var broadcastContainer []string
-
+	var do bool
+	do = false
+	select {
+	case do = <-fileChange:
+	}
 	inputList := strings.Split(input, ":")
 
 	if strings.Contains(input, "!:::tick:::!") {
@@ -505,13 +604,16 @@ func doWatch(input string, play Player) string {
 
 		//do nothing but draw messages already there
 	}
-	if inputList[0] == "broadcast" {
+	if inputList[0] == "broadcast" || do {
 		broadcastContainer = nil
-
+		if do {
+			fmt.Println("DOING")
+		}
 		file, err := os.Open("../pot/broadcast")
 		if err != nil {
 			panic(err)
 		}
+		defer file.Close()
 		contents, err := ioutil.ReadAll(file)
 		if err != nil {
 			panic(err)
