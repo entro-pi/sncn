@@ -416,6 +416,78 @@ func AssembleBroadside(broadside Broadcast, row int, col int) (string) {
 	return cel
 	//	fmt.Println(cel)
 }
+func AssembleBM(broadside Broadcast, row int, col int) (string) {
+	broadside.Payload.Selected = true
+	var cel string
+	colString := strconv.Itoa(col)
+	inWord := broadside.Payload.Message
+	if len(inWord) < 15 {
+		inWord = " "+inWord
+		for len(inWord) < 90 {
+			inWord += " "+inWord+" "
+		}
+	}else if len(inWord) < 30 {
+		inWord = " "+inWord
+		for len(inWord) < 90 {
+			inWord = " "+inWord+" "
+		}
+	}else {
+		inWord = " "+inWord
+		for len(inWord) < 90 {
+			inWord = inWord + " "
+		}
+	}
+	wor := inWord[0:30]
+	word := inWord[29:59]
+	words := inWord[59:89]
+
+	numString := strconv.Itoa(broadside.Payload.ID)
+
+	row++
+	if broadside.Payload.Selected {
+		cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;200;25;150m ", wor, "\033[48;2;200;25;150m \033[0m")
+	}else {
+		cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m \033[48;2;10;10;20m", wor, "\033[48;2;20;255;50m \033[0m")
+	}
+
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m \033[48;2;10;10;20m", word, "\033[48;2;20;255;50m \033[0m")
+	row++
+	cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m \033[48;2;10;10;20m", words, "\033[48;2;20;255;50m \033[0m")
+	row++
+	if broadside.Payload.Game == "" {
+		if broadside.Payload.Selected {
+			broadside.Payload.Game = "SELECTED"
+		} else {
+			broadside.Payload.Game = "snowcrash"
+		}
+	}
+
+	namePlate := "                            "[len(broadside.Payload.Name+numString):]
+	if broadside.Payload.Selected {
+		cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;200;25;150m @"+broadside.Payload.Name+"@"+numString+namePlate+"\033[48;2;200;25;50m \033[0m")
+	}else {
+		cel += fmt.Sprint("\033["+strconv.Itoa(row)+";"+colString+"H\033[48;2;20;255;50m@"+broadside.Payload.Name+"@"+numString+namePlate+"\033[48;2;20;255;50m \033[0m")
+
+	}
+
+	broadRow := 0
+	if broadside.Payload.Selected && len(strings.Split(broadside.Payload.BigMessage, "\n")) > 1 {
+		bigSplit := strings.Split(broadside.Payload.BigMessage, "\n")
+		for i := 0;i < len(bigSplit);i++ {
+			cel += fmt.Sprint("\033["+strconv.Itoa(24+broadRow)+";53H\033[0m"+bigSplit[broadRow]+"\033[0m")
+			broadRow++
+		}
+		if !broadside.Payload.Transaction.Sold && broadside.Payload.Transaction.Item.Name != "" {
+			cel += fmt.Sprintf("\033[44;53H\033[38:2:150:50:150m{{FOR SALE %v}} \033[38:2:75:75:0m||'BUY' for %v credbits||\033[0m", broadside.Payload.Transaction.Item.Name, broadside.Payload.Transaction.Price)
+		}
+	}
+
+
+
+	return cel
+	//	fmt.Println(cel)
+}
 
 func AssembleDescCel(room Space, row int) (string) {
 	var cel string

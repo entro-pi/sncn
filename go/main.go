@@ -36,7 +36,10 @@ func main() {
 			scanner := bufio.NewScanner(os.Stdin)
 		//	fmt.Print("Enter your command")
 			fmt.Print("Initializing a player")
-			play := InitPlayer("dorp", "norp")
+			user, pword := LoginSC()
+			play := InitPlayer(user, pword)
+			whoList := who(play.Name)
+			fmt.Println(whoList)
 		//	go actOn() //for receiving in Go
 //			go watch(play)
 			for scanner.Scan() {
@@ -48,7 +51,7 @@ func main() {
 				}else {
 					doPlayer(input, play)
 					go doWatch(input, play, fileChange)
-					go doInput(input, play, fileChange)
+					go doInput(input, play, fileChange, whoList)
 			//		fmt.Print("Enter your command")
 				}
 				fmt.Print("\033[26;53H\n")
@@ -58,21 +61,24 @@ func main() {
 	if os.Args[1] == "--secondary" {
 			scanner := bufio.NewScanner(os.Stdin)
 		//	fmt.Print("Enter your command")
+			user, pword := LoginSC()
 			fmt.Print("Initializing a player")
-			play := InitPlayer("dorp", "norp")
-			go actOn(play, fileChange) //for receiving in Go
+			play := InitPlayer(user, pword)
+			whoList := who(play.Name)
+			fmt.Println(whoList)
+			go actOn(play, fileChange, whoList) //for receiving in Go
 			go watch(play, fileChange)
 			for scanner.Scan() {
 				input := scanner.Text()
 				//Should probably do some error checking before
 				//passing it along
-				if len(strings.Split(input, ":")) <= 1 {
+				if len(strings.Split(input, " ")) <= 1 {
 					continue
 				}else {
 					play, input = parseInput(play, input)
 					doPlayer(input, play)
 					go watch(play, fileChange)
-					go doInput(input, play, fileChange)
+					go doInput(input, play, fileChange, whoList)
 					go doWatch(input, play, fileChange)
 			//		fmt.Print("Enter your command")
 				}
@@ -87,6 +93,18 @@ func parseInput(play Player, input string) (Player, string) {
 	var value []string
 
 	fmt.Println("INPUT IS ",input)
+	if strings.HasPrefix(input, "tell") {
+		if strings.Split(input, " ")[1] == play.Name {
+			input = strings.ReplaceAll(input, " ", ":")
+			return play, input
+		}
+	}
+	if strings.HasPrefix(input, "broadcast") {
+		input = strings.ReplaceAll(input, " ", ":")
+		return play, input
+	}
+
+
 	if strings.HasPrefix(input, "generate") {
 		if len(strings.Split(input, " ")) > 1 {
 			value = strings.Split(input, " ")
@@ -112,6 +130,39 @@ func parseInput(play Player, input string) (Player, string) {
 	return play, input
 }
 
+func who(newPlayer string) []string {
+	var oldPlayers []string
+	f, err := os.OpenFile("../pot/who", os.O_RDWR|os.O_CREATE, 0644) 
+	if err != nil {
+		panic(err)
+	}
+
+	content, err := ioutil.ReadAll(f)
+	if err != nil {
+		panic(err)
+	}
+
+	longUser := strings.Split(string(content), "\n")
+	for i := 0;i < len(longUser);i++ {
+		if newPlayer == longUser[i] {
+			continue
+		}else {
+			oldPlayers = append(oldPlayers, longUser[i])
+		}
+	}
+	_, err = f.WriteString(newPlayer+"\n")
+	if err != nil {
+		panic(err)
+	}
+	err = f.Sync()
+	if err != nil {
+		panic(err)
+	}
+	f.Close()
+	oldPlayers = append(oldPlayers, newPlayer)
+	return oldPlayers
+}
+
 func doPlayer(input string, play Player) {
 	play = decompEq(play)
 	play = decompInv(play)
@@ -120,7 +171,7 @@ func doPlayer(input string, play Player) {
 	describeInventory(play)
 }
 
-func doInput(input string, play Player, fileChange chan bool) {
+func doInput(input string, play Player, fileChange chan bool, whoList []string) {
 	connection := getConnectionString()
 	conn, err := amqp.Dial(connection)
 
@@ -131,10 +182,17 @@ func doInput(input string, play Player, fileChange chan bool) {
 	if len(inputArray) < 2 {
 		inputArray = append(inputArray, ":")
 	}
-	if inputArray[1] == play.Name {
-		direct = true
-		fmt.Println("\033[48:2:0:0:120m",direct, play.Name,"\033[0m")
+	tellTo := ""
+	for i := 0;i < len(whoList);i++ {
+		fmt.Println(inputArray[1])
+		if inputArray[0] == "tell" && inputArray[1] == whoList[i] {
+			direct = true
+			tellTo = inputArray[1]
+			fmt.Println("\033[48:2:0:0:120m",direct, tellTo,"\033[0m")
+			break
+		}
 	}
+
 
 	failOnError(err, "Failed to connect to RabbitMQ")
 
@@ -145,12 +203,12 @@ func doInput(input string, play Player, fileChange chan bool) {
 	failOnError(err, "Failed to open a channel")
 
 	defer ch.Close()
-	chDirect, err := conn.Channel()
+/*	chDirect, err := conn.Channel()
 
 	failOnError(err, "Failed to open a channel")
 
 	defer chDirect.Close()
-
+*/
 	q, err := ch.QueueDeclare(
 		"", //name
 		true, // durable
@@ -159,14 +217,18 @@ func doInput(input string, play Player, fileChange chan bool) {
 		false, //no-wait
 		nil, //arguments
 	)
-	qdirect, err := chDirect.QueueDeclare(
-		play.Name, //name
-		true, // durable
-		false, //delete when used
-		false, //exclusive
-		false, //no-wait
-		nil, //arguments
-	)
+	for i := 0;i < len(whoList);i++ {
+		_, err := ch.QueueDeclare(
+			whoList[i], //name
+			true, // durable
+			false, //delete when used
+			false, //exclusive
+			false, //no-wait
+			nil, //arguments
+		)
+		failOnError(err, "Failed to declare a queue")
+
+	}
 /*	q, err := ch.QueueDeclare(
 		"input", //name
 		true, // durable
@@ -187,8 +249,8 @@ func doInput(input string, play Player, fileChange chan bool) {
 	nil, //arguments
 	)
 	failOnError(err, "Failed to declare an exchange")
-	err = chDirect.ExchangeDeclare(
-	"broadcasts"+play.Name, //name
+	err = ch.ExchangeDeclare(
+	"tells", //name
 	"direct", //type
 	false, //durable
 	false, //auto-delted
@@ -205,25 +267,25 @@ func doInput(input string, play Player, fileChange chan bool) {
 		false,
 		nil,
 	)
-	
-	err = chDirect.QueueBind(
-		qdirect.Name, //queue name
-		play.Name, //routing key
-		"broadcasts"+play.Name,//exchange
-		false,
-		nil,
-	)
+	for i := 0;i < len(whoList);i++ {
+		err = ch.QueueBind(
+			whoList[i], //queue name
+			whoList[i], //routing key
+			"tells",//exchange
+			false,
+			nil,
+		)
+		failOnError(err, "Failed to bind a queue")
+	}
 	body := ""
-	failOnError(err, "Failed to bind a queue")
 	for i := 0;i < len(inputArray);i++ {
-		body += inputArray[i]
+		body += inputArray[i]+" "
 	}
 	if direct {
-		body = strings.ReplaceAll(body, "broadcast", "tell")
-		fileChange <- true
-		err = chDirect.Publish(
-		"broadcasts"+play.Name, //exchange
-		play.Name, // routing key
+		//body = strings.ReplaceAll(body, "broadcast", "tell")
+		err = ch.Publish(
+		"tells", //exchange
+		tellTo, // routing key
 		false, //mandatory
 		false, //immediate
 		amqp.Publishing {
@@ -244,13 +306,13 @@ func doInput(input string, play Player, fileChange chan bool) {
 	}
 
 //	fmt.Print("\033[26;53H\n")
-//	log.Printf(" [x] Sent %s", body)
+	log.Printf(" [x] Sent %s", body)
 	failOnError(err, "Failed to publish a message")
 
 }
 
 
-func actOn(play Player, fileChange chan bool) {
+func actOn(play Player, fileChange chan bool, whoList []string) {
         connection := getConnectionString()
         conn, err := amqp.Dial(connection)
 
@@ -263,12 +325,12 @@ func actOn(play Player, fileChange chan bool) {
         failOnError(err, "Failed to open a channel")
 
         defer ch.Close()
-        chDirect, err := conn.Channel()
+    /*    chDirect, err := conn.Channel()
 
         failOnError(err, "Failed to open a channel")
 
         defer chDirect.Close()
-
+*/
 	err = ch.ExchangeDeclare(
 		"broadcasts",//name
 		"fanout",//type
@@ -279,8 +341,8 @@ func actOn(play Player, fileChange chan bool) {
 		nil, //args
 	)
 	failOnError(err, "Failed to declare an exchange")
-	err = chDirect.ExchangeDeclare(
-		play.Name,//name
+	err = ch.ExchangeDeclare(
+		"tells",//name
 		"direct",//type
 		false, //durable
 		false, //auto-deleted
@@ -299,9 +361,9 @@ func actOn(play Player, fileChange chan bool) {
                 nil, //arguments
         )
         failOnError(err, "Failed to declare a queue")
-        qplayer, err := chDirect.QueueDeclare(
-                "", //name
-                false, // durable
+        qplayer, err := ch.QueueDeclare(
+                play.Name, //name
+                true, // durable
                 false, //delete when used
                 false, //exclusive
                 false, //no-wait
@@ -317,15 +379,16 @@ func actOn(play Player, fileChange chan bool) {
 		nil,
 	)
 	failOnError(err, "Failed to bind a queue")
-	err = chDirect.QueueBind(
-		qplayer.Name, //queue name
-		play.Name, //routing key
-		"broadcasts"+play.Name, //exchange
-		false,
-		nil,
-	)
-	failOnError(err, "Failed to bind a queue")
-
+	for i := 0;i < len(whoList);i++ {
+		err = ch.QueueBind(
+			qplayer.Name, //queue name
+			whoList[i], //routing key
+			"tells", //exchange
+			false,
+			nil,
+		)
+		failOnError(err, "Failed to bind a queue")
+	}
 	msgs, err := ch.Consume(
 		q.Name, //queue
 		"",
@@ -336,11 +399,11 @@ func actOn(play Player, fileChange chan bool) {
 		nil, //args
 	)
 	failOnError(err, "Failed to register a consumer")
-	tells, err := chDirect.Consume(
+	tells, err := ch.Consume(
 		qplayer.Name, //queue
-		play.Name,
+		"tells",
 		true, //auto-ack
-		false, //exclusive
+		true, //exclusive
 		false, //no-local
 		false, //no-wait
 		nil, //args
@@ -349,6 +412,47 @@ func actOn(play Player, fileChange chan bool) {
 
 	forever := make(chan bool)
 	for {
+		
+		//select {
+		//default:
+		go func() {
+			for tell := range tells {
+				message := string(tell.Body)
+
+				if strings.Split(message, " ")[1] == play.Name {
+
+					fmt.Print("\033[26;53H\n")
+					log.Printf("\033[38:2:150:150:0mReceived a tell: %s\033[0m", tell.Body)
+					if strings.HasPrefix(message, "tell") {
+						if !strings.Contains(message, "!:::tick:::!") {
+							f, err := os.OpenFile("../pot/tells", os.O_APPEND|os.O_WRONLY, 0644) 
+							if err != nil {
+								panic(err)
+							}
+							//strip the thingies out
+	//						message = strings.ReplaceAll(message, "tell:", "\033[38:2:150:0:100mtell")
+
+							_, err = f.WriteString(message+"\n")
+							if err != nil {
+								panic(err)
+							}
+							fileChange <- true
+							var blank Player 
+							f.Close()
+							go doWatch(string(tell.Body), blank, fileChange)
+						}
+				
+					}else {
+						var blank Player 
+
+						go doWatch("!:::tick:::!", blank, fileChange)
+					}
+				}
+				if err != nil {
+					panic(err)
+				}
+			}
+		}()
 		go func() {
 			for d := range msgs {
 				fmt.Print("\033[26;53H\n")
@@ -370,9 +474,9 @@ func actOn(play Player, fileChange chan bool) {
 						f.Close()
 						fileChange <- true
 
-						doWatch(string(d.Body), blank, fileChange)
+						go doWatch(string(d.Body), blank, fileChange)
 					}else {
-						doWatch("!:::tick:::!", blank, fileChange)
+						go doWatch("!:::tick:::!", blank, fileChange)
 					}
 				}
 				if err != nil {
@@ -380,42 +484,9 @@ func actOn(play Player, fileChange chan bool) {
 				}
 			}
 		}()
-		go func() {
-			for tell := range tells {
-				fmt.Print("\033[26;53H\n")
-				log.Printf("\033[38:2:150:150:0mReceived a tell: %s\033[0m", tell.Body)
-				message := string(tell.Body)
-				if strings.HasPrefix(message, "tell") {
-					var blank Player
-					if !strings.Contains(message, "!:::tick:::!") {
-						f, err := os.OpenFile("../pot/broadcast", os.O_APPEND|os.O_WRONLY, 0644) 
-						if err != nil {
-							panic(err)
-						}
-						//strip the thingies out
-						message = strings.ReplaceAll(message, "tell", "\033[48:2:75:10:0mtell\033[0m")
 
-						_, err = f.WriteString(message+"\n")
-						if err != nil {
-							panic(err)
-						}
-						f.Close()
-						fileChange <- true
-						fileChange <- true
-
-						doWatch(string(tell.Body), blank, fileChange)
-					}else {
-						doWatch("!:::tick:::!", blank, fileChange)
-					}
-				}
-				if err != nil {
-					panic(err)
-				}
-			}
-		}()
+//		}
 		<-forever
-
-
 	}
 }
 
@@ -437,6 +508,7 @@ func watch(play Player, fileChange chan bool) {
 	        select {
 
 	        case <-fileChange:
+			drawTells(play, 0, 0)
 			broadcastContainer = nil
 			file, err := os.Open("../pot/broadcast")
 			if err != nil {
@@ -506,7 +578,8 @@ func watch(play Player, fileChange chan bool) {
 	            if event.Op&fsnotify.Write == fsnotify.Write {
 	        //        log.Print("\033[48:2:150:0:150mmodified file:", event.Name,"\033[0m")
 	            }
-		if event.Name == "../pot/broadcast" {
+		if event.Name == "../pot/broadcast" || event.Name == "../pot/tells" {
+			drawTells(play, 157, 24)
 			broadcastContainer = nil
 			file, err := os.Open(event.Name)
 			if err != nil {
@@ -589,6 +662,50 @@ func watch(play Player, fileChange chan bool) {
 	}
 	<-done
 }
+func drawTells(play Player, colVal int, rowVal int) {
+	var broadcastContainer []string
+	file, err := os.Open("../pot/tells")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	row := 0
+
+	tells, err := ioutil.ReadAll(file)
+	if err != nil {
+		panic(err)
+	}
+	lines := strings.Split(string(tells), "\n")
+	for i := 0;i < len(lines);i++ {
+			var newBroad Broadcast
+			newBroad.Payload.Message = lines[i]
+			newBroad.Payload.Name = play.Name
+			newBroad.Payload.Game = "snowcrash.network"
+			if len(newBroad.Payload.Message) > 89 {
+				newBroad.Payload.Message = lines[i][:89]
+			}
+			if strings.Contains(lines[i], "!:::tick:::!") {
+				continue
+			}
+
+			newBroadPayload := AssembleBM(newBroad, rowVal, colVal)
+			broadcastContainer = append(broadcastContainer, newBroadPayload)
+			if row >= 5 {
+				row = 0
+				rowVal = 0
+			}else {
+				row++
+				rowVal += 4
+				colVal = 153
+			}
+		}
+		for i := 0;i < len(broadcastContainer);i++ {
+			fmt.Print(broadcastContainer[i])
+		}
+		fmt.Print("\033[26;53H\n")
+
+}
+
 func doWatch(input string, play Player, fileChange chan bool) string {
 	var broadcastContainer []string
 	var do bool
