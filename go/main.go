@@ -203,12 +203,6 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 	failOnError(err, "Failed to open a channel")
 
 	defer ch.Close()
-/*	chDirect, err := conn.Channel()
-
-	failOnError(err, "Failed to open a channel")
-
-	defer chDirect.Close()
-*/
 	q, err := ch.QueueDeclare(
 		"", //name
 		true, // durable
@@ -217,18 +211,6 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 		false, //no-wait
 		nil, //arguments
 	)
-	for i := 0;i < len(whoList);i++ {
-		_, err := ch.QueueDeclare(
-			whoList[i], //name
-			true, // durable
-			false, //delete when used
-			false, //exclusive
-			false, //no-wait
-			nil, //arguments
-		)
-		failOnError(err, "Failed to declare a queue")
-
-	}
 /*	q, err := ch.QueueDeclare(
 		"input", //name
 		true, // durable
@@ -240,18 +222,8 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 */	failOnError(err, "Failed to declare a queue")
 
 	err = ch.ExchangeDeclare(
-	"broadcasts", //name
-	"fanout", //type
-	false, //durable
-	false, //auto-delted
-	false, //internal
-	false, //no wait
-	nil, //arguments
-	)
-	failOnError(err, "Failed to declare an exchange")
-	err = ch.ExchangeDeclare(
-	"tells", //name
-	"direct", //type
+	"ballast", //name
+	"topic", //type
 	false, //durable
 	false, //auto-delted
 	false, //internal
@@ -263,20 +235,10 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 	err = ch.QueueBind(
 		q.Name, //queue name
 		"", //routing key
-		"broadcasts",//exchange
+		"ballast",//exchange
 		false,
 		nil,
 	)
-	for i := 0;i < len(whoList);i++ {
-		err = ch.QueueBind(
-			whoList[i], //queue name
-			whoList[i], //routing key
-			"tells",//exchange
-			false,
-			nil,
-		)
-		failOnError(err, "Failed to bind a queue")
-	}
 	body := ""
 	for i := 0;i < len(inputArray);i++ {
 		body += inputArray[i]+" "
@@ -284,8 +246,8 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 	if direct {
 		//body = strings.ReplaceAll(body, "broadcast", "tell")
 		err = ch.Publish(
-		"tells", //exchange
-		tellTo, // routing key
+		"ballast", //exchange
+		tellTo+".tell", // routing key
 		false, //mandatory
 		false, //immediate
 		amqp.Publishing {
@@ -294,7 +256,7 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 		})
 	}else {
 		err = ch.Publish(
-		"broadcasts", //exchange
+		"ballast", //exchange
 		"", // routing key
 		false, //mandatory
 		false, //immediate
@@ -332,18 +294,8 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
         defer chDirect.Close()
 */
 	err = ch.ExchangeDeclare(
-		"broadcasts",//name
-		"fanout",//type
-		false, //durable
-		false, //auto-deleted
-		false, //internal
-		false, //no wait
-		nil, //args
-	)
-	failOnError(err, "Failed to declare an exchange")
-	err = ch.ExchangeDeclare(
-		"tells",//name
-		"direct",//type
+		"ballast",//name
+		"topic",//type
 		false, //durable
 		false, //auto-deleted
 		false, //internal
@@ -361,34 +313,22 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
                 nil, //arguments
         )
         failOnError(err, "Failed to declare a queue")
-        qplayer, err := ch.QueueDeclare(
-                play.Name, //name
-                true, // durable
-                false, //delete when used
-                false, //exclusive
-                false, //no-wait
-                nil, //arguments
-        )
-        failOnError(err, "Failed to declare a queue")
 
 	err = ch.QueueBind(
 		q.Name, //queue name
 		"", //routing key
-		"broadcasts", //exchange
+		"ballast", //exchange
+		false,
+		nil,
+	)
+	err = ch.QueueBind(
+		q.Name, //queue name
+		play.Name+".tell", //routing key
+		"ballast", //exchange
 		false,
 		nil,
 	)
 	failOnError(err, "Failed to bind a queue")
-	for i := 0;i < len(whoList);i++ {
-		err = ch.QueueBind(
-			qplayer.Name, //queue name
-			whoList[i], //routing key
-			"tells", //exchange
-			false,
-			nil,
-		)
-		failOnError(err, "Failed to bind a queue")
-	}
 	msgs, err := ch.Consume(
 		q.Name, //queue
 		"",
@@ -399,16 +339,6 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 		nil, //args
 	)
 	failOnError(err, "Failed to register a consumer")
-	tells, err := ch.Consume(
-		qplayer.Name, //queue
-		"tells",
-		true, //auto-ack
-		true, //exclusive
-		false, //no-local
-		false, //no-wait
-		nil, //args
-	)
-        failOnError(err, "Failed to register a consumer")
 
 	forever := make(chan bool)
 	for {
@@ -416,13 +346,13 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 		//select {
 		//default:
 		go func() {
-			for tell := range tells {
-				message := string(tell.Body)
+			for msg := range msgs {
+				message := string(msg.Body)
 
 				if strings.Split(message, " ")[1] == play.Name {
 
 					fmt.Print("\033[26;53H\n")
-					log.Printf("\033[38:2:150:150:0mReceived a tell: %s\033[0m", tell.Body)
+					log.Printf("\033[38:2:150:150:0mReceived a tell: %s\033[0m", msg.Body)
 					if strings.HasPrefix(message, "tell") {
 						if !strings.Contains(message, "!:::tick:::!") {
 							f, err := os.OpenFile("../pot/tells", os.O_APPEND|os.O_WRONLY, 0644) 
@@ -439,7 +369,8 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 							fileChange <- true
 							var blank Player 
 							f.Close()
-							go doWatch(string(tell.Body), blank, fileChange)
+							go doWatch(string(msg.Body), blank, fileChange)
+							continue
 						}
 				
 					}else {
@@ -451,13 +382,9 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 				if err != nil {
 					panic(err)
 				}
-			}
-		}()
-		go func() {
-			for d := range msgs {
+			
 				fmt.Print("\033[26;53H\n")
-				log.Printf("\033[38:2:0:150:150mReceived a message: %s\033[0m", d.Body)
-				message := string(d.Body)
+				log.Printf("\033[38:2:0:150:150mReceived a message: %s\033[0m", msg.Body)
 				if strings.HasPrefix(message, "broadcast") {
 					var blank Player
 					if !strings.Contains(message, "!:::tick:::!") {
@@ -474,7 +401,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 						f.Close()
 						fileChange <- true
 
-						go doWatch(string(d.Body), blank, fileChange)
+						go doWatch(string(msg.Body), blank, fileChange)
 					}else {
 						go doWatch("!:::tick:::!", blank, fileChange)
 					}
