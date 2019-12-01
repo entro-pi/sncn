@@ -76,8 +76,6 @@ defmodule PlayerWatcher do
 	end
 	def lookup(conn, playerHash) do
 		IO.puts("occasionally the poller does stuff")
-		cursor = Mongo.find(conn, "Players", %{"$and" =>[%{name: playerHash}]})
-		|> Enum.to_list()
 	
 	end
 	def watch(conn, playerHash) do
@@ -271,7 +269,7 @@ defmodule Test do
 	end
 
 	def test do
-		weasel = %Pfiles.Pfile{name: "Weasel", oldx: 0, oldy: 0, tarx: 0, tary: 0, maxrezz: 20, rezz: 10, maxtech: 10, tech: 5}
+		weasel = %Pfiles.Pfile{name: "Weasel", oldx: 0, oldy: 0, tarx: 0, tary: 0, maxrezz: 20, rezz: 10, maxtech: 10, tech: 5, inventory: {[item: %Object{ name: "Poptart kitten"}, number: 1]}}
 		{:ok, conn} = PlayerWatcher.start_connection
 		PlayerWatcher.add_p_file(conn, weasel)
 	end
@@ -296,67 +294,17 @@ end
 defmodule EquipmentItem do
 	use Ecto.Schema
 	schema "equipmentitem" do
-	belongs_to :item, Object
+	embeds_one :item, Object
 	field :number, :integer
         end
 end
 
 defmodule InventoryItem do
 	use Ecto.Schema
-        schema "inventoryitem"do
-	belongs_to :item, Object
+        schema "inventoryitem" do
+	embeds_one :item, Object
 	field :number, :integer
 	end
-end
-defmodule InventoryBank do
-        use Ecto.Schema
-        schema "inventorybank" do
-         belongs_to :slotone, InventoryItem
-         field :slotoneamount, :integer
-         belongs_to :slottwo, InventoryItem
-         field :slottwoamount, :integer
-         belongs_to :slotthree, InventoryItem
-         field :slotthreeamount, :integer
-         belongs_to :slotfour, InventoryItem
-         field :slotfouramount, :integer
-         belongs_to :slotfive, InventoryItem
-         field :slotfiveamount, :integer
-         belongs_to :slotsix, InventoryItem
-         field :slotsixamount, :integer
-         belongs_to :slotseven, InventoryItem
-         field :slotsevenamount, :integer
-         belongs_to :sloteight, InventoryItem
-         field :sloteightamount, :integer
-         belongs_to :slotnine, InventoryItem
-         field :slotnineamount, :integer
-         belongs_to :slotten, InventoryItem
-         field :slottenamount, :integer
-end
-end
-defmodule EquipmentBank do
-        use Ecto.Schema
-        schema "equipmentbank" do
-         belongs_to :slotone, EquipmentItem
-         field :slotoneamount, :integer
-         belongs_to :slottwo, EquipmentItem
-         field :slottwoamount, :integer
-         belongs_to :slotthree, EquipmentItem
-         field :slotthreeamount, :integer
-         belongs_to :slotfour, EquipmentItem
-         field :slotfouramount, :integer
-         belongs_to :slotfive, EquipmentItem
-         field :slotfiveamount, :integer
-         belongs_to :slotsix, EquipmentItem
-         field :slotsixamount, :integer
-         belongs_to :slotseven, EquipmentItem
-         field :slotsevenamount, :integer
-         belongs_to :sloteight, EquipmentItem
-         field :sloteightamount, :integer
-         belongs_to :slotnine, EquipmentItem
-         field :slotnineamount, :integer
-         belongs_to :slotten, EquipmentItem
-         field :slottenamount, :integer
-end
 end
 
 defmodule Pfiles.Pfile do
@@ -365,16 +313,14 @@ defmodule Pfiles.Pfile do
         field :name, :string
 	 field :hostname, :string
 	 field :title, :string
-                belongs_to :itembank, InventoryBank
-	belongs_to  :equipmentbank, EquipmentBank
                 field :str, :integer
 		field :int, :integer
 		field :dex, :integer
                 field :wis, :integer
 		field :con, :integer
 		field :cha, :integer
-                belongs_to :inventory, Elixir.List
-		belongs_to :Equipped, Elixir.List
+                field :inventory, {:array, InventoryItem}
+		field :equipped, {:array, EquipmentItem}
                 field :coreboard, :string
 		field :plaincoreboard, :string
                 field :currentroom, :string
