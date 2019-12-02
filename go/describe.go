@@ -1,11 +1,11 @@
 package main
 
 import (
-  "fmt"
   "os"
-	"time"
+  "fmt"
+  term "github.com/nsf/termbox-go"
+  "time"
   "strconv"
-  "bufio"
   "math/rand"
   "strings"
 )
@@ -124,46 +124,107 @@ for i := 0;i < 52;i++ {
 
 
 func LoginSC() (string, string){
-  clearDirty()
-  loginScanner := bufio.NewScanner(os.Stdin)
-  user := ""
-  fmt.Printf("\033[10;28H\033[0m")
-  fmt.Printf("\033[11;28H \033[48;2;10;255;20m\033[38;2;10;10;255m         LOGIN         \033[0m")
-  fmt.Printf("\033[12;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
-  fmt.Printf("\033[13;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mUSER                \033[48;2;10;255;20m \033[0m")
-  fmt.Printf("\033[14;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
-  fmt.Printf("\033[15;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
-  fmt.Printf("\033[16;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mPASSWORD            \033[48;2;10;255;20m \033[0m")
-  fmt.Printf("\033[17;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
-  fmt.Printf("\033[18;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
-  fmt.Printf("\033[19;28H \033[48;2;10;255;20m                       \033[0m")
-  fmt.Printf("\033[14;32H" + user + "\033[0m")
+       err := term.Init()
+         if err != nil {
+                 panic(err)
+         }
 
-  loginScanner.Scan()
+         defer term.Close()
 
-  user = loginScanner.Text()
-  fmt.Printf("\033[17;32H")
-  for {
+         fmt.Println("Enter any key to begin login sequence, ESC to cancel")
 
-		fmt.Printf("\033[10;28H\033[0m")
-		fmt.Printf("\033[11;28H \033[48;2;10;255;20m\033[38;2;10;10;255m         LOGIN         \033[0m")
-		fmt.Printf("\033[12;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
-		fmt.Printf("\033[13;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mUSER                \033[48;2;10;255;20m \033[0m")
-		fmt.Printf("\033[14;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
-		fmt.Printf("\033[15;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
-		fmt.Printf("\033[16;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mPASSWORD            \033[48;2;10;255;20m \033[0m")
-		fmt.Printf("\033[17;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
-		fmt.Printf("\033[18;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
-		fmt.Printf("\033[19;28H \033[48;2;10;255;20m                       \033[0m")
-		fmt.Printf("\033[14;32H" + user + "\033[0m")
-    fmt.Printf("\033[17;32H")
-		loginScanner.Scan()
-    pword := loginScanner.Text()
-    //clearDirty()
-    //Only use clearDirty at major intersections, it will cause flicker
-		return user, pword
+	userEntered := false
+	pwdHide := "********************************************************************************************************"
+	user := ""
+	pword := ""
+	escaped := false
+	KEYPRESS:
+         for {
+                 switch ev := term.PollEvent(); ev.Type {
+                 case term.EventKey:
+                         switch ev.Key {
+			case term.KeyBackspace2:
+				fallthrough
+			case term.KeyBackspace:
+				if !userEntered {
+					if len(user) - 1 > 0 {
+						user = user[:len(user)-1]
+					}else {
+						user = ""
+					}
+					userLine := "________________"
+	                                 fmt.Printf("\033[14;32H" + userLine + "\033[0m")
+	                                 fmt.Printf("\033[14;32H" + user + "\033[0m")
+				}else if userEntered {
+					if len(pword)-1 > 0 {
+						pword = pword[:len(pword)-1]
+					}else {
+						pword = ""
+					}
+					pwdLine := "________________"
+					pwordMask := 0
+					fmt.Printf("\033[17;32H" + pwdLine+ "\033[0m")
+					pwordMask = len(pword)
+					fmt.Printf("\033[17;32H" + pwdHide[:pwordMask] + "\033[0m")
+				}
+                         case term.KeyEsc:
+				escaped = true
+				break KEYPRESS
+                        case term.KeyEnter:
+				if !userEntered && len(user) > 3 {
+					userEntered = true
+					continue 
+				}else if userEntered {
+					return user, pword
+				}
+			default:
+				
+                                 // we only want to read a single character or one key pressed event
+				  clearDirty()
+				if !userEntered {
+				  user += string(ev.Ch)
+				  fmt.Printf("\033[10;28H\033[0m")
+				  fmt.Printf("\033[11;28H \033[48;2;10;255;20m\033[38;2;10;10;255m         LOGIN         \033[0m")
+				  fmt.Printf("\033[12;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+				  fmt.Printf("\033[13;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mUSER                \033[48;2;10;255;20m \033[0m")
+				  fmt.Printf("\033[14;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
+				  fmt.Printf("\033[15;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+				  fmt.Printf("\033[16;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mPASSWORD            \033[48;2;10;255;20m \033[0m")
+				  fmt.Printf("\033[17;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
+				  fmt.Printf("\033[18;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+				  fmt.Printf("\033[19;28H \033[48;2;10;255;20m                       \033[0m")
+				  fmt.Printf("\033[14;32H" + user + "\033[0m")
 
-  }
+				  fmt.Printf("\033[17;32H")
+                                 }else if userEntered {
+			    		pword += string(ev.Ch)
+					fmt.Printf("\033[10;28H\033[0m")
+					fmt.Printf("\033[11;28H \033[48;2;10;255;20m\033[38;2;10;10;255m         LOGIN         \033[0m")
+					fmt.Printf("\033[12;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+					fmt.Printf("\033[13;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mUSER                \033[48;2;10;255;20m \033[0m")
+					fmt.Printf("\033[14;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
+					fmt.Printf("\033[15;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+					fmt.Printf("\033[16;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   \033[38;2;10;200;150mPASSWORD            \033[48;2;10;255;20m \033[0m")
+					fmt.Printf("\033[17;28H\033[48;2;10;255;20m \033[48;2;10;10;20m   ________________    \033[48;2;10;255;20m \033[0m")
+					fmt.Printf("\033[18;28H\033[48;2;10;255;20m \033[48;2;10;10;20m                       \033[48;2;10;255;20m \033[0m")
+					fmt.Printf("\033[19;28H \033[48;2;10;255;20m                       \033[0m")
+					fmt.Printf("\033[14;32H" + user + "\033[0m")
+		                        fmt.Printf("\033[17;32H")
+					fmt.Printf("\033[17;32H" + pwdHide[:len(pword)] + "\033[0m")
+
+
+				}
+
+                         }
+                 case term.EventError:
+                         panic(ev.Err)
+                 }
+         }
+ if len(user) < 3 || len(pword) < 3 || escaped {
+	term.Close()
+	os.Exit(1)
+ } 
+
   return "", ""
 }
 func clearDirty() {
