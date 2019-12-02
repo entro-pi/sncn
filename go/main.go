@@ -130,9 +130,31 @@ func parseInput(play Player, input string) (Player, string) {
 	return play, input
 }
 
+func logout(playName string) {
+	f, err := os.OpenFile("../pot/who", os.O_RDWR|os.O_CREATE, 0644)
+	if err != nil {
+		panic(err)
+	}
+	content, err := ioutil.ReadAll(f)
+	if err != nil {
+		panic(err)
+	}
+
+	longUser := strings.Split(string(content), "\n")
+	for i := 1;i < len(longUser);i++ {
+		if playName == longUser[i] {
+			f.WriteString("<<logout>>+\n")
+			continue
+		}else if len(longUser[i]) > 1 {
+			f.WriteString(longUser[i]+"\n")
+		}
+	}
+	f.Close()
+}
+
 func who(newPlayer string) []string {
 	var oldPlayers []string
-	f, err := os.OpenFile("../pot/who", os.O_RDWR|os.O_CREATE, 0644) 
+	f, err := os.OpenFile("../pot/who", os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -143,10 +165,12 @@ func who(newPlayer string) []string {
 	}
 
 	longUser := strings.Split(string(content), "\n")
-	for i := 0;i < len(longUser);i++ {
+	for i := 1;i < len(longUser);i++ {
 		if newPlayer == longUser[i] {
 			continue
-		}else {
+		}else if longUser[i] == longUser[i-1] {
+
+			}else {
 			oldPlayers = append(oldPlayers, longUser[i])
 		}
 	}
@@ -159,6 +183,7 @@ func who(newPlayer string) []string {
 		panic(err)
 	}
 	f.Close()
+	defer logout(newPlayer)
 	oldPlayers = append(oldPlayers, newPlayer)
 	return oldPlayers
 }
@@ -178,9 +203,13 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 	direct := false
 
 	//Determine if we're sending to anyone in particular
+
 	inputArray := strings.Split(input, ":")
 	if len(inputArray) < 2 {
 		inputArray = append(inputArray, ":")
+	}
+	if inputArray[0] == "quit" {
+		os.Exit(1)
 	}
 	tellTo := ""
 	for i := 0;i < len(whoList);i++ {
@@ -342,7 +371,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 
 	forever := make(chan bool)
 	for {
-		
+
 		//select {
 		//default:
 		go func() {
@@ -355,7 +384,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 					log.Printf("\033[38:2:150:150:0mReceived a tell: %s\033[0m", msg.Body)
 					if strings.HasPrefix(message, "tell") {
 						if !strings.Contains(message, "!:::tick:::!") {
-							f, err := os.OpenFile("../pot/tells", os.O_APPEND|os.O_WRONLY, 0644) 
+							f, err := os.OpenFile("../pot/tells", os.O_APPEND|os.O_WRONLY, 0644)
 							if err != nil {
 								panic(err)
 							}
@@ -367,14 +396,14 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 								panic(err)
 							}
 							fileChange <- true
-							var blank Player 
+							var blank Player
 							f.Close()
 							go doWatch(string(msg.Body), blank, fileChange)
 							continue
 						}
-				
+
 					}else {
-						var blank Player 
+						var blank Player
 
 						go doWatch("!:::tick:::!", blank, fileChange)
 					}
@@ -382,13 +411,13 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 				if err != nil {
 					panic(err)
 				}
-			
+
 				fmt.Print("\033[26;53H\n")
 				log.Printf("\033[38:2:0:150:150mReceived a message: %s\033[0m", msg.Body)
 				if strings.HasPrefix(message, "broadcast") {
 					var blank Player
 					if !strings.Contains(message, "!:::tick:::!") {
-						f, err := os.OpenFile("../pot/broadcast", os.O_APPEND|os.O_WRONLY, 0644) 
+						f, err := os.OpenFile("../pot/broadcast", os.O_APPEND|os.O_WRONLY, 0644)
 						if err != nil {
 							panic(err)
 						}
@@ -664,9 +693,9 @@ func doWatch(input string, play Player, fileChange chan bool) string {
 		}
 		var lines []string
 		lines = nil
-		
+
 		lines = strings.Split(string(contents), "\n")
-		lineIn := strings.Split(string(contents), "\n")	
+		lineIn := strings.Split(string(contents), "\n")
 		if len(lines) >= 21 {
 			lines = nil
 			for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
