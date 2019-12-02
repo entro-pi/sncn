@@ -60,33 +60,7 @@ func main() {
 
 	fileChange := make(chan bool)
 	if len(os.Args) == 2 {
-	if os.Args[1] == "--main" {
-			scanner := bufio.NewScanner(os.Stdin)
-		//	fmt.Print("Enter your command")
-			fmt.Print("Initializing a player")
-			user, pword := LoginSC()
-			play := InitPlayer(user, pword)
-			whoList := who(play.Name)
-			fmt.Println(whoList)
-		//	go actOn() //for receiving in Go
-//			go watch(play)
-			for scanner.Scan() {
-				input := scanner.Text()
-				//Should probably do some error checking before
-				//passing it along
-				if len(strings.Split(input, ":")) <= 1 {
-					continue
-				}else {
-					doPlayer(input, play)
-					go doWatch(input, play, fileChange)
-					go doInput(input, play, fileChange, whoList)
-			//		fmt.Print("Enter your command")
-				}
-				fmt.Print("\033[26;53H\n")
-
-			}
-	}
-	if os.Args[1] == "--1920x1080" {
+	if os.Args[1] == "--1920x1080main" {
 			scanner := bufio.NewScanner(os.Stdin)
 		//	fmt.Print("Enter your command")
 			user, pword := LoginSC()
@@ -104,7 +78,7 @@ func main() {
 					continue
 				}else {
 					play, input = parseInput(play, input)
-					doPlayer(input, play)
+					doPlayer(input, play, os.Args[1])
 					go watch(play, fileChange)
 					go doInput(input, play, fileChange, whoList)
 					go doWatch(input, play, fileChange)
@@ -133,7 +107,7 @@ func main() {
                                         continue
                                 }else {
                                         play, input = parseInput(play, input)
-                                        doPlayer(input, play)
+                                        doPlayer(input, play, os.Args[1])
                                         go watch(play, fileChange)
                                         go doInput(input, play, fileChange, whoList)
                                         go doWatch(input, play, fileChange)
@@ -244,12 +218,17 @@ func who(playName string) []string {
 	return oldPlayers
 }
 
-func doPlayer(input string, play Player) {
-	play = decompEq(play)
-	play = decompInv(play)
-	DescribePlayer(play)
-	describeEquipment(play)
-	describeInventory(play)
+func doPlayer(input string, play Player, format string) {
+	
+	if format == "--1920x1080main" {
+		play = decompEq(play)
+		play = decompInv(play)
+		
+
+		DescribePlayer(play)
+		describeEquipment(play)
+		describeInventory(play)
+	}
 }
 
 func doInput(input string, play Player, fileChange chan bool, whoList []string) {
@@ -512,6 +491,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 func watch(play Player, fileChange chan bool) {
 	var broadcastContainer []string
 
+
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 	    log.Fatal(err)
@@ -525,68 +505,12 @@ func watch(play Player, fileChange chan bool) {
 	        select {
 
 	        case <-fileChange:
-			drawTells(play, 0, 0)
+			if os.Args[1] == "--4x3" {
+				drawTells(os.Args[1], play, 150, 24)
+			}
 			broadcastContainer = nil
-			file, err := os.Open("../pot/broadcast")
-			if err != nil {
-				panic(err)
-			}
-			defer file.Close()
-			contents, err := ioutil.ReadAll(file)
-			if err != nil {
-				panic(err)
-			}
-			var lines []string
-			lines = nil
-			lines = strings.Split(string(contents), "\n")
-			lineIn := strings.Split(string(contents), "\n")
-			if len(lines) >= 20 {
-				lines = nil
-				for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
-					lineIn[i] = strings.ReplaceAll(lineIn[i], "broadcast:", "")
-					lines = append(lines, lineIn[i])
-				}
-			}
-//			var broadcastContainer []Broadcast
-			col := 0
-			row := 0
-			colVal := 53
-			rowVal := 0
-			for i := 0;i < len(lines);i++ {
-					var newBroad Broadcast
-					newBroad.Payload.Message = lines[i]
-					newBroad.Payload.Name = play.Name
-					newBroad.Payload.Game = "snowcrash.network"
-					if len(newBroad.Payload.Message) > 89 {
-						newBroad.Payload.Message = lines[i][:89]
-					}
-					if strings.Contains(lines[i], "!:::tick:::!") {
-						continue
-					}
-
-					newBroadPayload := AssembleBroadside(newBroad, rowVal, colVal)
-					broadcastContainer = append(broadcastContainer, newBroadPayload)
-					if row >= 5 {
-						row = 0
-						rowVal = 0
-					}
-					if col < 3 {
-						col++
-						colVal += 30
-					}else {
-						row++
-						rowVal += 4
-						col = 0
-						colVal = 53
-					}
-				}
-				for i := 0;i < len(broadcastContainer);i++ {
-					fmt.Print(broadcastContainer[i])
-				}
-				fmt.Print("\033[26;53H\n")
-
-				//log.Print(string(contents))
-	        case event, ok := <-watcher.Events:
+	        	broadcastContainer = drawBroadcasts(os.Args[1], play, broadcastContainer)
+		case event, ok := <-watcher.Events:
 	            if !ok {
 	                return
 	            }
@@ -596,68 +520,13 @@ func watch(play Player, fileChange chan bool) {
 	        //        log.Print("\033[48:2:150:0:150mmodified file:", event.Name,"\033[0m")
 	            }
 		if event.Name == "../pot/broadcast" || event.Name == "../pot/tells" {
-			drawTells(play, 157, 24)
 			broadcastContainer = nil
-			file, err := os.Open(event.Name)
-			if err != nil {
-				panic(err)
+			if event.Name == "../pot/broadcast" {
+				broadcastContainer = drawBroadcasts(os.Args[1], play, broadcastContainer)
+			}else if event.Name == "../pot/tells" && os.Args[1] == "--4x3" {
+				drawTells(os.Args[1], play, 150, 24)
 			}
-			defer file.Close()
-			contents, err := ioutil.ReadAll(file)
-			if err != nil {
-				panic(err)
-			}
-			var lines []string
-			lines = nil
-			lines = strings.Split(string(contents), "\n")
-			lineIn := strings.Split(string(contents), "\n")
-			if len(lines) >= 20 {
-				lines = nil
-				for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
-					lineIn[i] = strings.ReplaceAll(lineIn[i], "broadcast:", "")
-					lines = append(lines, lineIn[i])
-				}
-			}
-//			var broadcastContainer []Broadcast
-			col := 0
-			row := 0
-			colVal := 53
-			rowVal := 0
-			for i := 0;i < len(lines);i++ {
-					var newBroad Broadcast
-					newBroad.Payload.Message = lines[i]
-					newBroad.Payload.Name = play.Name
-					newBroad.Payload.Game = "snowcrash.network"
-					if len(newBroad.Payload.Message) > 89 {
-						newBroad.Payload.Message = lines[i][:89]
-					}
-					if strings.Contains(lines[i], "!:::tick:::!") {
-						continue
-					}
-
-					newBroadPayload := AssembleBroadside(newBroad, rowVal, colVal)
-					broadcastContainer = append(broadcastContainer, newBroadPayload)
-					if row >= 5 {
-						row = 0
-						rowVal = 0
-					}
-					if col < 3 {
-						col++
-						colVal += 30
-					}else {
-						row++
-						rowVal += 4
-						col = 0
-						colVal = 53
-					}
-				}
-				for i := 0;i < len(broadcastContainer);i++ {
-					fmt.Print(broadcastContainer[i])
-				}
-				fmt.Print("\033[26;53H\n")
-
-				//log.Print(string(contents))
-			}
+		}
 	        case err, ok := <-watcher.Errors:
 	            if !ok {
 	                return
@@ -679,7 +548,86 @@ func watch(play Player, fileChange chan bool) {
 	}
 	<-done
 }
-func drawTells(play Player, colVal int, rowVal int) {
+func drawBroadcasts(format string, play Player, broadcastContainer []string) []string {
+	file, err := os.Open("../pot/broadcast")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	contents, err := ioutil.ReadAll(file)
+	if err != nil {
+		panic(err)
+	}
+	var lines []string
+	lines = nil
+	lines = strings.Split(string(contents), "\n")
+	lineIn := strings.Split(string(contents), "\n")
+	if len(lines) >= 20 {
+		lines = nil
+		for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
+			lineIn[i] = strings.ReplaceAll(lineIn[i], "broadcast:", "")
+			lines = append(lines, lineIn[i])
+		}
+	}
+	//			var broadcastContainer []Broadcast
+	col := 0
+	row := 0
+	colVal := 0
+	rowVal := 0
+	colValHolder := 0
+	colNumber := 0
+	rowNumber := 0
+	if format == "--1920x1080main" {
+		colVal = 53
+		rowNumber = 5
+		colValHolder = 53
+		rowVal = 0
+		colNumber = 3
+	}else if format == "--4x3" {
+		colVal = 0
+		rowNumber = 5
+		colValHolder = 0
+		rowVal = 0
+		colNumber = 4
+	}
+	for i := 0;i < len(lines);i++ {
+			var newBroad Broadcast
+			newBroad.Payload.Message = lines[i]
+			newBroad.Payload.Name = play.Name
+			newBroad.Payload.Game = "snowcrash.network"
+			if len(newBroad.Payload.Message) > 89 {
+				newBroad.Payload.Message = lines[i][:89]
+			}
+			if strings.Contains(lines[i], "!:::tick:::!") {
+				continue
+			}
+
+			newBroadPayload := AssembleBroadside(newBroad, rowVal, colVal)
+			broadcastContainer = append(broadcastContainer, newBroadPayload)
+			if row >= rowNumber {
+				row = 0
+				rowVal = 0
+			}
+			if col < colNumber {
+				col++
+				colVal += 30
+			}else {
+				row++
+				rowVal += 4
+				col = 0
+				colVal = colValHolder
+			}
+		}
+		for i := 0;i < len(broadcastContainer);i++ {
+			fmt.Print(broadcastContainer[i])
+		}
+		fmt.Print("\033[26;53H\n")
+
+		//log.Print(string(contents))
+	return broadcastContainer
+}
+
+func drawTells(format string, play Player, colVal int, rowVal int) {
 	var broadcastContainer []string
 	file, err := os.Open("../pot/tells")
 	if err != nil {
@@ -691,6 +639,19 @@ func drawTells(play Player, colVal int, rowVal int) {
 	tells, err := ioutil.ReadAll(file)
 	if err != nil {
 		panic(err)
+	}
+	colValHolder := 0
+	rowNumber := 0
+	col := 0
+	colNumber := 0
+	if format == "--1920x1080main" {
+		colVal = 150
+		colValHolder = 150
+	}else if format == "--4x3" {
+		colVal = 0
+		colValHolder = 0
+		rowNumber = 6
+		colNumber = 4
 	}
 	lines := strings.Split(string(tells), "\n")
 	for i := 0;i < len(lines);i++ {
@@ -707,13 +668,18 @@ func drawTells(play Player, colVal int, rowVal int) {
 
 			newBroadPayload := AssembleBM(newBroad, rowVal, colVal)
 			broadcastContainer = append(broadcastContainer, newBroadPayload)
-			if row >= 5 {
+			if row >= rowNumber {
 				row = 0
-				rowVal = 0
+				rowVal = 24
+			}else if col < colNumber {
+				colVal += 30
+				col++
 			}else {
-				row++
 				rowVal += 4
-				colVal = 153
+
+				row++
+				col = 0
+				colVal = colValHolder
 			}
 		}
 		for i := 0;i < len(broadcastContainer);i++ {
@@ -740,62 +706,7 @@ func doWatch(input string, play Player, fileChange chan bool) string {
 	}
 	if inputList[0] == "broadcast" || do {
 		broadcastContainer = nil
-		if do {
-			fmt.Println("DOING")
-		}
-		file, err := os.Open("../pot/broadcast")
-		if err != nil {
-			panic(err)
-		}
-		defer file.Close()
-		contents, err := ioutil.ReadAll(file)
-		if err != nil {
-			panic(err)
-		}
-		var lines []string
-		lines = nil
-
-		lines = strings.Split(string(contents), "\n")
-		lineIn := strings.Split(string(contents), "\n")
-		if len(lines) >= 21 {
-			lines = nil
-			for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
-				lineIn[i] = strings.ReplaceAll(lineIn[i], "broadcast:", "")
-				lines = append(lines, lineIn[i])
-			}
-		}
-//			var broadcastContainer []Broadcast
-		col := 0
-		row := 0
-		colVal := 53
-		rowVal := 0
-		for i := 0;i < len(lines);i++ {
-			if strings.Contains(lines[i], "!:::tick:::!") {
-				continue
-			}
-			var newBroad Broadcast
-			newBroad.Payload.Name = play.Name
-			newBroad.Payload.Game = "snowcrash.network"
-			newBroad.Payload.Message = lines[i]
-			if len(newBroad.Payload.Message) > 24 {
-				newBroad.Payload.Message = lines[i][:24]
-			}
-			newBroadPayload := AssembleBroadside(newBroad, rowVal, colVal)
-			broadcastContainer = append(broadcastContainer, newBroadPayload)
-			if row >= 5 {
-				row = 0
-				rowVal = 0
-			}
-			if col < 3 {
-				col++
-				colVal += 30
-			}else {
-				row++
-				rowVal += 4
-				col = 0
-				colVal = 53
-			}
-		}
+		broadcastContainer = drawBroadcasts(os.Args[1], play, broadcastContainer)
 		//log.Print(string(contents))
 	}
 	for i := 0;i < len(broadcastContainer);i++ {
