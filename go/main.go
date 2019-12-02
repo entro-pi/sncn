@@ -1,6 +1,9 @@
 package main
 
 import (
+	"time"
+	"context"
+	"os/signal"
 	"strings"
 	"fmt"
 	"bufio"
@@ -29,7 +32,32 @@ func getConnectionString() string {
 	return scanned
 }
 
+func handleBreak() {
+	//handle signal interrupt
+	ctx := context.Background()
+
+	//trap ctrl-c and call cancel
+	ctx, cancel := context.WithCancel(ctx)
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	defer func() {
+		signal.Stop(c)
+		cancel()
+	}()
+	go func() {
+		select {
+		case <-c:
+			cancel()
+		case <-ctx.Done():
+		}
+	}()
+
+}
+
+
 func main() {
+	go handleBreak()
+
 	fileChange := make(chan bool)
 	if len(os.Args) == 2 {
 	if os.Args[1] == "--main" {
@@ -139,26 +167,36 @@ func logout(playName string) {
 	if err != nil {
 		panic(err)
 	}
-
-	longUser := strings.Split(string(content), "\n")
-	for i := 1;i < len(longUser);i++ {
-		if playName == longUser[i] {
-			f.WriteString("<<logout>>+\n")
-			continue
-		}else if len(longUser[i]) > 1 {
-			f.WriteString(longUser[i]+"\n")
-		}
-	}
-	f.Close()
-}
-
-func who(newPlayer string) []string {
-	var oldPlayers []string
-	f, err := os.OpenFile("../pot/who", os.O_RDWR|os.O_CREATE, 0644)
+	newF, err := os.OpenFile("../pot/newWho", os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		panic(err)
 	}
 
+	longUser := strings.Split(string(content), "\n")
+	for i := 1;i < len(longUser);i++ {
+		if playName == longUser[i] {
+			newF.WriteString("<<logout>>\n")
+			continue
+		}else if len(longUser[i]) > 1 && longUser[i] != playName {
+			newF.WriteString(longUser[i]+"\n")
+		}
+	}
+	f.Sync()
+	newF.Sync()
+	f.Close()
+	newF.Close()
+//	os.Remove("../pot/who")
+	os.Rename("../pot/newWho", "../pot/who")
+}
+
+func who(playName string) []string {
+	var oldPlayers []string
+	
+	time.Sleep(100*time.Millisecond)
+	f, err := os.Open("../pot/who")
+	if err != nil {
+		panic(err)
+	}
 	content, err := ioutil.ReadAll(f)
 	if err != nil {
 		panic(err)
@@ -166,25 +204,15 @@ func who(newPlayer string) []string {
 
 	longUser := strings.Split(string(content), "\n")
 	for i := 1;i < len(longUser);i++ {
-		if newPlayer == longUser[i] {
+		if playName == longUser[i] {
+			fmt.Print("YOU\n")
 			continue
-		}else if longUser[i] == longUser[i-1] {
-
-			}else {
-			oldPlayers = append(oldPlayers, longUser[i])
+		}else if len(longUser[i]) > 1 && longUser[i] != playName {
+			fmt.Print(longUser[i]+"\n")
 		}
-	}
-	_, err = f.WriteString(newPlayer+"\n")
-	if err != nil {
-		panic(err)
-	}
-	err = f.Sync()
-	if err != nil {
-		panic(err)
+		oldPlayers = append(oldPlayers, longUser[i])
 	}
 	f.Close()
-	defer logout(newPlayer)
-	oldPlayers = append(oldPlayers, newPlayer)
 	return oldPlayers
 }
 
@@ -206,13 +234,17 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 
 	inputArray := strings.Split(input, ":")
 	if len(inputArray) < 2 {
-		inputArray = append(inputArray, ":")
+		inputArray = strings.Split(input, " ")
 	}
 	if inputArray[0] == "quit" {
 		os.Exit(1)
 	}
 	tellTo := ""
-	for i := 0;i < len(whoList);i++ {
+	if inputArray[0] == "tell" {
+		direct = true
+		tellTo = inputArray[1]
+	}
+	/*for i := 0;i < len(whoList);i++ {
 		fmt.Println(inputArray[1])
 		if inputArray[0] == "tell" && inputArray[1] == whoList[i] {
 			direct = true
@@ -220,7 +252,7 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 			fmt.Println("\033[48:2:0:0:120m",direct, tellTo,"\033[0m")
 			break
 		}
-	}
+	}*/
 
 
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -283,7 +315,7 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 			ContentType: "text/plain",
 			Body: []byte(body),
 		})
-	}else {
+	}else if inputArray[0] == "broadcast" {
 		err = ch.Publish(
 		"ballast", //exchange
 		"", // routing key
@@ -395,6 +427,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 							if err != nil {
 								panic(err)
 							}
+							f.Sync()
 							fileChange <- true
 							var blank Player
 							f.Close()
