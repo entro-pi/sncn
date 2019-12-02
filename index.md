@@ -1,3 +1,18 @@
+bweeeeee!
+
+I refactored the entire thing into a seperate
+golang-client and elixir server. As well as
+rabbitmq in place of zeromq, postgresql in
+place of mongodb and am working under the 
+assumption that one would play the game with
+multiple monitors. If you have Opinions on 
+this, join the discord or slack and let your voice
+be heard!
+
+https://discord.gg/7gu2tkX
+
+Cheers!
+Weasel
 
 ![ouroboro](docs/ouroboro.png)
 
