@@ -11,26 +11,40 @@ import (
 // Simple Gtk3 Application written in go.
 // This application creates a window on the application callback activate.
 // More GtkApplication info can be found here -> https://wiki.gnome.org/HowDoI/GtkApplication
-
-func b1Clicked() {
+/*
+func b1Clicked(textB interface{}) {
+	button := textB.(*gtk.Button)
+	
+	text := textB.(*gtk.TextView)
+	draw, err := text.GetBuffer()
+	if err != nil {
+		panic(err)
+	}
+	draw.SetText("YES")
 	fmt.Println("b1 clicked")
 }
 
-func b2Clicked() {
+func b2Clicked(textB interface{}) {
+	text := textB.(*gtk.TextView)
+	draw, err := text.GetBuffer()
+	if err != nil {
+		panic(err)
+	}
+	draw.SetText("NO")
 	fmt.Println("b2 clicked")
 }
-
+*/
 
 // you just place them in a map that names the signals, then feed the map to the builder
-var signals = map[string]interface{}{
+/*var signals = map[string]interface{}{
 	"B1": b1Clicked,
 	"B2": b2Clicked,
-}
+}*/
 
 
 func main() {
     // Create Gtk Application, change appID to your application domain name reversed.
-    const appID = "org.gtk.example"
+    const appID = "org.gtk.sncn"
     application, err := gtk.ApplicationNew(appID, glib.APPLICATION_FLAGS_NONE)
     // Check to make sure no errors when creating Gtk Application
     if err != nil {
@@ -48,8 +62,38 @@ func main() {
 	    if err != nil {
 		panic(err)
 		}
-
-	twoBuilder.ConnectSignals(signals)
+	if err == nil {
+		view, err := twoBuilder.GetObject("view1")
+		yesButton, err := twoBuilder.GetObject("b1")
+		if err != nil {
+			panic(err)
+		}
+		yes := yesButton.(*gtk.Button)
+		yes.Connect("clicked", func (btn *gtk.Button) {
+			text := view.(*gtk.TextView)
+			draw, err := text.GetBuffer()
+			if err != nil {
+				panic(err)
+			}
+			draw.SetText("YES")
+			fmt.Println("b1 clicked")
+		})
+		noButton, err := twoBuilder.GetObject("b2")
+		if err != nil {
+			panic(err)
+		}
+		no := noButton.(*gtk.Button)
+		no.Connect("clicked", func (btn *gtk.Button) {
+			text := view.(*gtk.TextView)
+			draw, err := text.GetBuffer()
+			if err != nil {
+				panic(err)
+			}
+			draw.SetText("no")
+			fmt.Println("b1 clicked")
+		})
+	}
+//	twoBuilder.ConnectSignals(signals)
 
         // Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("mainwindow")
