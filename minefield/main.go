@@ -6,40 +6,8 @@ import (
     "fmt"
     "github.com/gotk3/gotk3/glib"
     "github.com/gotk3/gotk3/gtk"
+//    "github.com/gotk3/gotk3/gdk"
 )
-
-// Simple Gtk3 Application written in go.
-// This application creates a window on the application callback activate.
-// More GtkApplication info can be found here -> https://wiki.gnome.org/HowDoI/GtkApplication
-/*
-func b1Clicked(textB interface{}) {
-	button := textB.(*gtk.Button)
-	
-	text := textB.(*gtk.TextView)
-	draw, err := text.GetBuffer()
-	if err != nil {
-		panic(err)
-	}
-	draw.SetText("YES")
-	fmt.Println("b1 clicked")
-}
-
-func b2Clicked(textB interface{}) {
-	text := textB.(*gtk.TextView)
-	draw, err := text.GetBuffer()
-	if err != nil {
-		panic(err)
-	}
-	draw.SetText("NO")
-	fmt.Println("b2 clicked")
-}
-*/
-
-// you just place them in a map that names the signals, then feed the map to the builder
-/*var signals = map[string]interface{}{
-	"B1": b1Clicked,
-	"B2": b2Clicked,
-}*/
 
 
 func main() {
@@ -100,7 +68,27 @@ func main() {
         if err != nil {
             log.Fatal("Could not create application window.", err)
         }
+
 	wind := appWindow.(*gtk.Window)
+
+	wind.SetDefaultSize(400, 400)
+	windowWidget, err := wind.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+
+	css, err := gtk.CssProviderNew()
+	if err != nil {
+		panic(err)
+	}
+
+	css.LoadFromPath("design.css")
+	
+	screen, err := windowWidget.GetScreen()
+	if err != nil {
+		panic(err)
+	}
+	gtk.AddProviderForScreen(screen, css, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         // Set ApplicationWindow Properties
         wind.Show()
 	application.AddWindow(wind)

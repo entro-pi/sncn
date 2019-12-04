@@ -1,0 +1,26 @@
+#b1:focus {
+	font-size:32px;
+}
+#b1:focus {
+	color: #118888;
+}
+.button {
+	background: rgb(50, 175, 50);
+	border: 5px;
+	padding: 1px;
+}
+.button:hover {
+	background: rgb(50, 225, 50);
+	border: 5px;
+	padding: 1px;
+}
+
+window {
+	background-color: rgb(0, 0, 0);
+}
+window:focus {
+	background-color: rgb(0, 0, 0);
+}
+TextView {
+	background-color: rgb(0, 0, 0);
+}
