@@ -1,6 +1,7 @@
 package main
 
 import (
+    "strings"
     "log"
     "os"
     "fmt"
@@ -43,8 +44,9 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			draw.SetText("YES")
+			draw.SetText("ACK")
 			fmt.Println("b1 clicked")
+			os.Exit(1)
 		})
 		noButton, err := twoBuilder.GetObject("b2")
 		if err != nil {
@@ -57,9 +59,52 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			draw.SetText("no")
+			draw.SetText("ACK")
 			fmt.Println("b1 clicked")
 		})
+		userField, err := twoBuilder.GetObject("loginbuffer")
+		if err != nil {
+			panic(err)
+		}
+		passField, err := twoBuilder.GetObject("passwordbuffer")
+		if err != nil {
+			panic(err)
+		}
+
+		user := userField.(*gtk.TextBuffer)
+		pass := passField.(*gtk.TextBuffer)
+		limit := 25
+		user.Connect("insert-text", func (textBuf *gtk.TextBuffer) {
+			start, end := textBuf.GetBounds()
+			text, err := textBuf.GetText(start, end, true)
+			if len(strings.Split(text, "\n")) > 1 {
+				textBuf.SetText(strings.Split(text, "\n")[0])
+			}
+			if err != nil {
+				fmt.Printf("", err)
+			}
+			err = nil
+			if len(text) >= limit {
+				textBuf.SetText(text[len(text)-1:])
+			}
+		})
+		pass.Connect("insert-text", func (textBuf *gtk.TextBuffer) {
+			start, end := textBuf.GetBounds()
+			text, err := textBuf.GetText(start, end, true)
+			if len(strings.Split(text, "\n")) > 1 {
+				textBuf.SetText(strings.Split(text, "\n")[0])
+			}
+			if err != nil {
+				fmt.Printf("", err)
+			}
+			err = nil
+			if len(text) >= limit {
+				textBuf.SetText(text[len(text)-1:])
+			}
+
+		})
+
+
 	}
 //	twoBuilder.ConnectSignals(signals)
 
@@ -69,9 +114,11 @@ func main() {
             log.Fatal("Could not create application window.", err)
         }
 
-	wind := appWindow.(*gtk.Window)
+	wind := appWindow.(*gtk.ApplicationWindow)
 
 	wind.SetDefaultSize(400, 400)
+	wind.SetResizable(false)
+	wind.SetPosition(gtk.WIN_POS_CENTER)
 	windowWidget, err := wind.GetStyleContext()
 	if err != nil {
 		panic(err)
@@ -83,13 +130,24 @@ func main() {
 	}
 
 	css.LoadFromPath("design.css")
-	
+	user, err := twoBuilder.GetObject("user")
+	userView := user.(*gtk.TextView)
+	userView.SetWrapMode(gtk.WRAP_NONE)
+	if err != nil {
+		panic(err)
+	}
+	pass, err := twoBuilder.GetObject("pass")
+	passView := pass.(*gtk.TextView)
+	passView.SetWrapMode(gtk.WRAP_NONE)
+	if err != nil {
+		panic(err)
+	}
 	screen, err := windowWidget.GetScreen()
 	if err != nil {
 		panic(err)
 	}
 	gtk.AddProviderForScreen(screen, css, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-        // Set ApplicationWindow Properties
+	// Set ApplicationWindow Properties
         wind.Show()
 	application.AddWindow(wind)
     })
