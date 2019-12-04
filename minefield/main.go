@@ -10,6 +10,67 @@ import (
 //    "github.com/gotk3/gotk3/gdk"
 )
 
+func getUserPass(twoBuilder *gtk.Builder) (string, string) {
+	userBufUncast, err := twoBuilder.GetObject("loginbuffer")
+	if err != nil {
+		panic(err)
+	}
+	userBuf := userBufUncast.(*gtk.TextBuffer)
+	start, end := userBuf.GetBounds()
+	passBufUncast, err := twoBuilder.GetObject("passwordbuffer")
+	if err != nil {
+		panic(err)
+	}
+	passBuf := passBufUncast.(*gtk.TextBuffer)
+	startP, endP := passBuf.GetBounds()
+	user, err := userBuf.GetText(start, end, false)
+	if err != nil {
+		panic(err)
+	}
+	pass, err := passBuf.GetText(startP, endP, false)
+	if err != nil {
+		panic(err)
+	}
+
+	return user, pass
+
+}
+
+func launch(application *gtk.Application, twoBuilder *gtk.Builder) {
+        // Create ApplicationWindow
+        appWindow, err := twoBuilder.GetObject("smalltalkwindow")
+        if err != nil {
+            log.Fatal("Could not create application window.", err)
+        }
+
+	wind := appWindow.(*gtk.ApplicationWindow)
+
+	wind.SetDefaultSize(1920, 1000)
+	wind.SetResizable(false)
+	wind.SetPosition(gtk.WIN_POS_CENTER)
+	windowWidget, err := wind.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+
+	css, err := gtk.CssProviderNew()
+	if err != nil {
+		panic(err)
+	}
+
+	css.LoadFromPath("design.css")
+	screen, err := windowWidget.GetScreen()
+	if err != nil {
+		panic(err)
+	}
+	gtk.AddProviderForScreen(screen, css, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+	// Set ApplicationWindow Properties
+        wind.Show()
+	application.AddWindow(wind)
+
+
+}
+
 
 func main() {
     // Create Gtk Application, change appID to your application domain name reversed.
@@ -34,23 +95,16 @@ func main() {
 	if err == nil {
 	//	loginTitle, err := twoBuilder.GetObject("loginTitle")
 	//	passTitle, err := twoBuilder.GetObject("passTitle")
-		view, err := twoBuilder.GetObject("syn-ack")
+		/*view, err := twoBuilder.GetObject("syn-ack")
 		if err != nil {
 			panic(err)
-		}
+		}*/
 		yesButton, err := twoBuilder.GetObject("b1")
 		if err != nil {
 			panic(err)
 		}
 		yes := yesButton.(*gtk.Button)
 		yes.Connect("clicked", func (btn *gtk.Button) {
-			text := view.(*gtk.TextView)
-			draw, err := text.GetBuffer()
-			if err != nil {
-				panic(err)
-			}
-			draw.SetText("ACK")
-			fmt.Println("b1 clicked")
 			os.Exit(1)
 		})
 		noButton, err := twoBuilder.GetObject("b2")
@@ -59,13 +113,19 @@ func main() {
 		}
 		no := noButton.(*gtk.Button)
 		no.Connect("clicked", func (btn *gtk.Button) {
-			text := view.(*gtk.TextView)
-			draw, err := text.GetBuffer()
+			drawBoof, err := twoBuilder.GetObject("buf1")
 			if err != nil {
 				panic(err)
 			}
-			draw.SetText("ACK")
-			fmt.Println("b1 clicked")
+			draw := drawBoof.(*gtk.TextBuffer)
+			user, pass := getUserPass(twoBuilder)
+			userCaps := strings.ToUpper(user)
+			draw.SetText(userCaps+"-ACK")
+			fmt.Print(pass)
+			fmt.Println("b2 clicked")
+			if userCaps == "WEASEL" && pass == "lol" {
+				launch(application, twoBuilder)
+			}
 		})
 		userField, err := twoBuilder.GetObject("loginbuffer")
 		if err != nil {
@@ -78,34 +138,64 @@ func main() {
 
 		user := userField.(*gtk.TextBuffer)
 		pass := passField.(*gtk.TextBuffer)
-		limit := 25
 		user.Connect("insert-text", func (textBuf *gtk.TextBuffer) {
 			start, end := textBuf.GetBounds()
 			text, err := textBuf.GetText(start, end, true)
+			if err != nil {
+				fmt.Printf("", err)
+			}/*
+			if strings.Contains(text, "\n") {
+				//start.BackwardChars(1)
+				//textBuf.Delete(start, end)
+				btnHold, err := twoBuilder.GetObject("b2")
+				if err != nil {
+					panic(err)
+				}
+				btn := btnHold.(*gtk.Button)
+				btn.Clicked()
+			}*/
 			if len(strings.Split(text, "\n")) > 1 {
 				textBuf.SetText(strings.Split(text, "\n")[0])
 			}
-			if err != nil {
-				fmt.Printf("", err)
-			}
 			err = nil
-			if len(text) >= limit {
-				textBuf.SetText(text[len(text)-1:])
-			}
 		})
 		pass.Connect("insert-text", func (textBuf *gtk.TextBuffer) {
+
 			start, end := textBuf.GetBounds()
-			text, err := textBuf.GetText(start, end, true)
-			if len(strings.Split(text, "\n")) > 1 {
-				textBuf.SetText(strings.Split(text, "\n")[0])
+/*			tagTable, err := textBuf.GetTagTable()
+			if err != nil {
+				panic(err)
 			}
+			greenTag, err := tagTable.Lookup("greenTag2")
+			if err != nil {
+				panic(err)
+			}
+			textBuf.ApplyTag(greenTag, start, end)
+*/
+
+			text, err := textBuf.GetText(start, end, true)
 			if err != nil {
 				fmt.Printf("", err)
 			}
-			err = nil
-			if len(text) >= limit {
-				textBuf.SetText(text[len(text)-1:])
+/*			if strings.Contains(text, "\n") {
+//				end.BackwardChars(1)
+				start, end = textBuf.GetBounds()
+				//newEnd := textBuf.GetEndIter()
+//				textBuf.Modified(true)
+				textBuf.Delete(start, end)
+				start, _ = textBuf.GetBounds()
+				textBuf.Insert(start, "NOOT")
+//				btnHold, err := twoBuilder.GetObject("b2")
+//				if err != nil {
+//					panic(err)
+//				}
+//				btn := btnHold.(*gtk.Button)
+//				btn.Clicked()
+			}*/
+			if len(strings.Split(text, "\n")) > 1 {
+				textBuf.SetText(strings.Split(text, "\n")[0])
 			}
+			err = nil
 
 		})
 

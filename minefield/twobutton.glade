@@ -23,7 +23,24 @@
   </object>
   <object class="GtkTextBuffer" id="loginbuffer">
     <property name="tag_table">TTT1</property>
-    <signal name="insert-text" handler="limitlogin" swapped="no"/>
+  </object>
+  <object class="GtkTextTagTable" id="TTT2">
+    <child type="tag">
+      <object class="GtkTextTag" id="greenTag2">
+        <property name="name">loginTitleTag</property>
+        <property name="background">green</property>
+        <property name="foreground">black</property>
+        <property name="background_rgba">rgb(18,255,39)</property>
+        <property name="foreground_rgba">rgb(0,0,0)</property>
+        <property name="font">Courier New Small-Caps 0.01953125</property>
+        <property name="family">Courier New</property>
+        <property name="variant">small-caps</property>
+        <property name="size">20</property>
+        <property name="size_points">0.01953125</property>
+        <property name="editable">False</property>
+        <property name="paragraph_background_rgba">rgb(85,87,83)</property>
+      </object>
+    </child>
   </object>
   <object class="GtkWindow">
     <property name="can_focus">False</property>
@@ -42,16 +59,11 @@
       </object>
     </child>
   </object>
-  <object class="GtkSizeGroup">
-    <property name="mode">both</property>
-    <widgets>
-      <widget name="box2"/>
-    </widgets>
-  </object>
   <object class="GtkAdjustment" id="adjustment1"/>
   <object class="GtkTextBuffer" id="buf1">
     <property name="text" translatable="yes">SYNCRO</property>
   </object>
+  <object class="GtkTextBuffer" id="passwordbuffer"/>
   <object class="GtkApplicationWindow" id="mainwindow">
     <property name="can_focus">False</property>
     <property name="hexpand">False</property>
@@ -59,6 +71,9 @@
     <property name="resizable">False</property>
     <property name="decorated">False</property>
     <property name="show_menubar">False</property>
+    <child>
+      <placeholder/>
+    </child>
     <child>
       <object class="GtkAspectFrame">
         <property name="width_request">50</property>
@@ -236,9 +251,376 @@
         </child>
       </object>
     </child>
+    <style>
+      <class name="syncro"/>
+    </style>
   </object>
-  <object class="GtkTextBuffer" id="passwordbuffer">
-    <signal name="insert-text" handler="limitpass" swapped="no"/>
+  <object class="GtkSizeGroup">
+    <property name="mode">both</property>
+    <widgets>
+      <widget name="box2"/>
+    </widgets>
+  </object>
+  <object class="GtkApplicationWindow" id="smalltalkwindow">
+    <property name="can_focus">False</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkGrid" id="smalltalk">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="column_spacing">1</property>
+        <property name="row_homogeneous">True</property>
+        <property name="column_homogeneous">True</property>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.75</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">3</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">3</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="top_attach">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">3</property>
+            <property name="top_attach">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="top_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">3</property>
+            <property name="top_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="top_attach">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">cel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="opacity">0.74901960784313726</property>
+            <style>
+              <class name="cel"/>
+              <class name="cel:hover"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">3</property>
+            <property name="top_attach">4</property>
+          </packing>
+        </child>
+        <style>
+          <class name="smalltalk"/>
+        </style>
+      </object>
+    </child>
+    <style>
+      <class name="smalltalk"/>
+    </style>
   </object>
   <object class="GtkTextBuffer" id="textbuffer1">
     <property name="text" translatable="yes">PASSWORD</property>
