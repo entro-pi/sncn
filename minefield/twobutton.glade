@@ -17,8 +17,13 @@
         <property name="size">20</property>
         <property name="size_points">0.02</property>
         <property name="editable">False</property>
+        <property name="paragraph_background_rgba">rgb(85,87,83)</property>
       </object>
     </child>
+  </object>
+  <object class="GtkTextBuffer" id="loginbuffer">
+    <property name="tag_table">TTT1</property>
+    <signal name="insert-text" handler="limitlogin" swapped="no"/>
   </object>
   <object class="GtkWindow">
     <property name="can_focus">False</property>
@@ -44,9 +49,8 @@
     </widgets>
   </object>
   <object class="GtkAdjustment" id="adjustment1"/>
-  <object class="GtkTextBuffer" id="buf1"/>
-  <object class="GtkTextBuffer" id="loginbuffer">
-    <signal name="insert-text" handler="limitlogin" swapped="no"/>
+  <object class="GtkTextBuffer" id="buf1">
+    <property name="text" translatable="yes">SYNCRO</property>
   </object>
   <object class="GtkApplicationWindow" id="mainwindow">
     <property name="can_focus">False</property>
@@ -76,13 +80,16 @@
               <object class="GtkTextView" id="syn-ack">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="opacity">0.5</property>
                 <property name="editable">False</property>
                 <property name="justification">center</property>
                 <property name="cursor_visible">False</property>
+                <property name="buffer">buf1</property>
                 <property name="accepts_tab">False</property>
+                <property name="input_purpose">name</property>
                 <property name="monospace">True</property>
                 <style>
-                  <class name="window"/>
+                  <class name="opacGlow"/>
                 </style>
               </object>
               <packing>
@@ -143,11 +150,13 @@
                 <property name="justification">center</property>
                 <property name="buffer">loginbuffer</property>
                 <property name="accepts_tab">False</property>
-                <property name="input_purpose">password</property>
+                <property name="input_purpose">name</property>
                 <property name="input_hints">GTK_INPUT_HINT_UPPERCASE_CHARS | GTK_INPUT_HINT_NONE</property>
                 <property name="monospace">True</property>
                 <style>
                   <class name="black"/>
+                  <class name="opacGlow"/>
+                  <class name="opacGlow:focus"/>
                 </style>
               </object>
               <packing>
@@ -194,6 +203,7 @@
                 <property name="monospace">True</property>
                 <style>
                   <class name="black"/>
+                  <class name="opacGlow"/>
                 </style>
               </object>
               <packing>

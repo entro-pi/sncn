@@ -33,21 +33,6 @@ func main() {
 		}
 	if err == nil {
 	//	loginTitle, err := twoBuilder.GetObject("loginTitle")
-		loginTag, err := twoBuilder.GetObject("greenTag1")
-		if err != nil {
-			panic(err)
-		}
-		lTag := loginTag.(*gtk.TextTag)
-		loginBuffer, err := twoBuilder.GetObject("textbuffer1")
-		if err != nil {
-			panic(err)
-		}
-		loginBufferToTag := loginBuffer.(*gtk.TextBuffer)
-		var startl *gtk.TextIter
-		var endl *gtk.TextIter
-		startl, endl = loginBufferToTag.GetBounds()
-		loginBufferToTag.ApplyTag(lTag, startl, endl)
-
 	//	passTitle, err := twoBuilder.GetObject("passTitle")
 		view, err := twoBuilder.GetObject("syn-ack")
 		if err != nil {
