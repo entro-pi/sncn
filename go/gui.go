@@ -109,6 +109,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	tells := tellsUn.(*gtk.Button)
 	tells.Connect("clicked", func () {
 		fill(twoBuilder, true)
+		wind.SetDefaultSize(1920, 1080)
 //		paintOver(twoBuilder)
 /*		butt := assembleBroadButton("0")
 		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
@@ -145,6 +146,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	broad := broadUn.(*gtk.Button)
 	broad.Connect("clicked", func () {
 		fill(twoBuilder, false)
+		wind.SetDefaultSize(1920, 1080)
 		/*
 		butt := assembleBroadButton("0")
 		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
@@ -220,23 +222,27 @@ func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
 	
 	small := smallUn.(*gtk.Grid)
 	numInRow := 4
-	for i := 0;i < numInRow;i++ {
+	for i := 0;i < 12;i++ {
 		small.RemoveRow(0)
 	}
 	row := 0
 	numCount := 0
 	for i := 0;i < len(buttonContainer);i++ {
 		if numCount < numInRow {
+//			small.Add(buttonContainer[i])
 			small.Attach(buttonContainer[i], numCount, row, 1, 1)
+			numCount++
+			small.ShowAll()
+			fmt.Println("Num in row", numCount)
 		}else {
-			small.InsertRow(1)
+//			small.InsertRow(row)
 			row++
 			numCount = 0
-			small.Attach(buttonContainer[i], numCount, row, 1, 1)
+			fmt.Println("row", row)
+			//small.Attach(buttonContainer[i], numCount, row, 1, 1)
+			small.ShowAll()
 		}
-		numCount++
 	}
-
 	small.ShowAll()
 
 }
