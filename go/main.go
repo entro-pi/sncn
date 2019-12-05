@@ -623,15 +623,80 @@ func drawBroadcasts(format string, play Player, broadcastContainer []string) []s
 			}
 		}
 		for i := 0;i < len(broadcastContainer);i++ {
-			fmt.Print(broadcastContainer[i])
+			//fmt.Print(broadcastContainer[i])
 		}
-		fmt.Print("\033[26;53H\n")
+		//fmt.Print("\033[26;53H\n")
+
+		//log.Print(string(contents))
+	return broadcastContainer
+}
+func drawPlainBroadcasts(play Player) []string {
+	var broadcastContainer []string
+	file, err := os.Open("../pot/broadcast")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	contents, err := ioutil.ReadAll(file)
+	if err != nil {
+		panic(err)
+	}
+	var lines []string
+	lines = nil
+	lines = strings.Split(string(contents), "\n")
+	lineIn := strings.Split(string(contents), "\n")
+	if len(lines) >= 20 {
+		lines = nil
+		for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
+			lineIn[i] = strings.ReplaceAll(lineIn[i], "broadcast:", "")
+			lines = append(lines, lineIn[i])
+		}
+	}
+	//			var broadcastContainer []Broadcast
+	col := 0
+	row := 0
+	colVal := 0
+	rowVal := 0
+	colValHolder := 0
+	colNumber := 0
+	rowNumber := 0
+	for i := 0;i < len(lines);i++ {
+			var newBroad Broadcast
+			newBroad.Payload.Message = lines[i]
+			newBroad.Payload.Name = play.Name
+			newBroad.Payload.Game = "snowcrash.network"
+			if len(newBroad.Payload.Message) > 89 {
+				newBroad.Payload.Message = lines[i][:89]
+			}
+			if strings.Contains(lines[i], "!:::tick:::!") {
+				continue
+			}
+
+			broadcastContainer = append(broadcastContainer, newBroad.Payload.Message)
+			if row >= rowNumber {
+				row = 0
+				rowVal = 0
+			}
+			if col < colNumber {
+				col++
+				colVal += 30
+			}else {
+				row++
+				rowVal += 4
+				col = 0
+				colVal = colValHolder
+			}
+		}
+		for i := 0;i < len(broadcastContainer);i++ {
+			//fmt.Print(broadcastContainer[i])
+		}
+		//fmt.Print("\033[26;53H\n")
 
 		//log.Print(string(contents))
 	return broadcastContainer
 }
 
-func drawTells(format string, play Player, colVal int, rowVal int) {
+func drawTells(format string, play Player, colVal int, rowVal int) []string {
 	var broadcastContainer []string
 	file, err := os.Open("../pot/tells")
 	if err != nil {
@@ -687,10 +752,10 @@ func drawTells(format string, play Player, colVal int, rowVal int) {
 			}
 		}
 		for i := 0;i < len(broadcastContainer);i++ {
-			fmt.Print(broadcastContainer[i])
+		//	fmt.Print(broadcastContainer[i])
 		}
-		fmt.Print("\033[26;53H\n")
-
+//		fmt.Print("\033[26;53H\n")
+	return broadcastContainer
 }
 
 func doWatch(input string, play Player, fileChange chan bool) string {

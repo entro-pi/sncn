@@ -49,7 +49,27 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 
 }
 
-func launch(application *gtk.Application, twoBuilder *gtk.Builder) {
+func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) {
+	rows := 7
+	cols := 4
+	count := 0
+	broadcasts := drawPlainBroadcasts(play)
+	for r := 0;r < (rows);r++ {
+		for c := 0;c < (cols);c++ {
+			messageName := fmt.Sprint("message"+strconv.Itoa(count))
+			messageUncast, err := twoBuilder.GetObject(messageName)
+			if err != nil {
+				panic(err)
+			}
+			message := messageUncast.(*gtk.Label)
+			if count >= len(broadcasts) {
+				message.SetText(broadcasts[len(broadcasts)-1])
+			}else {
+				message.SetText(broadcasts[count])
+			}
+			count++
+		}
+	}
         // Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("maininterface")
         if err != nil {
@@ -174,7 +194,7 @@ func LaunchGUI() {
 			fmt.Print(pass)
 			fmt.Println("b2 clicked")
 			if userCaps == "WEASEL" && pass == "lol" {
-				launch(application, twoBuilder)
+				launch(InitPlayer(user, pass), application, twoBuilder)
 			}
 		})
 
@@ -209,21 +229,6 @@ func LaunchGUI() {
 		panic(err)
 	}
 
-	rows := 7
-	cols := 4
-	count := 0
-	for r := 0;r < (rows);r++ {
-		for c := 0;c < (cols);c++ {
-			messageName := fmt.Sprint("message"+strconv.Itoa(count))
-			messageUncast, err := twoBuilder.GetObject(messageName)
-			if err != nil {
-				panic(err)
-			}
-			message := messageUncast.(*gtk.Label)
-			message.SetText("dorp dorp dorp dorp!")
-			count++
-		}
-	}
 	gtk.AddProviderForScreen(screen, css, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 	// Set ApplicationWindow Properties
         wind.Show()

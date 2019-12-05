@@ -1,3 +1,17 @@
+@keyframes celGlow {
+	from {
+		
+		opacity: 1.0;
+		background-color: rgb(10, 250, 10);
+	}
+
+	to {
+		opacity:0.50;
+		background-color: rgb(10, 200, 10);
+	}
+
+}
+
 
 .syncro {
 	background-color: rgb(0, 0, 50);
@@ -100,10 +114,27 @@ frame {
 }
 
 .header {
+	animation-duration: 2s;
+	animation-name: celGlow;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+	background-color: rgb(10, 250, 10);
+}
+
+.footer:hover {
+	animation-play-state: paused;
+	background-color: rgb(10, 250, 10);
+}
+.header:hover {
+	animation-play-state: paused;
 	background-color: rgb(10, 250, 10);
 }
 
 .footer {
+	animation-duration: 2s;
+	animation-name: celGlow;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
 	background-color: rgb(10, 250, 10);
 }
 .contents {
