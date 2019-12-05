@@ -60,6 +60,10 @@ func main() {
 
 	fileChange := make(chan bool)
 	if len(os.Args) == 2 {
+	if os.Args[1] == "--gui" {
+		fmt.Println("doot")
+		LaunchGUI()
+	}
 	if os.Args[1] == "--1920x1080main" {
 			scanner := bufio.NewScanner(os.Stdin)
 		//	fmt.Print("Enter your command")
