@@ -11,27 +11,36 @@ import (
 )
 
 func getUserPass(twoBuilder *gtk.Builder) (string, string) {
-	userBufUncast, err := twoBuilder.GetObject("loginbuffer")
+	userUncast, err := twoBuilder.GetObject("login")
 	if err != nil {
 		panic(err)
 	}
-	userBuf := userBufUncast.(*gtk.TextBuffer)
-	start, end := userBuf.GetBounds()
-	passBufUncast, err := twoBuilder.GetObject("passwordbuffer")
+	userEntry := userUncast.(*gtk.Entry)
+	userBuf, err := userEntry.GetBuffer()
 	if err != nil {
 		panic(err)
 	}
-	passBuf := passBufUncast.(*gtk.TextBuffer)
-	startP, endP := passBuf.GetBounds()
-	user, err := userBuf.GetText(start, end, false)
+//	userBuf := userBufUncast.(*gtk.EntryBuffer)
+	passUncast, err := twoBuilder.GetObject("pass")
 	if err != nil {
 		panic(err)
 	}
-	pass, err := passBuf.GetText(startP, endP, false)
+	passEntry := passUncast.(*gtk.Entry)
+	passBuf, err := passEntry.GetBuffer()
 	if err != nil {
 		panic(err)
 	}
 
+//	passBuf := passBufUncast.(*gtk.EntryBuffer)
+	user, err := userBuf.GetText()
+	if err != nil {
+		panic(err)
+	}
+	pass, err := passBuf.GetText()
+	if err != nil {
+		panic(err)
+	}
+	user = strings.ToUpper(user)
 	return user, pass
 
 }
@@ -95,10 +104,15 @@ func main() {
 	if err == nil {
 	//	loginTitle, err := twoBuilder.GetObject("loginTitle")
 	//	passTitle, err := twoBuilder.GetObject("passTitle")
-		/*view, err := twoBuilder.GetObject("syn-ack")
+		view, err := twoBuilder.GetObject("syn-ack")
 		if err != nil {
 			panic(err)
-		}*/
+		}
+		drawField := view.(*gtk.TextView)
+		draw, err := drawField.GetBuffer()
+		if err != nil {
+			panic(err)
+		}
 		yesButton, err := twoBuilder.GetObject("b1")
 		if err != nil {
 			panic(err)
@@ -113,11 +127,6 @@ func main() {
 		}
 		no := noButton.(*gtk.Button)
 		no.Connect("clicked", func (btn *gtk.Button) {
-			drawBoof, err := twoBuilder.GetObject("buf1")
-			if err != nil {
-				panic(err)
-			}
-			draw := drawBoof.(*gtk.TextBuffer)
 			user, pass := getUserPass(twoBuilder)
 			userCaps := strings.ToUpper(user)
 			draw.SetText(userCaps+"-ACK")
@@ -127,81 +136,10 @@ func main() {
 				launch(application, twoBuilder)
 			}
 		})
-		userField, err := twoBuilder.GetObject("loginbuffer")
-		if err != nil {
-			panic(err)
-		}
-		passField, err := twoBuilder.GetObject("passwordbuffer")
-		if err != nil {
-			panic(err)
-		}
 
-		user := userField.(*gtk.TextBuffer)
-		pass := passField.(*gtk.TextBuffer)
-		user.Connect("insert-text", func (textBuf *gtk.TextBuffer) {
-			start, end := textBuf.GetBounds()
-			text, err := textBuf.GetText(start, end, true)
-			if err != nil {
-				fmt.Printf("", err)
-			}/*
-			if strings.Contains(text, "\n") {
-				//start.BackwardChars(1)
-				//textBuf.Delete(start, end)
-				btnHold, err := twoBuilder.GetObject("b2")
-				if err != nil {
-					panic(err)
-				}
-				btn := btnHold.(*gtk.Button)
-				btn.Clicked()
-			}*/
-			if len(strings.Split(text, "\n")) > 1 {
-				textBuf.SetText(strings.Split(text, "\n")[0])
-			}
-			err = nil
-		})
-		pass.Connect("insert-text", func (textBuf *gtk.TextBuffer) {
-
-			start, end := textBuf.GetBounds()
-/*			tagTable, err := textBuf.GetTagTable()
-			if err != nil {
-				panic(err)
-			}
-			greenTag, err := tagTable.Lookup("greenTag2")
-			if err != nil {
-				panic(err)
-			}
-			textBuf.ApplyTag(greenTag, start, end)
-*/
-
-			text, err := textBuf.GetText(start, end, true)
-			if err != nil {
-				fmt.Printf("", err)
-			}
-/*			if strings.Contains(text, "\n") {
-//				end.BackwardChars(1)
-				start, end = textBuf.GetBounds()
-				//newEnd := textBuf.GetEndIter()
-//				textBuf.Modified(true)
-				textBuf.Delete(start, end)
-				start, _ = textBuf.GetBounds()
-				textBuf.Insert(start, "NOOT")
-//				btnHold, err := twoBuilder.GetObject("b2")
-//				if err != nil {
-//					panic(err)
-//				}
-//				btn := btnHold.(*gtk.Button)
-//				btn.Clicked()
-			}*/
-			if len(strings.Split(text, "\n")) > 1 {
-				textBuf.SetText(strings.Split(text, "\n")[0])
-			}
-			err = nil
-
-		})
 
 
 	}
-//	twoBuilder.ConnectSignals(signals)
 
         // Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("mainwindow")
@@ -225,18 +163,6 @@ func main() {
 	}
 
 	css.LoadFromPath("design.css")
-	user, err := twoBuilder.GetObject("user")
-	userView := user.(*gtk.TextView)
-	userView.SetWrapMode(gtk.WRAP_NONE)
-	if err != nil {
-		panic(err)
-	}
-	pass, err := twoBuilder.GetObject("pass")
-	passView := pass.(*gtk.TextView)
-	passView.SetWrapMode(gtk.WRAP_NONE)
-	if err != nil {
-		panic(err)
-	}
 	screen, err := windowWidget.GetScreen()
 	if err != nil {
 		panic(err)

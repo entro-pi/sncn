@@ -11,6 +11,12 @@ textview {
 	background-color: rgb(10, 255, 10);
 
 }
+.notebookstyle {
+	font: 22px courier new;
+	background: rgb(10, 255, 10);
+	background-color: rgb(10, 255, 10);
+
+}
 .button {
 	font: 22px courier new;
 	color: rgb(0, 0, 0);
@@ -26,14 +32,6 @@ textview {
 	background-color: rgb(50, 225, 50);
 }
 
-.smalltalk {
-	border-style: dotted;
-	border-top: 15px;
-	border-bottom: 30px;
-	border-color: rgb(85, 10, 85);
-	font-size: 26px;
-	background-color: transparent;
-}
 frame {
 	border-style: dotted;
 	border-top: 15px;
@@ -43,13 +41,14 @@ frame {
 	background-color: transparent;
 }
 .cel {
-	
+	font: 26px courier;
+	color: rgb(10, 75, 10);
 	border: 5px black;
 	border-radius: 0em;
 	background: rgb(10, 10, 50);
 }
 .cel:hover {
-	font-size: 26px;
+	font: 26px courier;
 	border: 5px rgb(150, 10, 150);
 	background: rgb(85, 10, 85);
 }
