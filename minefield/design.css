@@ -13,6 +13,8 @@ textview {
 }
 .notebookstyle {
 	font: 22px courier new;
+	color: rgb(0, 0, 0);
+	opacity: 1.0;
 	background: rgb(10, 255, 10);
 	background-color: rgb(10, 255, 10);
 
@@ -50,8 +52,65 @@ frame {
 .cel:hover {
 	font: 26px courier;
 	border: 5px rgb(150, 10, 150);
-	background: rgb(85, 10, 85);
+	background-color: #eb2899;
 }
+.notebookstyle {
+	color: #eb2899;
+	background-color: #eb2899;
+}
+.notebookstyle:hover {
+	color: rgb(10, 175, 10);
+	background-color: rgb(10, 175, 10);
+}
+.broadcastsstyle {
+	color: #eb2899;
+	background-color: #eb2899;
+}
+.broadcastsstyle:hover {
+	color: rgb(10, 175, 10);
+	background-color: rgb(10, 175, 10);
+}
+.inventorystyle {
+	color: #eb2899;
+	background-color: #eb2899;
+}
+.inventorystyle:hover {
+	color: rgb(10, 175, 10);
+	background-color: rgb(10, 175, 10);
+}
+.equipmentstyle {
+	color: #eb2899;
+	background-color: #eb2899;
+}
+.equipmentstyle:hover {
+	color: rgb(10, 175, 10);
+	background-color: rgb(10, 175, 10);
+}
+.tellsstyle {
+	color: #eb2899;
+	background-color: #eb2899;
+}
+.tellsstyle:hover {
+	color: rgb(10, 175, 10);
+	background-color: rgb(10, 175, 10);
+}
+.sidebar {
+	color: #eb2899;
+	background-color: rgb(85, 10, 85);
+}
+
+.header {
+	background-color: rgb(10, 250, 10);
+}
+
+.footer {
+	background-color: rgb(10, 250, 10);
+}
+.contents {
+	font: 16px courier;
+	color: rgb(10, 250, 10);
+}
+
 
 #user {
 	background-color: rgb(50, 175, 50);

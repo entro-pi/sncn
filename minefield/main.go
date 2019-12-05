@@ -1,6 +1,7 @@
 package main
 
 import (
+    "strconv"
     "strings"
     "log"
     "os"
@@ -9,6 +10,7 @@ import (
     "github.com/gotk3/gotk3/gtk"
 //    "github.com/gotk3/gotk3/gdk"
 )
+
 
 func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 	userUncast, err := twoBuilder.GetObject("login")
@@ -47,14 +49,34 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 
 func launch(application *gtk.Application, twoBuilder *gtk.Builder) {
         // Create ApplicationWindow
-        appWindow, err := twoBuilder.GetObject("smalltalkwindow")
+        appWindow, err := twoBuilder.GetObject("maininterface")
         if err != nil {
             log.Fatal("Could not create application window.", err)
         }
+	exitUn, err := twoBuilder.GetObject("exitMain")
+	if err != nil {
+		panic(err)
+	}
+	exit := exitUn.(*gtk.Button)
+	exit.Connect("clicked", func () {
+		os.Exit(1)
+	})
+	invUn, err := twoBuilder.GetObject("invMain")
+	if err != nil {
+		panic(err)
+	}
+	inv := invUn.(*gtk.Button)
+	inv.Connect("clicked", func () {
+		boxUn, err := twoBuilder.GetObject("smalltalkgrid")
+		if err != nil {
+			panic(err)
+		}
+		box := boxUn.(*gtk.Grid)
+		box.SetVisible(false)
+	})
 
 	wind := appWindow.(*gtk.ApplicationWindow)
-
-	wind.SetDefaultSize(1920, 1000)
+	wind.SetDefaultSize(1920, 1080)
 	wind.SetResizable(false)
 	wind.SetPosition(gtk.WIN_POS_CENTER)
 	windowWidget, err := wind.GetStyleContext()
@@ -166,6 +188,20 @@ func main() {
 	screen, err := windowWidget.GetScreen()
 	if err != nil {
 		panic(err)
+	}
+
+	rows := 4
+	cols := 7
+	for r := 0;r < (rows)-1;r++ {
+		for c := 0;c < (cols);c++ {
+			messageName := fmt.Sprint("message"+strconv.Itoa((r*c)+r))
+			messageUncast, err := twoBuilder.GetObject(messageName)
+			if err != nil {
+				panic(err)
+			}
+			message := messageUncast.(*gtk.Label)
+			message.SetText("dorp dorp dorp dorp!")
+		}
 	}
 	gtk.AddProviderForScreen(screen, css, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 	// Set ApplicationWindow Properties
