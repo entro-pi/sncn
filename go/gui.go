@@ -1,6 +1,8 @@
 package main
 
 import (
+    "time"
+    "strconv"
     "strings"
     "log"
     "os"
@@ -49,9 +51,6 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 }
 
 func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) {
-        numBroad := 0
-	rowCount := 0
-	colCount := 0
 	// Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("maininterface")
         if err != nil {
@@ -109,24 +108,25 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	tells := tellsUn.(*gtk.Button)
 	tells.Connect("clicked", func () {
+		fill(twoBuilder, true)
 //		paintOver(twoBuilder)
-		butt := assembleBroadButton("0")
+/*		butt := assembleBroadButton("0")
 		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
 		if err != nil {
 			panic(err)
 		}
 		small := smallUn.(*gtk.Grid)
-		small.Attach(butt, rowCount, colCount, 1, 1)
-		small.InsertColumn(colCount)
+		numBroad++
+		colCount++
+		small.Add(butt)
+		//small.InsertColumn(colCount)
 		wind.ShowAll()
-		if numBroad % 4 == 0 {
-			colCount = 0
+		if colCount == 4 {
+			colCount = 1
 			small.InsertRow(rowCount)
 			rowCount++
 		}
-		numBroad++
-		colCount++
-		/*
+		
 		box1Un, err := twoBuilder.GetObject("smalltalkgrid")
 		if err != nil {
 			panic(err)
@@ -144,22 +144,24 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	broad := broadUn.(*gtk.Button)
 	broad.Connect("clicked", func () {
+		fill(twoBuilder, false)
+		/*
 		butt := assembleBroadButton("0")
 		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
 		if err != nil {
 			panic(err)
 		}
 		small := smallUn.(*gtk.Grid)
-		small.Attach(butt, rowCount, colCount, 1, 1)
-		small.InsertColumn(colCount)
-		wind.ShowAll()
-		if numBroad % 4 == 0 {
-			colCount = 0
-			small.InsertRow(rowCount)
-			rowCount++
-		}
 		numBroad++
 		colCount++
+		small.Add(butt)
+		//small.InsertColumn(colCount)
+		wind.ShowAll()
+		if colCount == 4 {
+			colCount = 1
+			small.InsertRow(rowCount)
+			rowCount++
+		}*/
 
 		/*
 		box1Un, err := twoBuilder.GetObject("smalltalkgrid")
@@ -196,6 +198,48 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 
 }
 
+func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
+	var broadcastContainer []string
+	var buttonContainer []*gtk.Button
+	if tellorbroad {
+		play := InitPlayer("WEASEL", "lol")
+		broadcastContainer = drawPlainTells(play)
+	}else {
+		play := InitPlayer("WEASEL", "lol")
+		broadcastContainer = drawPlainBroadcasts(play)
+	}
+	for i := 0;i < len(broadcastContainer);i++ {
+		broad := assembleBroadButtonWithMessage(strconv.Itoa(i), broadcastContainer[i])
+		buttonContainer = append(buttonContainer, broad)
+	}
+
+	smallUn, err := twoBuilder.GetObject("smalltalkgrid")
+	if err != nil {
+		panic(err)
+	}
+	
+	small := smallUn.(*gtk.Grid)
+	numInRow := 4
+	for i := 0;i < numInRow;i++ {
+		small.RemoveRow(0)
+	}
+	row := 0
+	numCount := 0
+	for i := 0;i < len(buttonContainer);i++ {
+		if numCount < numInRow {
+			small.Attach(buttonContainer[i], numCount, row, 1, 1)
+		}else {
+			small.InsertRow(1)
+			row++
+			numCount = 0
+			small.Attach(buttonContainer[i], numCount, row, 1, 1)
+		}
+		numCount++
+	}
+
+	small.ShowAll()
+
+}
 func assembleBroadButton(name string) *gtk.Button {
 	newBroadcast, err := gtk.ButtonNew()
 	if err != nil {
@@ -216,6 +260,69 @@ func assembleBroadButton(name string) *gtk.Button {
 	if err != nil {
 		panic(err)
 	}
+
+	fromFieldLabel, err := gtk.LabelNew(name+"field")
+	if err != nil {
+		panic(err)
+	}
+	newBox.PackEnd(fromFieldLabel, false, false, 1)
+
+	buttStyle, err := newBroadcast.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	buttStyle.AddClass("cel")
+	buttStyle.AddClass("cell:hover")
+
+	TDStyle, err := timeDateLabel.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	TDStyle.AddClass("header")
+
+	messStyle, err := messageLabel.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	messStyle.AddClass("contents")
+
+	fromFieldStyle, err := fromFieldLabel.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	fromFieldStyle.AddClass("footer")
+
+	newBox.Add(timeDateLabel)
+	newBox.Add(messageLabel)
+	newBox.Add(fromFieldLabel)
+
+	newBroadcast.Add(newBox)
+
+	return newBroadcast
+
+}
+func assembleBroadButtonWithMessage(name string, message string) *gtk.Button {
+	newBroadcast, err := gtk.ButtonNew()
+	if err != nil {
+		panic(err)
+	}
+
+	newBox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
+	if err != nil {
+		panic(err)
+	}
+
+	timeDateLabel, err := gtk.LabelNew(name+"timedate")
+	if err != nil {
+		panic(err)
+	}
+	timeDateLabel.SetText(time.Now().Weekday().String())
+
+	messageLabel, err := gtk.LabelNew(name+"message")
+	if err != nil {
+		panic(err)
+	}
+	messageLabel.SetText(message)
 
 	fromFieldLabel, err := gtk.LabelNew(name+"field")
 	if err != nil {
