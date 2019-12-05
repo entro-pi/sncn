@@ -74,6 +74,23 @@ func launch(application *gtk.Application, twoBuilder *gtk.Builder) {
 		box := boxUn.(*gtk.Grid)
 		box.SetVisible(false)
 	})
+	broadUn, err := twoBuilder.GetObject("broadMain")
+	if err != nil {
+		panic(err)
+	}
+	broad := broadUn.(*gtk.Button)
+	broad.Connect("clicked", func () {
+		boxUn, err := twoBuilder.GetObject("smalltalkgrid")
+		if err != nil {
+			panic(err)
+		}
+		box := boxUn.(*gtk.Grid)
+		if box.GetVisible() {
+			box.SetVisible(false)
+		}else {
+			box.SetVisible(true)
+		}
+	})
 
 	wind := appWindow.(*gtk.ApplicationWindow)
 	wind.SetDefaultSize(1920, 1080)
@@ -190,17 +207,19 @@ func main() {
 		panic(err)
 	}
 
-	rows := 4
-	cols := 7
-	for r := 0;r < (rows)-1;r++ {
+	rows := 7
+	cols := 4
+	count := 0
+	for r := 0;r < (rows);r++ {
 		for c := 0;c < (cols);c++ {
-			messageName := fmt.Sprint("message"+strconv.Itoa((r*c)+r))
+			messageName := fmt.Sprint("message"+strconv.Itoa(count))
 			messageUncast, err := twoBuilder.GetObject(messageName)
 			if err != nil {
 				panic(err)
 			}
 			message := messageUncast.(*gtk.Label)
 			message.SetText("dorp dorp dorp dorp!")
+			count++
 		}
 	}
 	gtk.AddProviderForScreen(screen, css, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
