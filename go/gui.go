@@ -49,7 +49,10 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 }
 
 func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) {
-        // Create ApplicationWindow
+        numBroad := 0
+	rowCount := 0
+	colCount := 0
+	// Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("maininterface")
         if err != nil {
             log.Fatal("Could not create application window.", err)
@@ -113,8 +116,16 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			panic(err)
 		}
 		small := smallUn.(*gtk.Grid)
-		small.Add(butt)
+		small.Attach(butt, rowCount, colCount, 1, 1)
+		small.InsertColumn(colCount)
 		wind.ShowAll()
+		if numBroad % 4 == 0 {
+			colCount = 0
+			small.InsertRow(rowCount)
+			rowCount++
+		}
+		numBroad++
+		colCount++
 		/*
 		box1Un, err := twoBuilder.GetObject("smalltalkgrid")
 		if err != nil {
@@ -139,8 +150,17 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			panic(err)
 		}
 		small := smallUn.(*gtk.Grid)
-		small.Add(butt)
+		small.Attach(butt, rowCount, colCount, 1, 1)
+		small.InsertColumn(colCount)
 		wind.ShowAll()
+		if numBroad % 4 == 0 {
+			colCount = 0
+			small.InsertRow(rowCount)
+			rowCount++
+		}
+		numBroad++
+		colCount++
+
 		/*
 		box1Un, err := twoBuilder.GetObject("smalltalkgrid")
 		if err != nil {
@@ -201,7 +221,7 @@ func assembleBroadButton(name string) *gtk.Button {
 	if err != nil {
 		panic(err)
 	}
-	newBox.PackEnd(fromFieldLabel, true, true, 1)
+	newBox.PackEnd(fromFieldLabel, false, false, 1)
 
 	buttStyle, err := newBroadcast.GetStyleContext()
 	if err != nil {
