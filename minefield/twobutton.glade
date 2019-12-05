@@ -138,7 +138,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <style>
-                  <class name="notebookstyle"/>
+                  <class name="exitstyle"/>
                 </style>
               </object>
               <packing>
@@ -147,6 +147,9 @@
                 <property name="position">4</property>
               </packing>
             </child>
+            <style>
+              <class name="glow"/>
+            </style>
           </object>
           <packing>
             <property name="expand">False</property>

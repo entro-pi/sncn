@@ -54,12 +54,12 @@ frame {
 	border: 5px rgb(150, 10, 150);
 	background-color: #eb2899;
 }
-.notebookstyle {
-	color: #eb2899;
+.exitstyle {
+	color: rgb(0, 0, 0);
 	background-color: #eb2899;
 }
-.notebookstyle:hover {
-	color: rgb(10, 175, 10);
+.exitstyle:hover {
+	color: rgb(0, 0, 0);
 	background-color: rgb(10, 175, 10);
 }
 .broadcastsstyle {
@@ -130,6 +130,11 @@ frame {
 	color: rgb(10, 10, 50);
 	opacity: 0.5;
 	background-color: rgb(10, 10, 50);
+}
+.glow {
+	font-size: 26px;
+	color: rgb(10, 10, 50);
+	background-color: rgb(75, 10, 50);
 }
 
 .opacGlow:focus {
