@@ -1,12 +1,12 @@
 @keyframes celGlow {
 	from {
 		
-		opacity: 1.0;
+		opacity: 0.5;
 		background-color: rgb(10, 250, 10);
 	}
 
 	to {
-		opacity:0.50;
+		opacity:1;
 		background-color: rgb(10, 200, 10);
 	}
 
@@ -115,9 +115,7 @@ frame {
 
 .header {
 	animation-duration: 2s;
-	animation-name: celGlow;
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	animation-iteration-count: 1;
 	background-color: rgb(10, 250, 10);
 }
 
@@ -132,9 +130,7 @@ frame {
 
 .footer {
 	animation-duration: 2s;
-	animation-name: celGlow;
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
+	animation-iteration-count: 1;
 	background-color: rgb(10, 250, 10);
 }
 .contents {

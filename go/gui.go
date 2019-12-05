@@ -1,7 +1,6 @@
 package main
 
 import (
-    "strconv"
     "strings"
     "log"
     "os"
@@ -50,26 +49,6 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 }
 
 func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) {
-	rows := 7
-	cols := 4
-	count := 0
-	broadcasts := drawPlainBroadcasts(play)
-	for r := 0;r < (rows);r++ {
-		for c := 0;c < (cols);c++ {
-			messageName := fmt.Sprint("message"+strconv.Itoa(count))
-			messageUncast, err := twoBuilder.GetObject(messageName)
-			if err != nil {
-				panic(err)
-			}
-			message := messageUncast.(*gtk.Label)
-			if count >= len(broadcasts) {
-				message.SetText(broadcasts[len(broadcasts)-1])
-			}else {
-				message.SetText(broadcasts[count])
-			}
-			count++
-		}
-	}
         // Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("maininterface")
         if err != nil {
@@ -94,7 +73,59 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			panic(err)
 		}
 		box := boxUn.(*gtk.Grid)
-		box.SetVisible(false)
+		if box.GetVisible() {
+			box.SetVisible(false)
+		}else {
+			box.SetVisible(true)
+		}
+	})
+	equipUn, err := twoBuilder.GetObject("equipMain")
+	if err != nil {
+		panic(err)
+	}
+	equip := equipUn.(*gtk.Button)
+	equip.Connect("clicked", func () {
+		box1Un, err := twoBuilder.GetObject("smalltalkgrid")
+		if err != nil {
+			panic(err)
+		}
+		box1 := box1Un.(*gtk.Grid)
+		if box1.GetVisible() {
+			box1.SetVisible(false)
+		}else {
+			box1.SetVisible(true)
+		}
+	})
+	wind := appWindow.(*gtk.ApplicationWindow)
+	wind.SetDefaultSize(1920, 1080)
+	wind.SetResizable(false)
+	wind.SetPosition(gtk.WIN_POS_CENTER)
+	tellsUn, err := twoBuilder.GetObject("tellsMain")
+	if err != nil {
+		panic(err)
+	}
+	tells := tellsUn.(*gtk.Button)
+	tells.Connect("clicked", func () {
+//		paintOver(twoBuilder)
+		butt := assembleBroadButton("0")
+		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
+		if err != nil {
+			panic(err)
+		}
+		small := smallUn.(*gtk.Grid)
+		small.Add(butt)
+		wind.ShowAll()
+		/*
+		box1Un, err := twoBuilder.GetObject("smalltalkgrid")
+		if err != nil {
+			panic(err)
+		}
+		box1 := box1Un.(*gtk.Grid)
+		if box1.GetVisible {
+			box1.SetVisible(false)
+		}else {
+			box1.SetVisible(true)
+		}*/
 	})
 	broadUn, err := twoBuilder.GetObject("broadMain")
 	if err != nil {
@@ -102,22 +133,26 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	broad := broadUn.(*gtk.Button)
 	broad.Connect("clicked", func () {
-		boxUn, err := twoBuilder.GetObject("smalltalkgrid")
+		butt := assembleBroadButton("0")
+		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
 		if err != nil {
 			panic(err)
 		}
-		box := boxUn.(*gtk.Grid)
-		if box.GetVisible() {
-			box.SetVisible(false)
-		}else {
-			box.SetVisible(true)
+		small := smallUn.(*gtk.Grid)
+		small.Add(butt)
+		wind.ShowAll()
+		/*
+		box1Un, err := twoBuilder.GetObject("smalltalkgrid")
+		if err != nil {
+			panic(err)
 		}
+		box1 := box1Un.(*gtk.Grid)
+		if box1.GetVisible {
+			box1.SetVisible(false)
+		}else {
+			box1.SetVisible(true)
+		}*/
 	})
-
-	wind := appWindow.(*gtk.ApplicationWindow)
-	wind.SetDefaultSize(1920, 1080)
-	wind.SetResizable(false)
-	wind.SetPosition(gtk.WIN_POS_CENTER)
 	windowWidget, err := wind.GetStyleContext()
 	if err != nil {
 		panic(err)
@@ -138,6 +173,68 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
         wind.Show()
 	application.AddWindow(wind)
 
+
+}
+
+func assembleBroadButton(name string) *gtk.Button {
+	newBroadcast, err := gtk.ButtonNew()
+	if err != nil {
+		panic(err)
+	}
+
+	newBox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
+	if err != nil {
+		panic(err)
+	}
+
+	timeDateLabel, err := gtk.LabelNew(name+"timedate")
+	if err != nil {
+		panic(err)
+	}
+
+	messageLabel, err := gtk.LabelNew(name+"message")
+	if err != nil {
+		panic(err)
+	}
+
+	fromFieldLabel, err := gtk.LabelNew(name+"field")
+	if err != nil {
+		panic(err)
+	}
+	newBox.PackEnd(fromFieldLabel, true, true, 1)
+
+	buttStyle, err := newBroadcast.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	buttStyle.AddClass("cel")
+	buttStyle.AddClass("cell:hover")
+
+	TDStyle, err := timeDateLabel.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	TDStyle.AddClass("header")
+
+	messStyle, err := messageLabel.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	messStyle.AddClass("contents")
+
+	fromFieldStyle, err := fromFieldLabel.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	fromFieldStyle.AddClass("footer")
+
+	newBox.Add(timeDateLabel)
+	newBox.Add(messageLabel)
+	newBox.Add(fromFieldLabel)
+
+	newBroadcast.Add(newBox)
+
+	return newBroadcast
 
 }
 

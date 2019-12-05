@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"time"
 	"context"
 	"os/signal"
@@ -10,6 +11,7 @@ import (
 	"os"
 	"io/ioutil"
 	"log"
+	"github.com/gotk3/gotk3/gtk"
 	"github.com/fsnotify/fsnotify"
 	"github.com/streadway/amqp"
 )
@@ -756,6 +758,97 @@ func drawTells(format string, play Player, colVal int, rowVal int) []string {
 		}
 //		fmt.Print("\033[26;53H\n")
 	return broadcastContainer
+}
+
+
+func drawPlainTells(play Player) []string {
+	var broadcastContainer []string
+	file, err := os.Open("../pot/tells")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	row := 0
+
+	tells, err := ioutil.ReadAll(file)
+	if err != nil {
+		panic(err)
+	}
+	colValHolder := 0
+	rowNumber := 0
+	col := 0
+	colNumber := 0
+	colVal := 0
+	rowVal := 0
+	lines := strings.Split(string(tells), "\n")
+	for i := 0;i < len(lines);i++ {
+			var newBroad Broadcast
+			newBroad.Payload.Message = lines[i]
+			newBroad.Payload.Name = play.Name
+			newBroad.Payload.Game = "snowcrash.network"
+			if len(newBroad.Payload.Message) > 89 {
+				newBroad.Payload.Message = lines[i][:89]
+			}
+			if strings.Contains(lines[i], "!:::tick:::!") {
+				continue
+			}
+
+			broadcastContainer = append(broadcastContainer, newBroad.Payload.Message)
+			if row >= rowNumber {
+				row = 0
+				rowVal = 24
+			}else if col < colNumber {
+				colVal += 30
+				col++
+			}else {
+				rowVal += 4
+
+				row++
+				col = 0
+				colVal = colValHolder
+			}
+		}
+		for i := 0;i < len(broadcastContainer);i++ {
+		//	fmt.Print(broadcastContainer[i])
+		}
+//		fmt.Print("\033[26;53H\n")
+	return broadcastContainer
+}
+func paintOver(twoBuilder *gtk.Builder) {
+        rows := 7
+        cols := 4
+        count := 0
+	var broadcastContainer []string
+	file, err := os.Open("../pot/paintOver")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	tells, err := ioutil.ReadAll(file)
+	if err != nil {
+		panic(err)
+	}
+	lines := strings.Split(string(tells), "\n")
+	for i := 0;i < len(lines);i++ {
+			broadcastContainer = append(broadcastContainer, lines[i])
+	}
+        for r := 0;r < rows;r++ {
+                for c := 0;c < cols;c++ {
+                        count++
+                        if count >= len(broadcastContainer) {
+                                count = len(broadcastContainer)-1
+                        }
+                        messageName := fmt.Sprint("message"+strconv.Itoa(count))
+                        messageUncast, err := twoBuilder.GetObject(messageName)
+                        if err != nil {
+                                panic(err)
+                        }
+                        message := messageUncast.(*gtk.Label)
+                        message.SetText(lines[count])
+                }
+        }
+
 }
 
 func doWatch(input string, play Player, fileChange chan bool) string {
