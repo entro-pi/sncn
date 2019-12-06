@@ -81,6 +81,27 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	exit.Connect("clicked", func () {
 		os.Exit(1)
 	})
+	sendUn, err := twoBuilder.GetObject("Send")
+	if err != nil {
+		panic(err)
+	}
+
+	send := sendUn.(*gtk.Button)
+	send.Connect("clicked", func() {
+		inputUn, err := twoBuilder.GetObject("postBuf")
+		if err != nil {
+			panic(err)
+		}
+		input := inputUn.(*gtk.TextBuffer)
+		start, end := input.GetBounds()
+		inputText, err := input.GetText(start, end, false)
+		if err != nil {
+			panic(err)
+		}
+		inputText = strings.ReplaceAll(inputText, "\n", "")
+		doGUIInput(inputText)
+	})
+
 	invUn, err := twoBuilder.GetObject("invMain")
 	if err != nil {
 		panic(err)

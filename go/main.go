@@ -64,6 +64,9 @@ func main() {
 	if len(os.Args) == 2 {
 	if os.Args[1] == "--gui" {
 		fmt.Println("doot")
+		play := InitPlayer("WEASEL", "lol")
+		whoList := who(play.Name)
+		go actOn(play, fileChange, whoList)
 		LaunchGUI()
 	}
 	if os.Args[1] == "--1920x1080main" {
@@ -346,6 +349,114 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 	failOnError(err, "Failed to publish a message")
 
 }
+func doGUIInput(input string) {
+	connection := getConnectionString()
+	play := InitPlayer("WEASEL", "lol")
+	conn, err := amqp.Dial(connection)
+
+	direct := false
+
+	//Determine if we're sending to anyone in particular
+
+	inputArray := strings.Split(input, "::SENDER::")
+	tellToArray := strings.Split(input, "@")
+	tellTo := ""
+	if len(tellToArray) > 2 {
+		direct = true
+		tellTo = tellToArray[1]
+	}else {
+		tellTo = ""
+	}
+	/*for i := 0;i < len(whoList);i++ {
+		fmt.Println(inputArray[1])
+		if inputArray[0] == "tell" && inputArray[1] == whoList[i] {
+			direct = true
+			tellTo = inputArray[1]
+			fmt.Println("\033[48:2:0:0:120m",direct, tellTo,"\033[0m")
+			break
+		}
+	}*/
+
+
+	failOnError(err, "Failed to connect to RabbitMQ")
+
+	defer conn.Close()
+
+	ch, err := conn.Channel()
+
+	failOnError(err, "Failed to open a channel")
+
+	defer ch.Close()
+	q, err := ch.QueueDeclare(
+		"", //name
+		true, // durable
+		false, //delete when used
+		false, //exclusive
+		false, //no-wait
+		nil, //arguments
+	)
+/*	q, err := ch.QueueDeclare(
+		"input", //name
+		true, // durable
+		true, //delete when used
+		false, //exclusive
+		false, //no-wait
+		nil, //arguments
+	)
+*/	failOnError(err, "Failed to declare a queue")
+
+	err = ch.ExchangeDeclare(
+	"ballast", //name
+	"topic", //type
+	false, //durable
+	false, //auto-delted
+	false, //internal
+	false, //no wait
+	nil, //arguments
+	)
+	failOnError(err, "Failed to declare an exchange")
+
+	err = ch.QueueBind(
+		q.Name, //queue name
+		"", //routing key
+		"ballast",//exchange
+		false,
+		nil,
+	)
+	body := "::SENDER::"+play.Name+"::SENDER::="
+	for i := 0;i < len(inputArray);i++ {
+		body += inputArray[i]+" "
+	}
+	if direct {
+		body += "::SENDTO::"+tellTo+"::SENDTO::"
+		//body = strings.ReplaceAll(body, "broadcast", "tell")
+		err = ch.Publish(
+		"ballast", //exchange
+		tellTo+".tell", // routing key
+		false, //mandatory
+		false, //immediate
+		amqp.Publishing {
+			ContentType: "text/plain",
+			Body: []byte(body),
+		})
+	}else {
+		err = ch.Publish(
+		"ballast", //exchange
+		"", // routing key
+		false, //mandatory
+		false, //immediate
+		amqp.Publishing {
+			ContentType: "text/plain",
+			Body: []byte(body),
+		})
+
+	}
+
+//	fmt.Print("\033[26;53H\n")
+	log.Printf(" [x] Sent %s", body)
+	failOnError(err, "Failed to publish a message")
+
+}
 
 
 func actOn(play Player, fileChange chan bool, whoList []string) {
@@ -417,15 +528,16 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 	forever := make(chan bool)
 	for {
 
-		//select {
-		//default:
+		select {
+		default:
 		go func() {
+			fmt.Println("Awaiting messages")
 			for msg := range msgs {
+				fmt.Println("Message!")
 				message := string(msg.Body)
 
-				if strings.Split(message, " ")[1] == play.Name {
+				if strings.Split(message, "::SENDTO::")[0] == play.Name {
 
-					fmt.Print("\033[26;53H\n")
 					log.Printf("\033[38:2:150:150:0mReceived a tell: %s\033[0m", msg.Body)
 					if strings.HasPrefix(message, "tell") {
 						if !strings.Contains(message, "!:::tick:::!") {
@@ -435,8 +547,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 							}
 							//strip the thingies out
 	//						message = strings.ReplaceAll(message, "tell:", "\033[38:2:150:0:100mtell")
-							sender := strings.Split(message, "::SENDER::")[1]
-							_, err = f.WriteString("::SENDER::"+sender+"::SENDER::"+message+"\n")
+							_, err = f.WriteString(message)
 							if err != nil {
 								panic(err)
 							}
@@ -458,9 +569,9 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 					panic(err)
 				}
 
-				fmt.Print("\033[26;53H\n")
 				log.Printf("\033[38:2:0:150:150mReceived a message: %s\033[0m", msg.Body)
-				if strings.HasPrefix(message, "broadcast") {
+				if true {
+//				if strings.HasPrefix(message, "broadcast") {
 					var blank Player
 					if !strings.Contains(message, "!:::tick:::!") {
 						f, err := os.OpenFile("../pot/broadcast", os.O_APPEND|os.O_WRONLY, 0644)
@@ -488,7 +599,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 			}
 		}()
 
-//		}
+		}
 		<-forever
 	}
 }
