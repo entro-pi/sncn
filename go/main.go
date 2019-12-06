@@ -428,7 +428,7 @@ func doGUIInput(input string) {
 		body += inputArray[i]+" "
 	}
 	if direct {
-		body += "::SENDTO::"+tellTo+"::SENDTO::"
+		body += "::=::SENDTO::"+tellTo+"::SENDTO::"
 		//body = strings.ReplaceAll(body, "broadcast", "tell")
 		err = ch.Publish(
 		"ballast", //exchange
@@ -529,18 +529,17 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 	forever := make(chan bool)
 	for {
 
-		select {
-		default:
+//		select {
+//		default:
 		go func() {
 			fmt.Println("Awaiting messages")
 			for msg := range msgs {
 				fmt.Println("Message!")
 				message := string(msg.Body)
 
-				if strings.Split(message, "::SENDTO::")[0] == play.Name {
+				if strings.Split(message, "::SENDTO::")[1] == play.Name {
 
 					log.Printf("\033[38:2:150:150:0mReceived a tell: %s\033[0m", msg.Body)
-					if strings.HasPrefix(message, "tell") {
 						if !strings.Contains(message, "!:::tick:::!") {
 							f, err := os.OpenFile("../pot/tells", os.O_APPEND|os.O_WRONLY, 0644)
 							if err != nil {
@@ -548,54 +547,37 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 							}
 							//strip the thingies out
 	//						message = strings.ReplaceAll(message, "tell:", "\033[38:2:150:0:100mtell")
-							_, err = f.WriteString(message)
+							_, err = f.WriteString(message+"\n")
 							if err != nil {
 								panic(err)
 							}
-							f.Sync()
-							fileChange <- true
-							var blank Player
+//							f.Sync()
+							forever <- true
 							f.Close()
-							go doWatch(string(msg.Body), blank, fileChange)
-							continue
 						}
 
-					}else {
-						var blank Player
-
-						go doWatch("!:::tick:::!", blank, fileChange)
-					}
 				}else if strings.Split(message, "::SENDTO::")[1] == "ALL" {
 					log.Printf("\033[38:2:0:150:150mReceived a message: %s\033[0m", msg.Body)
-					var blank Player
 					if !strings.Contains(message, "!:::tick:::!") {
 						f, err := os.OpenFile("../pot/broadcast", os.O_APPEND|os.O_WRONLY, 0644)
 						if err != nil {
 							panic(err)
 						}
 						//strip the thingies out
-						message = strings.ReplaceAll(message, "broadcast", "")
-						sender := strings.Split(message, "::SENDER::")[1]
-						_, err = f.WriteString("::SENDER::"+sender+"::SENDER::"+message+"\n")
+						_, err = f.WriteString(message+"\n")
 						if err != nil {
 							panic(err)
 						}
 						f.Close()
-						fileChange <- true
+						forever <- true
 
-						go doWatch(string(msg.Body), blank, fileChange)
-					}else {
-						go doWatch("!:::tick:::!", blank, fileChange)
+						//go doWatch(string(msg.Body), blank, fileChange)
 					}
-				}
-				if err != nil {
-					panic(err)
 				}
 			}
 		}()
-
-		}
 		<-forever
+//		}
 	}
 }
 
