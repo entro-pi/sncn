@@ -360,6 +360,8 @@
           <object class="GtkGrid" id="smalltalkgrid">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="hexpand">False</property>
+            <property name="vexpand">False</property>
             <property name="row_homogeneous">True</property>
             <property name="column_homogeneous">True</property>
             <child>
@@ -367,12 +369,14 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
+                <property name="hexpand">False</property>
+                <property name="vexpand">False</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="hexpand">False</property>
+                    <property name="vexpand">False</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkLabel" id="timeDate0">

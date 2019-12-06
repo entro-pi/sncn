@@ -409,7 +409,34 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 		panic(err)
 	}
 	mess := strings.Split(message, "::=")[1]
-	messageLabel.SetText(mess)
+	messHolder := ""
+	addNewLine := false
+	since := 0
+	count := 0
+	for i := 0;i < len(mess);i++ {
+		count++
+		if count == 12 {
+			addNewLine = true
+		}
+		if addNewLine && mess[i] == ' ' {
+			messHolder += string(mess[i])+"\n"
+			addNewLine = false
+			count = 0
+		}else if addNewLine && mess[i] != ' ' {
+			since++
+		}else if since == 5 {
+			//since we haven't gotten a space in five
+			//characters, break the line anyway
+			messHolder += string(mess[i])+"\n"
+			addNewLine = false
+			since = 0
+			count = 0
+		}else {
+			messHolder += string(mess[i])
+		}
+	}
+	fmt.Print(messHolder)
+	messageLabel.SetText(messHolder)
 
 	fromFieldLabel, err := gtk.LabelNew(name+"field")
 	if err != nil {
