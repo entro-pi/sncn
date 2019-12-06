@@ -210,6 +210,9 @@ func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
 		play := InitPlayer("WEASEL", "lol")
 		broadcastContainer = drawPlainBroadcasts(play)
 	}
+	if len(broadcastContainer) >= 20 {
+		broadcastContainer = broadcastContainer[len(broadcastContainer)-20:len(broadcastContainer)]
+	}
 	for i := 0;i < len(broadcastContainer);i++ {
 		fmt.Println(i)
 		broad := assembleBroadButtonWithMessage(strconv.Itoa(i), broadcastContainer[i], twoBuilder)
@@ -237,10 +240,10 @@ func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
 			fmt.Println("Num in row", numCount)
 		}else {
 //			small.InsertRow(row)
+			small.Attach(buttonContainer[i], numCount, row, 1, 1)
 			row++
 			numCount = 0
 			fmt.Println("row", row)
-			//small.Attach(buttonContainer[i], numCount, row, 1, 1)
 			small.ShowAll()
 		}
 	}
