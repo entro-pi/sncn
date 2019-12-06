@@ -237,13 +237,13 @@ func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
 			small.Attach(buttonContainer[i], numCount, row, 1, 1)
 			numCount++
 			small.ShowAll()
-			fmt.Println("Num in row", numCount)
+//			fmt.Println("Num in row", numCount)
 		}else {
 //			small.InsertRow(row)
 			small.Attach(buttonContainer[i], numCount, row, 1, 1)
 			row++
 			numCount = 0
-			fmt.Println("row", row)
+//			fmt.Println("row", row)
 			small.ShowAll()
 		}
 	}
@@ -411,14 +411,47 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 
 	newBroadcast.Add(newBox)
 	newBroadcast.Connect("clicked", func (button *gtk.Button) {
-		fmt.Println("GETTING LABEL")
+		//fmt.Println("GETTING LABEL")
 		inspectUn, err := twoBuilder.GetObject("inspectMess")
 		if err != nil {
 			panic(err)
 		}
 		inspect := inspectUn.(*gtk.Label)
+		inspectWhoUn, err := twoBuilder.GetObject("inspectWho")
+		if err != nil {
+			panic(err)
+		}
+		inspectWho := inspectWhoUn.(*gtk.Label)
+
+		inspectTimeUn, err := twoBuilder.GetObject("inspectTime")
+		if err != nil {
+			panic(err)
+		}
+		inspectTime := inspectTimeUn.(*gtk.Label)
+
+		hours := strconv.Itoa(time.Now().Hour())
+		minutes := strconv.Itoa(time.Now().Minute())
+
+		inspectTime.SetText(time.Now().Weekday().String()+hours+minutes)
+
+		inspectWho.SetText("@"+sender)
 
 		inspect.SetText(mess)
+		inTctx, err := inspectTime.GetStyleContext()
+		if err != nil {
+			panic(err)
+		}
+		inWctx, err := inspectWho.GetStyleContext()
+		if err != nil {
+			panic(err)
+		}
+		inctx, err := inspect.GetStyleContext()
+		if err != nil {
+			panic(err)
+		}
+		inTctx.AddClass("inspectIn")
+		inWctx.AddClass("inspectIn")
+		inctx.AddClass("inspectIn")
 	})
 	return newBroadcast
 

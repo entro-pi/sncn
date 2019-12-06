@@ -1,13 +1,10 @@
-@keyframes celGlow {
-	from {
-		
-		opacity: 0.5;
-		background-color: rgb(10, 250, 10);
+@keyframes inspectIn {
+	0% {
+		opacity: 0.0;
 	}
 
-	to {
-		opacity:1;
-		background-color: rgb(10, 200, 10);
+	100% {
+		opacity: 1;
 	}
 
 }
@@ -132,6 +129,23 @@ frame {
 	animation-duration: 2s;
 	animation-iteration-count: 1;
 	background-color: rgb(10, 250, 10);
+}
+.greenText {
+	background-color: rgb(75, 10, 75);
+	color: rgb(10, 250, 10);
+}
+.loginText {
+	background-color: rgb(5, 10, 5);
+	color: rgb(10, 250, 10);
+}
+.inspectIn {
+	animation-name:inspectIn;
+	animation-duration: .250s;
+	animation-iteration-count: 1;
+}
+
+.inspect {
+	color: rgb(10, 250, 10);
 }
 .contents {
 	font: 16px courier;
