@@ -440,6 +440,7 @@ func doGUIInput(input string) {
 			Body: []byte(body),
 		})
 	}else {
+		body += "::=::SENDTO::ALL::SENDTO::"
 		err = ch.Publish(
 		"ballast", //exchange
 		"", // routing key
@@ -564,14 +565,8 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 
 						go doWatch("!:::tick:::!", blank, fileChange)
 					}
-				}
-				if err != nil {
-					panic(err)
-				}
-
-				log.Printf("\033[38:2:0:150:150mReceived a message: %s\033[0m", msg.Body)
-				if true {
-//				if strings.HasPrefix(message, "broadcast") {
+				}else if strings.Split(message, "::SENDTO::")[1] == "ALL" {
+					log.Printf("\033[38:2:0:150:150mReceived a message: %s\033[0m", msg.Body)
 					var blank Player
 					if !strings.Contains(message, "!:::tick:::!") {
 						f, err := os.OpenFile("../pot/broadcast", os.O_APPEND|os.O_WRONLY, 0644)
