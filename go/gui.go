@@ -69,7 +69,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	inv := invUn.(*gtk.Button)
-	inv.Connect("clicked", func () {
+	inv.Connect("clicked", func (button *gtk.Button) {
 		boxUn, err := twoBuilder.GetObject("smalltalkgrid")
 		if err != nil {
 			panic(err)
@@ -212,7 +212,7 @@ func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
 	}
 	for i := 0;i < len(broadcastContainer);i++ {
 		fmt.Println(broadcastContainer[i])
-		broad := assembleBroadButtonWithMessage(strconv.Itoa(i), broadcastContainer[i])
+		broad := assembleBroadButtonWithMessage(strconv.Itoa(i), broadcastContainer[i], twoBuilder)
 		buttonContainer = append(buttonContainer, broad)
 	}
 
@@ -247,6 +247,38 @@ func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
 	small.ShowAll()
 
 }
+func SetupBroadcastWindow(twoBuilder *gtk.Builder) {
+	inspectUn, err := twoBuilder.GetObject("inspect")
+	if err != nil {
+		panic(err)
+	}
+	inspect := inspectUn.(*gtk.Box)
+	button, err := gtk.ButtonNew()
+	if err != nil {
+		panic(err)
+	}
+	newBox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
+	if err != nil {
+		panic(err)
+	}
+	newLabel, err := gtk.LabelNew("doot")
+	if err != nil {
+		panic(err)
+	}
+	newLabel.SetText("BOOPS")
+	newBox.Add(button)
+	newBox.Add(newLabel)
+	boxCtx, err := newBox.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	boxCtx.AddClass("cel")
+	newBox.PackEnd(button, true, true, 1)
+	inspect.Add(newBox)
+
+}
+
+
 func assembleBroadButton(name string) *gtk.Button {
 	newBroadcast, err := gtk.ButtonNew()
 	if err != nil {
@@ -313,7 +345,7 @@ func GetSender(message string) string {
 	return sender
 
 }
-func assembleBroadButtonWithMessage(name string, message string) *gtk.Button {
+func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk.Builder) *gtk.Button {
 	newBroadcast, err := gtk.ButtonNew()
 	if err != nil {
 		panic(err)
@@ -375,7 +407,16 @@ func assembleBroadButtonWithMessage(name string, message string) *gtk.Button {
 	newBox.Add(fromFieldLabel)
 
 	newBroadcast.Add(newBox)
+	newBroadcast.Connect("clicked", func (button *gtk.Button) {
+		fmt.Println("GETTING LABEL")
+		inspectUn, err := twoBuilder.GetObject("inspectMess")
+		if err != nil {
+			panic(err)
+		}
+		inspect := inspectUn.(*gtk.Label)
 
+		inspect.SetText(mess)
+	})
 	return newBroadcast
 
 }
