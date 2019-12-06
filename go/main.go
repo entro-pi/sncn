@@ -313,7 +313,7 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 		false,
 		nil,
 	)
-	body := ""
+	body := "::SENDER::"+play.Name+"::SENDER::"
 	for i := 0;i < len(inputArray);i++ {
 		body += inputArray[i]+" "
 	}
@@ -435,8 +435,8 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 							}
 							//strip the thingies out
 	//						message = strings.ReplaceAll(message, "tell:", "\033[38:2:150:0:100mtell")
-
-							_, err = f.WriteString(message+"\n")
+							sender := strings.Split(message, "::SENDER::")[1]
+							_, err = f.WriteString("::SENDER::"+sender+"::SENDER::"+message+"\n")
 							if err != nil {
 								panic(err)
 							}
@@ -469,7 +469,8 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 						}
 						//strip the thingies out
 						message = strings.ReplaceAll(message, "broadcast", "")
-						_, err = f.WriteString(message+"\n")
+						sender := strings.Split(message, "::SENDER::")[1]
+						_, err = f.WriteString("::SENDER::"+sender+"::SENDER::"+message+"\n")
 						if err != nil {
 							panic(err)
 						}
@@ -646,22 +647,6 @@ func drawPlainBroadcasts(play Player) []string {
 	var lines []string
 	lines = nil
 	lines = strings.Split(string(contents), "\n")
-	lineIn := strings.Split(string(contents), "\n")
-	if len(lines) >= 20 {
-		lines = nil
-		for i := len(lineIn)-1;i > len(lineIn)-21;i-- {
-			lineIn[i] = strings.ReplaceAll(lineIn[i], "broadcast:", "")
-			lines = append(lines, lineIn[i])
-		}
-	}
-	//			var broadcastContainer []Broadcast
-	col := 0
-	row := 0
-	colVal := 0
-	rowVal := 0
-	colValHolder := 0
-	colNumber := 0
-	rowNumber := 0
 	for i := 0;i < len(lines);i++ {
 			var newBroad Broadcast
 			newBroad.Payload.Message = lines[i]
@@ -673,28 +658,10 @@ func drawPlainBroadcasts(play Player) []string {
 			if strings.Contains(lines[i], "!:::tick:::!") {
 				continue
 			}
-
-			broadcastContainer = append(broadcastContainer, newBroad.Payload.Message)
-			if row >= rowNumber {
-				row = 0
-				rowVal = 0
+			if len(newBroad.Payload.Message) > 1 {
+				broadcastContainer = append(broadcastContainer, newBroad.Payload.Message)
 			}
-			if col < colNumber {
-				col++
-				colVal += 30
-			}else {
-				row++
-				rowVal += 4
-				col = 0
-				colVal = colValHolder
-			}
-		}
-		for i := 0;i < len(broadcastContainer);i++ {
-			//fmt.Print(broadcastContainer[i])
-		}
-		//fmt.Print("\033[26;53H\n")
-
-		//log.Print(string(contents))
+	}
 	return broadcastContainer
 }
 
@@ -768,18 +735,11 @@ func drawPlainTells(play Player) []string {
 		panic(err)
 	}
 	defer file.Close()
-	row := 0
 
 	tells, err := ioutil.ReadAll(file)
 	if err != nil {
 		panic(err)
 	}
-	colValHolder := 0
-	rowNumber := 0
-	col := 0
-	colNumber := 0
-	colVal := 0
-	rowVal := 0
 	lines := strings.Split(string(tells), "\n")
 	for i := 0;i < len(lines);i++ {
 			var newBroad Broadcast
@@ -792,26 +752,10 @@ func drawPlainTells(play Player) []string {
 			if strings.Contains(lines[i], "!:::tick:::!") {
 				continue
 			}
-
-			broadcastContainer = append(broadcastContainer, newBroad.Payload.Message)
-			if row >= rowNumber {
-				row = 0
-				rowVal = 24
-			}else if col < colNumber {
-				colVal += 30
-				col++
-			}else {
-				rowVal += 4
-
-				row++
-				col = 0
-				colVal = colValHolder
+			if len(newBroad.Payload.Message) > 1 {
+				broadcastContainer = append(broadcastContainer, newBroad.Payload.Message)
 			}
 		}
-		for i := 0;i < len(broadcastContainer);i++ {
-		//	fmt.Print(broadcastContainer[i])
-		}
-//		fmt.Print("\033[26;53H\n")
 	return broadcastContainer
 }
 func paintOver(twoBuilder *gtk.Builder) {

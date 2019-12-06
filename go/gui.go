@@ -211,6 +211,7 @@ func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
 		broadcastContainer = drawPlainBroadcasts(play)
 	}
 	for i := 0;i < len(broadcastContainer);i++ {
+		fmt.Println(broadcastContainer[i])
 		broad := assembleBroadButtonWithMessage(strconv.Itoa(i), broadcastContainer[i])
 		buttonContainer = append(buttonContainer, broad)
 	}
@@ -307,6 +308,11 @@ func assembleBroadButton(name string) *gtk.Button {
 	return newBroadcast
 
 }
+func GetSender(message string) string {
+	sender := strings.Split(message, "::SENDER::")[1]
+	return sender
+
+}
 func assembleBroadButtonWithMessage(name string, message string) *gtk.Button {
 	newBroadcast, err := gtk.ButtonNew()
 	if err != nil {
@@ -318,22 +324,25 @@ func assembleBroadButtonWithMessage(name string, message string) *gtk.Button {
 		panic(err)
 	}
 
-	timeDateLabel, err := gtk.LabelNew(name+"timedate")
+	fromLabel, err := gtk.LabelNew(name+"from")
 	if err != nil {
 		panic(err)
 	}
-	timeDateLabel.SetText(time.Now().Weekday().String())
+	sender := GetSender(message)
+	fromLabel.SetText("@"+sender)
 
 	messageLabel, err := gtk.LabelNew(name+"message")
 	if err != nil {
 		panic(err)
 	}
-	messageLabel.SetText(message)
+	mess := strings.Split(message, "::=")[1]
+	messageLabel.SetText(mess)
 
 	fromFieldLabel, err := gtk.LabelNew(name+"field")
 	if err != nil {
 		panic(err)
 	}
+	fromFieldLabel.SetText(time.Now().Weekday().String())
 	newBox.PackEnd(fromFieldLabel, false, false, 1)
 
 	buttStyle, err := newBroadcast.GetStyleContext()
@@ -343,7 +352,7 @@ func assembleBroadButtonWithMessage(name string, message string) *gtk.Button {
 	buttStyle.AddClass("cel")
 	buttStyle.AddClass("cell:hover")
 
-	TDStyle, err := timeDateLabel.GetStyleContext()
+	TDStyle, err := fromLabel.GetStyleContext()
 	if err != nil {
 		panic(err)
 	}
@@ -361,7 +370,7 @@ func assembleBroadButtonWithMessage(name string, message string) *gtk.Button {
 	}
 	fromFieldStyle.AddClass("footer")
 
-	newBox.Add(timeDateLabel)
+	newBox.Add(fromLabel)
 	newBox.Add(messageLabel)
 	newBox.Add(fromFieldLabel)
 
