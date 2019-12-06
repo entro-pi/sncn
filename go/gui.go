@@ -57,6 +57,23 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
             log.Fatal("Could not create application window.", err)
         }
 	exitUn, err := twoBuilder.GetObject("exitMain")
+	postUn, err := twoBuilder.GetObject("postBuf")
+	if err != nil {
+		panic(err)
+	}
+	post := postUn.(*gtk.TextBuffer)
+	start, end := post.GetBounds()
+	tagUn, err := twoBuilder.GetObject("greenTex")
+	if err != nil {
+		panic(err)
+	}
+	tag := tagUn.(*gtk.TextTag)
+	post.ApplyTag(tag, start, end)
+	post.Connect("insert-text", func () {
+		start, end := post.GetBounds()
+
+		post.ApplyTag(tag, start, end)
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -410,6 +427,8 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 	newBox.Add(fromFieldLabel)
 
 	newBroadcast.Add(newBox)
+
+
 	newBroadcast.Connect("clicked", func (button *gtk.Button) {
 		//fmt.Println("GETTING LABEL")
 		inspectUn, err := twoBuilder.GetObject("inspectMess")

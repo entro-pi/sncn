@@ -208,8 +208,41 @@
       <class name="syncro"/>
     </style>
   </object>
-  <object class="GtkEntryBuffer" id="postBuf">
-    <property name="text" translatable="yes">enter text...</property>
+  <object class="GtkTextTagTable" id="texttagtable1">
+    <child type="tag">
+      <object class="GtkTextTag" id="greenTex">
+        <property name="name">grn</property>
+        <property name="background">black</property>
+        <property name="foreground">green</property>
+        <property name="background_gdk">#555557575353</property>
+        <property name="foreground_gdk">#11ebffff26d4</property>
+        <property name="background_rgba">rgb(85,87,83)</property>
+        <property name="foreground_rgba">rgb(18,255,39)</property>
+        <property name="font">Normal</property>
+        <property name="justification">center</property>
+        <property name="direction">ltr</property>
+        <property name="background_full_height">True</property>
+        <property name="paragraph_background_rgba">rgb(85,87,83)</property>
+      </object>
+    </child>
+  </object>
+  <object class="GtkTextBuffer" id="postBuf">
+    <property name="tag_table">texttagtable1</property>
+    <property name="text" translatable="yes">  
+
+
+
+
+
+
+
+
+
+
+
+
+
+</property>
   </object>
   <object class="GtkApplicationWindow" id="maininterface">
     <property name="can_focus">False</property>
@@ -500,7 +533,7 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="hexpand">True</property>
+                <property name="hexpand">False</property>
                 <property name="vexpand">True</property>
                 <property name="orientation">vertical</property>
                 <child>
@@ -522,18 +555,21 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="postEntry">
+                  <object class="GtkTextView" id="post">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="justification">center</property>
                     <property name="buffer">postBuf</property>
-                    <property name="truncate_multiline">True</property>
+                    <property name="overwrite">True</property>
+                    <property name="input_purpose">alpha</property>
+                    <property name="monospace">True</property>
                     <style>
-                      <class name="greenText"/>
+                      <class name="post"/>
                     </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">True</property>
+                    <property name="fill">False</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
