@@ -211,7 +211,7 @@ func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
 		broadcastContainer = drawPlainBroadcasts(play)
 	}
 	for i := 0;i < len(broadcastContainer);i++ {
-		fmt.Println(broadcastContainer[i])
+		fmt.Println(i)
 		broad := assembleBroadButtonWithMessage(strconv.Itoa(i), broadcastContainer[i], twoBuilder)
 		buttonContainer = append(buttonContainer, broad)
 	}
