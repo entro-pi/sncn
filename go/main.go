@@ -63,11 +63,7 @@ func main() {
 	fileChange := make(chan bool)
 	if len(os.Args) == 2 {
 	if os.Args[1] == "--gui" {
-		fmt.Println("doot")
-		play := InitPlayer("WEASEL", "lol")
-		whoList := who(play.Name)
-		go actOn(play, fileChange, whoList)
-		LaunchGUI()
+		LaunchGUI(fileChange)
 	}
 	if os.Args[1] == "--1920x1080main" {
 			scanner := bufio.NewScanner(os.Stdin)
@@ -349,10 +345,9 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 	failOnError(err, "Failed to publish a message")
 
 }
-func doGUIInput(input string) bool {
+func doGUIInput(play Player, input string) bool {
 	tell := false
 	connection := getConnectionString()
-	play := InitPlayer("WEASEL", "lol")
 	conn, err := amqp.Dial(connection)
 
 	direct := false
@@ -362,7 +357,7 @@ func doGUIInput(input string) bool {
 	inputArray := strings.Split(input, "::SENDER::")
 	tellToArray := strings.Split(input, "@")
 	tellTo := ""
-	if len(tellToArray) > 2 {
+	if len(tellToArray) >= 1 {
 		direct = true
 		tell = true
 		tellTo = tellToArray[1]
@@ -742,8 +737,8 @@ func drawPlainBroadcasts(play Player) []string {
 			newBroad.Payload.Message = lines[i]
 			newBroad.Payload.Name = play.Name
 			newBroad.Payload.Game = "snowcrash.network"
-			if len(newBroad.Payload.Message) > 160 {
-				newBroad.Payload.Message = lines[i][:160]
+			if len(newBroad.Payload.Message) > 500 {
+				newBroad.Payload.Message = lines[i][:500]
 			}
 			if strings.Contains(lines[i], "!:::tick:::!") {
 				continue
@@ -836,8 +831,8 @@ func drawPlainTells(play Player) []string {
 			newBroad.Payload.Message = lines[i]
 			newBroad.Payload.Name = play.Name
 			newBroad.Payload.Game = "snowcrash.network"
-			if len(newBroad.Payload.Message) > 160 {
-				newBroad.Payload.Message = lines[i][:160]
+			if len(newBroad.Payload.Message) > 500 {
+				newBroad.Payload.Message = lines[i][:500]
 			}
 			if strings.Contains(lines[i], "!:::tick:::!") {
 				continue

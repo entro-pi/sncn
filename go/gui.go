@@ -98,9 +98,9 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			panic(err)
 		}
 		inputText = strings.ReplaceAll(inputText, "\n", "")
-		tellBool := doGUIInput(inputText)
+		tellBool := doGUIInput(play, inputText)
 		input.SetText("")
-		fill(twoBuilder, tellBool)
+		fill(play, twoBuilder, tellBool)
 		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
 		if err != nil {
 			panic(err)
@@ -153,7 +153,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	tells := tellsUn.(*gtk.Button)
 	tells.Connect("clicked", func () {
-		fill(twoBuilder, true)
+		fill(play, twoBuilder, true)
 		wind.SetDefaultSize(1920, 1080)
 //		paintOver(twoBuilder)
 /*		butt := assembleBroadButton("0")
@@ -190,7 +190,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	broad := broadUn.(*gtk.Button)
 	broad.Connect("clicked", func () {
-		fill(twoBuilder, false)
+		fill(play, twoBuilder, false)
 		wind.SetDefaultSize(1920, 1080)
 		/*
 		butt := assembleBroadButton("0")
@@ -245,14 +245,14 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 
 }
 
-func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
+func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 	var broadcastContainer []string
 	var buttonContainer []*gtk.Button
 	if tellorbroad {
-		play := InitPlayer("WEASEL", "lol")
+//		play := InitPlayer("WEASEL", "lol")
 		broadcastContainer = drawPlainTells(play)
 	}else {
-		play := InitPlayer("WEASEL", "lol")
+//		play := InitPlayer("WEASEL", "lol")
 		broadcastContainer = drawPlainBroadcasts(play)
 	}
 	if len(broadcastContainer) >= 40 {
@@ -411,7 +411,7 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 		panic(err)
 	}
 	sender := GetSender(message)
-	fromLabel.SetText("@"+sender)
+	fromLabel.SetText("<-"+sender)
 
 	messageLabel, err := gtk.LabelNew(name+"message")
 	if err != nil {
@@ -489,6 +489,34 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 
 	newBroadcast.Connect("clicked", func (button *gtk.Button) {
 		//fmt.Println("GETTING LABEL")
+		mess := strings.Split(message, "::=")[1]
+		messHolder := ""
+		addNewLine := false
+		since := 0
+		count := 0
+		for i := 0;i < len(mess);i++ {
+			count++
+			if count == 40 {
+				addNewLine = true
+			}
+			if addNewLine && mess[i] == ' ' {
+				messHolder += string(mess[i])+"\n"
+				addNewLine = false
+				count = 0
+			}else if addNewLine && mess[i] != ' ' {
+				messHolder += string(mess[i])
+				since++
+			}else if since == 5 {
+				//since we haven't gotten a space in five
+				//characters, break the line anyway
+				messHolder += string(mess[i])+"\n"
+				addNewLine = false
+				since = 0
+				count = 0
+			}else {
+				messHolder += string(mess[i])
+			}
+		}
 		inspectUn, err := twoBuilder.GetObject("inspectMess")
 		if err != nil {
 			panic(err)
@@ -508,9 +536,9 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 
 		inspectTime.SetText(timeStamp)
 
-		inspectWho.SetText("@"+sender)
+		inspectWho.SetText("<-"+sender)
 
-		inspect.SetText(mess)
+		inspect.SetText(messHolder)
 		inTctx, err := inspectTime.GetStyleContext()
 		if err != nil {
 			panic(err)
@@ -532,7 +560,7 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 }
 
 
-func LaunchGUI() {
+func LaunchGUI(fileChange chan bool) {
     // Create Gtk Application, change appID to your application domain name reversed.
     const appID = "org.gtk.sncn"
     application, err := gtk.ApplicationNew(appID, glib.APPLICATION_FLAGS_NONE)
@@ -583,8 +611,11 @@ func LaunchGUI() {
 			draw.SetText(userCaps+"-ACK")
 			fmt.Print(pass)
 			fmt.Println("b2 clicked")
-			if userCaps == "WEASEL" && pass == "lol" {
-				launch(InitPlayer(user, pass), application, twoBuilder)
+			if len(userCaps) > 3 && len(pass) > 3 {
+        		        play := InitPlayer(user, pass)
+				whoList := who(play.Name)
+	                	go actOn(play, fileChange, whoList)
+				launch(play, application, twoBuilder)
 			}
 		})
 
