@@ -120,11 +120,11 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			panic(err)
 		}
 		box := boxUn.(*gtk.ScrolledWindow)
-		if box.GetVisible() {
+		//if box.GetVisible() {
 			box.SetVisible(false)
-		}else {
-			box.SetVisible(true)
-		}
+		//}else {
+		//	box.SetVisible(true)
+		//}
 	})
 	equipUn, err := twoBuilder.GetObject("equipMain")
 	if err != nil {
@@ -165,6 +165,20 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	tells.Connect("clicked", func () {
 		fill(play, twoBuilder, true)
 		wind.SetDefaultSize(1920, 1080)
+		smallUn, err := twoBuilder.GetObject("smalltalkWin")
+		if err != nil {
+			panic(err)
+		}
+		small := smallUn.(*gtk.ScrolledWindow)
+		small.ShowAll()
+		eqGridUn, err := twoBuilder.GetObject("equipmentWin")
+		if err != nil {
+			panic(err)
+		}
+		eqGrid := eqGridUn.(*gtk.ScrolledWindow)
+		if eqGrid.GetVisible() {
+			eqGrid.SetVisible(false)
+		}
 //		paintOver(twoBuilder)
 /*		butt := assembleBroadButton("0")
 		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
@@ -181,6 +195,18 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			colCount = 1
 			small.InsertRow(rowCount)
 			rowCount++
+		}
+		eqGridUn, err := twoBuilder.GetObject("equipmentWin")
+		if err != nil {
+			panic(err)
+		}
+		eqGrid := eqGridUn.(*gtk.ScrolledWindow)
+		if eqGrid.GetVisible() {
+			eqGrid.SetVisible(false)
+		}else {
+			eqGrid.SetVisible(true)
+			fillEq(play, twoBuilder)
+			eqGrid.ShowAll()
 		}
 		
 		box1Un, err := twoBuilder.GetObject("smalltalkgrid")
@@ -202,6 +228,20 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	broad.Connect("clicked", func () {
 		fill(play, twoBuilder, false)
 		wind.SetDefaultSize(1920, 1080)
+		smallUn, err := twoBuilder.GetObject("smalltalkWin")
+		if err != nil {
+			panic(err)
+		}
+		eqGridUn, err := twoBuilder.GetObject("equipmentWin")
+		if err != nil {
+			panic(err)
+		}
+		eqGrid := eqGridUn.(*gtk.ScrolledWindow)
+		if eqGrid.GetVisible() {
+			eqGrid.SetVisible(false)
+		}
+		small := smallUn.(*gtk.ScrolledWindow)
+		small.ShowAll()
 		/*
 		butt := assembleBroadButton("0")
 		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
@@ -295,12 +335,18 @@ func fillEq(play Player, twoBuilder *gtk.Builder) {
 		typeStyle.AddClass("smalltalk")
 		itemNameStyle.AddClass("smalltalk")
 		itemNumberStyle.AddClass("smalltalk")
-		eqGrid.Attach(typeLabel, numCount, row, 20, 3)
+		typeStyle.AddClass("cel")
+		itemNameStyle.AddClass("cel")
+		itemNumberStyle.AddClass("cel")
+		typeStyle.AddClass("cel:hover")
+		itemNameStyle.AddClass("cel:hover")
+		itemNumberStyle.AddClass("cel:hover")
+		eqGrid.Attach(typeLabel, numCount, row, 1, 1)
 		numCount++
-		eqGrid.Attach(itemNameLabel, numCount, row, 20, 3)
+		eqGrid.Attach(itemNameLabel, numCount, row, 1, 1)
 		numCount++
-		eqGrid.Attach(itemNumberLabel, numCount, row, 20, 3)
-		numCount++
+		eqGrid.Attach(itemNumberLabel, numCount, row, 1, 1)
+		numCount = 0
 		row++
 	}
 	eqGrid.SetColumnHomogeneous(true)
