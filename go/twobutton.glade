@@ -237,13 +237,6 @@
   </object>
   <object class="GtkTextBuffer" id="postBuf">
     <property name="tag_table">texttagtable1</property>
-    <property name="text" translatable="yes">
-
-
-
-
-
-</property>
   </object>
   <object class="GtkApplicationWindow" id="maininterface">
     <property name="can_focus">False</property>
@@ -345,7 +338,7 @@
               </packing>
             </child>
             <style>
-              <class name="glow"/>
+              <class name="opac"/>
             </style>
           </object>
           <packing>
@@ -516,7 +509,7 @@
                             <property name="buffer">postBuf</property>
                           </object>
                           <packing>
-                            <property name="expand">False</property>
+                            <property name="expand">True</property>
                             <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
@@ -534,6 +527,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
+                            <property name="pack_type">end</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
@@ -552,8 +546,10 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="shadow_type">in</property>
-                <property name="min_content_width">500</property>
-                <property name="max_content_width">500</property>
+                <property name="min_content_width">40</property>
+                <property name="min_content_height">10</property>
+                <property name="max_content_width">40</property>
+                <property name="max_content_height">10</property>
                 <child>
                   <object class="GtkViewport">
                     <property name="visible">True</property>
@@ -646,6 +642,36 @@
               <packing>
                 <property name="left_attach">0</property>
                 <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">PLACEHOLDER</property>
+                <style>
+                  <class name="greenText"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">PLACEHOLDER</property>
+                <style>
+                  <class name="greenText"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">1</property>
               </packing>
             </child>
           </object>
