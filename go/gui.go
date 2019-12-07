@@ -154,7 +154,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		}
 	})
 	wind := appWindow.(*gtk.ApplicationWindow)
-	wind.SetDefaultSize(1920, 1080)
+	wind.Fullscreen()
 	wind.SetResizable(false)
 	wind.SetPosition(gtk.WIN_POS_CENTER)
 	tellsUn, err := twoBuilder.GetObject("tellsMain")
@@ -164,7 +164,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	tells := tellsUn.(*gtk.Button)
 	tells.Connect("clicked", func () {
 		fill(play, twoBuilder, true)
-		wind.SetDefaultSize(1920, 1080)
 		smallUn, err := twoBuilder.GetObject("smalltalkWin")
 		if err != nil {
 			panic(err)
@@ -227,7 +226,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	broad := broadUn.(*gtk.Button)
 	broad.Connect("clicked", func () {
 		fill(play, twoBuilder, false)
-		wind.SetDefaultSize(1920, 1080)
 		smallUn, err := twoBuilder.GetObject("smalltalkWin")
 		if err != nil {
 			panic(err)
@@ -289,9 +287,30 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	gtk.AddProviderForScreen(screen, css, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 	// Set ApplicationWindow Properties
+	disp, err := screen.GetDisplay()
+	if err != nil {
+		panic(err)
+	}
+	windowUn, err := twoBuilder.GetObject("mainwindow")
+	if err != nil {
+		panic(err)
+	}
+	windowApp := windowUn.(*gtk.ApplicationWindow)
+	window, err := windowApp.GetWindow()
+	if err != nil {
+		panic(err)
+	}
+	moni, err := disp.GetMonitorAtWindow(window)
+	if err != nil {
+		panic(err)
+	}
+	geo := moni.GetGeometry()
+	height := geo.GetHeight()
+	width := geo.GetWidth()
+	wind.SetDefaultSize(width, height)
+	wind.Fullscreen()
         wind.Show()
 	application.AddWindow(wind)
-
 
 }
 
