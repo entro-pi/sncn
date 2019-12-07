@@ -22,7 +22,7 @@
 	background-color: rgb(10, 10, 50);
 }
 textview {
-	font: 26px courier new;
+	font: 20px courier new;
 	background: rgb(10, 255, 10);
 	background-color: rgb(10, 255, 10);
 
@@ -59,14 +59,14 @@ frame {
 	background-color: transparent;
 }
 .cel {
-	font: 26px courier;
+	font: 20px courier;
 	color: rgb(10, 75, 10);
 	border: 5px black;
 	border-radius: 0em;
 	background: rgb(10, 10, 50);
 }
 .cel:hover {
-	font: 26px courier;
+	font: 20px courier;
 	border: 5px rgb(150, 10, 150);
 	background-color: #eb2899;
 }
@@ -172,19 +172,19 @@ frame {
 	background-color: rgb(0, 0, 0);
 }
 .opacGlow {
-	font-size: 26px;
+	font-size: 18px;
 	color: rgb(10, 10, 50);
 	opacity: 0.5;
 	background-color: rgb(10, 10, 50);
 }
 .glow {
-	font-size: 26px;
+	font-size: 18px;
 	color: rgb(10, 10, 50);
 	background-color: rgb(75, 10, 50);
 }
 
 .opacGlow:focus {
-	font-size: 26px;
+	font-size: 18px;
 	color: rgb(50, 10, 50);	
 	opacity: 1;
 	background-color: rgb(50, 10, 50);
