@@ -547,7 +547,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 							}
 							//strip the thingies out
 	//						message = strings.ReplaceAll(message, "tell:", "\033[38:2:150:0:100mtell")
-							_, err = f.WriteString(message+"\n")
+							_, err = f.WriteString(message+"::TIMESTAMP::"+time.Now().Weekday().String()+"-"+strconv.Itoa(time.Now().Hour())+":"+strconv.Itoa(time.Now().Minute())+"::TIMESTAMP::\n")
 							if err != nil {
 								panic(err)
 							}
@@ -564,7 +564,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 							panic(err)
 						}
 						//strip the thingies out
-						_, err = f.WriteString(message+"\n")
+						_, err = f.WriteString(message+"::TIMESTAMP::"+time.Now().Weekday().String()+"-"+strconv.Itoa(time.Now().Hour())+":"+strconv.Itoa(time.Now().Minute())+"::TIMESTAMP::\n")
 						if err != nil {
 							panic(err)
 						}
@@ -740,8 +740,8 @@ func drawPlainBroadcasts(play Player) []string {
 			newBroad.Payload.Message = lines[i]
 			newBroad.Payload.Name = play.Name
 			newBroad.Payload.Game = "snowcrash.network"
-			if len(newBroad.Payload.Message) > 89 {
-				newBroad.Payload.Message = lines[i][:89]
+			if len(newBroad.Payload.Message) > 160 {
+				newBroad.Payload.Message = lines[i][:160]
 			}
 			if strings.Contains(lines[i], "!:::tick:::!") {
 				continue
@@ -834,8 +834,8 @@ func drawPlainTells(play Player) []string {
 			newBroad.Payload.Message = lines[i]
 			newBroad.Payload.Name = play.Name
 			newBroad.Payload.Game = "snowcrash.network"
-			if len(newBroad.Payload.Message) > 89 {
-				newBroad.Payload.Message = lines[i][:89]
+			if len(newBroad.Payload.Message) > 160 {
+				newBroad.Payload.Message = lines[i][:160]
 			}
 			if strings.Contains(lines[i], "!:::tick:::!") {
 				continue

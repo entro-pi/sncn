@@ -1,7 +1,6 @@
 package main
 
 import (
-    "time"
     "strconv"
     "strings"
     "log"
@@ -452,7 +451,8 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 	if err != nil {
 		panic(err)
 	}
-	fromFieldLabel.SetText(time.Now().Weekday().String())
+	timeStamp := strings.Split(message, "::TIMESTAMP::")[1]
+	fromFieldLabel.SetText(timeStamp)
 	newBox.PackEnd(fromFieldLabel, false, false, 1)
 
 	buttStyle, err := newBroadcast.GetStyleContext()
@@ -506,10 +506,7 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 		}
 		inspectTime := inspectTimeUn.(*gtk.Label)
 
-		hours := strconv.Itoa(time.Now().Hour())
-		minutes := strconv.Itoa(time.Now().Minute())
-
-		inspectTime.SetText(time.Now().Weekday().String()+hours+minutes)
+		inspectTime.SetText(timeStamp)
 
 		inspectWho.SetText("@"+sender)
 

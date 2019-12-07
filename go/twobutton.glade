@@ -339,6 +339,7 @@
             </child>
             <style>
               <class name="opac"/>
+              <class name="greenText"/>
             </style>
           </object>
           <packing>
@@ -442,6 +443,9 @@
                             <property name="top_attach">0</property>
                           </packing>
                         </child>
+                        <style>
+                          <class name="greenText"/>
+                        </style>
                       </object>
                     </child>
                   </object>
