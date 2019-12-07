@@ -101,11 +101,11 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		tellBool := doGUIInput(play, inputText)
 		input.SetText("")
 		fill(play, twoBuilder, tellBool)
-		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
+		smallUn, err := twoBuilder.GetObject("smalltalkWin")
 		if err != nil {
 			panic(err)
 		}
-		small := smallUn.(*gtk.Grid)
+		small := smallUn.(*gtk.ScrolledWindow)
 		small.ShowAll()
 	})
 
@@ -115,11 +115,11 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	inv := invUn.(*gtk.Button)
 	inv.Connect("clicked", func (button *gtk.Button) {
-		boxUn, err := twoBuilder.GetObject("smalltalkgrid")
+		boxUn, err := twoBuilder.GetObject("smalltalkWin")
 		if err != nil {
 			panic(err)
 		}
-		box := boxUn.(*gtk.Grid)
+		box := boxUn.(*gtk.ScrolledWindow)
 		if box.GetVisible() {
 			box.SetVisible(false)
 		}else {
@@ -132,15 +132,25 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	equip := equipUn.(*gtk.Button)
 	equip.Connect("clicked", func () {
-		box1Un, err := twoBuilder.GetObject("smalltalkgrid")
+		box1Un, err := twoBuilder.GetObject("smalltalkWin")
 		if err != nil {
 			panic(err)
 		}
-		box1 := box1Un.(*gtk.Grid)
+		box1 := box1Un.(*gtk.ScrolledWindow)
 		if box1.GetVisible() {
 			box1.SetVisible(false)
+		}
+		eqGridUn, err := twoBuilder.GetObject("equipmentWin")
+		if err != nil {
+			panic(err)
+		}
+		eqGrid := eqGridUn.(*gtk.ScrolledWindow)
+		if eqGrid.GetVisible() {
+			eqGrid.SetVisible(false)
 		}else {
-			box1.SetVisible(true)
+			eqGrid.SetVisible(true)
+			fillEq(play, twoBuilder)
+			eqGrid.ShowAll()
 		}
 	})
 	wind := appWindow.(*gtk.ApplicationWindow)
@@ -245,6 +255,57 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 
 }
 
+func fillEq(play Player, twoBuilder *gtk.Builder) {
+//	eqList := make([]Object, 20, 20)
+
+	eqGridUn, err := twoBuilder.GetObject("equipmentGrid")
+	if err != nil {
+		panic(err)
+	}
+	eqGrid := eqGridUn.(*gtk.Grid)
+	numCount := 0
+	row := 0
+	for i := 0;i < 20;i++ {
+		typeLabel, err := gtk.LabelNew("nothing")
+		if err != nil {
+			panic(err)
+		}
+		itemNameLabel, err := gtk.LabelNew("A nyancat")
+		if err != nil {
+			panic(err)
+		}
+		itemNameLabel.SetText("A nyancat")
+		itemNumberLabel, err := gtk.LabelNew("0")
+		if err != nil {
+			panic(err)
+		}
+		typeStyle, err := typeLabel.GetStyleContext()
+		if err != nil {
+			panic(err)
+		}
+		itemNameStyle, err := itemNameLabel.GetStyleContext()
+		if err != nil {
+			panic(err)
+		}
+		itemNumberStyle, err := itemNumberLabel.GetStyleContext()
+		if err != nil {
+			panic(err)
+		}
+
+		typeStyle.AddClass("smalltalk")
+		itemNameStyle.AddClass("smalltalk")
+		itemNumberStyle.AddClass("smalltalk")
+		eqGrid.Attach(typeLabel, numCount, row, 20, 3)
+		numCount++
+		eqGrid.Attach(itemNameLabel, numCount, row, 20, 3)
+		numCount++
+		eqGrid.Attach(itemNumberLabel, numCount, row, 20, 3)
+		numCount++
+		row++
+	}
+	eqGrid.SetColumnHomogeneous(true)
+}
+
 func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 	var broadcastContainer []string
 	var buttonContainer []*gtk.Button
@@ -264,7 +325,7 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 		buttonContainer = append(buttonContainer, broad)
 	}
 
-	smallUn, err := twoBuilder.GetObject("smalltalkgrid")
+	smallUn, err := twoBuilder.GetObject("smalltalkGrid")
 	if err != nil {
 		panic(err)
 	}
