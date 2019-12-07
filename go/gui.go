@@ -248,8 +248,8 @@ func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
 		play := InitPlayer("WEASEL", "lol")
 		broadcastContainer = drawPlainBroadcasts(play)
 	}
-	if len(broadcastContainer) >= 20 {
-		broadcastContainer = broadcastContainer[len(broadcastContainer)-20:len(broadcastContainer)]
+	if len(broadcastContainer) >= 40 {
+		broadcastContainer = broadcastContainer[len(broadcastContainer)-40:len(broadcastContainer)]
 	}
 	for i := 0;i < len(broadcastContainer);i++ {
 		fmt.Println(i)
