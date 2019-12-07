@@ -355,14 +355,13 @@
             <property name="hexpand">False</property>
             <property name="vexpand">False</property>
             <property name="row_homogeneous">True</property>
-            <property name="column_homogeneous">True</property>
             <child>
               <object class="GtkScrolledWindow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="shadow_type">in</property>
-                <property name="min_content_width">800</property>
-                <property name="max_content_width">800</property>
+                <property name="min_content_width">855</property>
+                <property name="max_content_width">855</property>
                 <child>
                   <object class="GtkViewport">
                     <property name="visible">True</property>

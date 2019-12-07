@@ -98,9 +98,9 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			panic(err)
 		}
 		inputText = strings.ReplaceAll(inputText, "\n", "")
-		doGUIInput(inputText)
+		tellBool := doGUIInput(inputText)
 		input.SetText("")
-		fill(twoBuilder, false)
+		fill(twoBuilder, tellBool)
 		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
 		if err != nil {
 			panic(err)

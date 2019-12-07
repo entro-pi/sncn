@@ -349,7 +349,8 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 	failOnError(err, "Failed to publish a message")
 
 }
-func doGUIInput(input string) {
+func doGUIInput(input string) bool {
+	tell := false
 	connection := getConnectionString()
 	play := InitPlayer("WEASEL", "lol")
 	conn, err := amqp.Dial(connection)
@@ -363,6 +364,7 @@ func doGUIInput(input string) {
 	tellTo := ""
 	if len(tellToArray) > 2 {
 		direct = true
+		tell = true
 		tellTo = tellToArray[1]
 	}else {
 		tellTo = ""
@@ -456,7 +458,7 @@ func doGUIInput(input string) {
 //	fmt.Print("\033[26;53H\n")
 	log.Printf(" [x] Sent %s", body)
 	failOnError(err, "Failed to publish a message")
-
+	return tell
 }
 
 
