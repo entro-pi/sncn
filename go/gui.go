@@ -100,6 +100,14 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		}
 		inputText = strings.ReplaceAll(inputText, "\n", "")
 		doGUIInput(inputText)
+		input.SetText("")
+		fill(twoBuilder, false)
+		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
+		if err != nil {
+			panic(err)
+		}
+		small := smallUn.(*gtk.Grid)
+		small.ShowAll()
 	})
 
 	invUn, err := twoBuilder.GetObject("invMain")
@@ -285,6 +293,8 @@ func fill(twoBuilder *gtk.Builder, tellorbroad bool)  {
 			small.ShowAll()
 		}
 	}
+	small.SetRowHomogeneous(true)
+	small.SetColumnHomogeneous(true)
 	small.ShowAll()
 
 }
