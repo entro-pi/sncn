@@ -357,7 +357,7 @@ func doGUIInput(play Player, input string) bool {
 	inputArray := strings.Split(input, "::SENDER::")
 	tellToArray := strings.Split(input, "@")
 	tellTo := ""
-	if len(tellToArray) >= 1 {
+	if len(tellToArray) > 1 {
 		direct = true
 		tell = true
 		tellTo = tellToArray[1]
