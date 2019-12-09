@@ -10,7 +10,7 @@ import (
     "gocv.io/x/gocv"
 )
 
-func main() {
+func recognize() {
     if len(os.Args) < 3 {
         fmt.Println("How to run:\n\tfacedetect [camera ID] [classifier XML file]")
         return
