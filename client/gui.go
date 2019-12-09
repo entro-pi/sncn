@@ -740,7 +740,7 @@ func LaunchGUI(fileChange chan bool) {
 			if len(userCaps) > 3 && len(pass) > 3 {
         		        play := InitPlayer(user, pass)
 				whoList := who(play.Name)
-	                	go actOn(play, fileChange, whoList)
+	                	go func() { actOn(play, fileChange, whoList)}()
 				launch(play, application, twoBuilder)
 			}
 		})
