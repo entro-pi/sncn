@@ -86,7 +86,29 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 
 	send := sendUn.(*gtk.Button)
+
+	send.Connect("pressed", func() {
+		postingUn, err := twoBuilder.GetObject("postingWin")
+		if err != nil {
+			panic(err)
+		}
+		posting := postingUn.(*gtk.ScrolledWindow)
+		spinUn, err := twoBuilder.GetObject("spin")
+		if err != nil {
+			panic(err)
+		}
+		spinner := spinUn.(*gtk.Spinner)
+	//	spinner.SetVisible(true)
+		spinner.Start()
+		posting.ShowAll()
+	})
+
 	send.Connect("clicked", func() {
+		smallUn, err := twoBuilder.GetObject("smalltalkWin")
+		if err != nil {
+			panic(err)
+		}
+		small := smallUn.(*gtk.ScrolledWindow)
 		inputUn, err := twoBuilder.GetObject("postBuf")
 		if err != nil {
 			panic(err)
@@ -97,16 +119,32 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		if err != nil {
 			panic(err)
 		}
+		tellBool := false
 		inputText = strings.ReplaceAll(inputText, "\n", "")
-		tellBool := doGUIInput(play, inputText)
-		input.SetText("")
-		fill(play, twoBuilder, tellBool)
-		smallUn, err := twoBuilder.GetObject("smalltalkWin")
+	        tellToArray := strings.Split(inputText, "@")
+	        if len(tellToArray) > 1 {
+	                tellBool = true
+	        }
+		postingUn, err := twoBuilder.GetObject("postingWin")
 		if err != nil {
 			panic(err)
 		}
-		small := smallUn.(*gtk.ScrolledWindow)
-		small.ShowAll()
+		posting := postingUn.(*gtk.ScrolledWindow)
+		spinUn, err := twoBuilder.GetObject("spin")
+		if err != nil {
+			panic(err)
+		}
+		spinner := spinUn.(*gtk.Spinner)
+
+		go func() {
+			doGUIInput(play, inputText)
+			fill(play, twoBuilder, tellBool)
+			small.ShowAll()
+			input.SetText("")
+			spinner.Stop()
+		//	spinner.SetVisible(false)
+			posting.ShowAll()
+		}()
 	})
 
 	invUn, err := twoBuilder.GetObject("invMain")
