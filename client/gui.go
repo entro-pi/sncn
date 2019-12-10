@@ -372,7 +372,7 @@ func createColumn(twee *gtk.TreeView, val string, constant int) *gtk.TreeViewCol
 	return col
 
 }
-func createColumnPackStart(twee *gtk.TreeView, val string, constant int) (*gtk.TreeViewColumn) {
+func createColumnPackStart(twee *gtk.TreeView, val string, value string, constant int) (*gtk.TreeViewColumn) {
 
 	col, err := gtk.TreeViewColumnNew()
 	if err != nil {
@@ -384,9 +384,24 @@ func createColumnPackStart(twee *gtk.TreeView, val string, constant int) (*gtk.T
 	}
 	col.PackStart(renderer, true)
 	renderer.Set("visible", true)
-	renderer.Set("text", "nyan")
+//	renderer.Set("text", value)
 	col.SetTitle(val)
 //	col.AddAttribute(renderer, col.GetTitle(), constant)
+	col.SetVisible(true)
+	return col
+
+}
+func labelColumns(twee *gtk.TreeView, value string, constant int, col *gtk.TreeViewColumn) (*gtk.TreeViewColumn) {
+
+	renderer, err := gtk.CellRendererTextNew()
+	if err != nil {
+		panic(err)
+	}
+	col.PackStart(renderer, true)
+	renderer.Set("visible", true)
+//	renderer.Set("text", value)
+	
+	col.AddAttribute(renderer, "text", constant)
 	col.SetVisible(true)
 	return col
 
@@ -394,12 +409,12 @@ func createColumnPackStart(twee *gtk.TreeView, val string, constant int) (*gtk.T
 
 func fillList(twoBuilder *gtk.Builder) {
 
-	iconUn, err := twoBuilder.GetObject("twee")
+	tweeUn, err := twoBuilder.GetObject("twee")
 	if err != nil {
 		panic(err)
 	}
-	icon := iconUn.(*gtk.TreeView)
-	listStore, err := gtk.TreeStoreNew(glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING)
+	twee := tweeUn.(*gtk.TreeView)
+	listStore, err := gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING)
 	if err != nil {
 		panic(err)
 	}
@@ -412,12 +427,20 @@ func fillList(twoBuilder *gtk.Builder) {
 	if err != nil {
 		panic(err)
 	}*/
-	firstColumn := createColumnPackStart(icon, "Name", COLUMN_NAME)
-	icon.AppendColumn(firstColumn)
-	icon.AppendColumn(createColumnPackStart(icon, "Item", COLUMN_ITEM))
-	icon.AppendColumn(createColumnPackStart(icon, "Value", COLUMN_VALUE))
-	icon.AppendColumn(createColumnPackStart(icon, "LongName", COLUMN_LONGNAME))
-	pos := listStore.Append(nil)
+	firstColumn := createColumnPackStart(twee, "Name", "Nyancat", COLUMN_NAME)
+	twee.AppendColumn(firstColumn)
+	secondColumn := createColumnPackStart(twee, "Item", "4000", COLUMN_ITEM)
+	twee.AppendColumn(secondColumn)
+	thirdColumn := createColumnPackStart(twee, "Value", "1.0", COLUMN_VALUE)
+	twee.AppendColumn(thirdColumn)
+	fourthColumn := createColumnPackStart(twee, "LongName", "A poptart kitten nyans along happily", COLUMN_LONGNAME)
+	twee.AppendColumn(fourthColumn)
+	pos := listStore.Append()
+	labelColumns(twee, "Rose", COLUMN_NAME, firstColumn)
+	labelColumns(twee, "4001", COLUMN_ITEM, secondColumn)
+	labelColumns(twee, "5.0", COLUMN_VALUE, thirdColumn)
+	labelColumns(twee, "A wilting red rose.", COLUMN_LONGNAME, fourthColumn)
+	
 	err = listStore.SetValue(pos, 0, "nyancat")
 	if err != nil {
 		panic(err)
@@ -434,11 +457,31 @@ func fillList(twoBuilder *gtk.Builder) {
 	if err != nil {
 		panic(err)
 	}
-	listStore.Append(pos)
-//	listStore.Append(pos)
-	icon.SetModel(listStore)
-	icon.SetVisible(true)
-	icon.Show()
+	pos = listStore.Append()
+	err = listStore.SetValue(pos, 0, "rose")
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 1, 4001)
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 2, 50.0)
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 3, "A wilting red rose")
+	if err != nil {
+		panic(err)
+	}
+	listStore.Append()
+
+
+
+	twee.SetModel(listStore)
+	twee.SetReorderable(true)
+	twee.SetVisible(true)
+	twee.Show()
 	mainInterfaceUn, err := twoBuilder.GetObject("actionGrid")
 	if err != nil {
 		panic(err)
