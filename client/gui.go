@@ -146,7 +146,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			posting.ShowAll()
 		}()
 	})
-
 	invUn, err := twoBuilder.GetObject("invMain")
 	if err != nil {
 		panic(err)
@@ -342,6 +341,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	if err != nil {
 		panic(err)
 	}
+	fillList(twoBuilder)
 	geo := moni.GetGeometry()
 	height := geo.GetHeight()
 	width := geo.GetWidth()
@@ -352,6 +352,100 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 
 }
 
+const (
+	COLUMN_NAME = 0
+	COLUMN_ITEM = 1
+	COLUMN_VALUE = 2
+	COLUMN_LONGNAME = 3
+)
+
+func createColumn(twee *gtk.TreeView, val string, constant int) *gtk.TreeViewColumn {
+	var renderer *gtk.CellRenderer
+
+	col, err := gtk.TreeViewColumnNew()
+	if err != nil {
+		panic(err)
+	}
+	col.SetTitle(val)
+	col.AddAttribute(renderer, val, constant)
+	col.SetVisible(true)
+	return col
+
+}
+func createColumnPackStart(twee *gtk.TreeView, val string, constant int) (*gtk.TreeViewColumn) {
+
+	col, err := gtk.TreeViewColumnNew()
+	if err != nil {
+		panic(err)
+	}
+	renderer, err := gtk.CellRendererTextNew()
+	if err != nil {
+		panic(err)
+	}
+	col.PackStart(renderer, true)
+	renderer.Set("visible", true)
+	renderer.Set("text", "nyan")
+	col.SetTitle(val)
+//	col.AddAttribute(renderer, col.GetTitle(), constant)
+	col.SetVisible(true)
+	return col
+
+}
+
+func fillList(twoBuilder *gtk.Builder) {
+
+	iconUn, err := twoBuilder.GetObject("twee")
+	if err != nil {
+		panic(err)
+	}
+	icon := iconUn.(*gtk.TreeView)
+	listStore, err := gtk.TreeStoreNew(glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING)
+	if err != nil {
+		panic(err)
+	}
+
+/*	listStoreUn, err := twoBuilder.GetObject("liststore1")
+	if err != nil {
+		panic(err)
+	}
+	listStore, err := gtk.ListStoreNew()
+	if err != nil {
+		panic(err)
+	}*/
+	firstColumn := createColumnPackStart(icon, "Name", COLUMN_NAME)
+	icon.AppendColumn(firstColumn)
+	icon.AppendColumn(createColumnPackStart(icon, "Item", COLUMN_ITEM))
+	icon.AppendColumn(createColumnPackStart(icon, "Value", COLUMN_VALUE))
+	icon.AppendColumn(createColumnPackStart(icon, "LongName", COLUMN_LONGNAME))
+	pos := listStore.Append(nil)
+	err = listStore.SetValue(pos, 0, "nyancat")
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 1, 4000)
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 2, 1.0)
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 3, "nyaaaaaaacat")
+	if err != nil {
+		panic(err)
+	}
+	listStore.Append(pos)
+//	listStore.Append(pos)
+	icon.SetModel(listStore)
+	icon.SetVisible(true)
+	icon.Show()
+	mainInterfaceUn, err := twoBuilder.GetObject("actionGrid")
+	if err != nil {
+		panic(err)
+	}
+	mainInterface := mainInterfaceUn.(*gtk.Grid)
+	mainInterface.ShowAll()
+}
 func fillEq(play Player, twoBuilder *gtk.Builder) {
 //	eqList := make([]Object, 20, 20)
 

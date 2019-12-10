@@ -6,6 +6,7 @@
   <object class="GtkTextBuffer" id="buf1">
     <property name="text" translatable="yes">SYNCRO</property>
   </object>
+  <object class="GtkListStore" id="icons"/>
   <object class="GtkWindow" id="color_swatches">
     <property name="can_focus">False</property>
     <child>
@@ -53,9 +54,24 @@
             <property name="top_attach">2</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkTreeView">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="model">icons</property>
+            <child internal-child="selection">
+              <object class="GtkTreeSelection"/>
+            </child>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">3</property>
+          </packing>
+        </child>
       </object>
     </child>
   </object>
+  <object class="GtkListStore" id="liststore1"/>
   <object class="GtkEntryBuffer" id="loginbuffer"/>
   <object class="GtkEntryBuffer" id="passwordbuffer"/>
   <object class="GtkApplicationWindow" id="mainwindow">
@@ -553,7 +569,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkGrid">
+          <object class="GtkGrid" id="actionGrid">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="hexpand">True</property>
@@ -760,22 +776,28 @@
                 </style>
               </object>
               <packing>
-                <property name="left_attach">0</property>
+                <property name="left_attach">1</property>
                 <property name="top_attach">1</property>
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkTreeView" id="twee">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can_focus">True</property>
+                <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
-                <property name="label" translatable="yes">PLACEHOLDER</property>
+                <property name="model">liststore1</property>
+                <property name="rubber_banding">True</property>
+                <property name="enable_grid_lines">both</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection"/>
+                </child>
                 <style>
                   <class name="greenText"/>
                 </style>
               </object>
               <packing>
-                <property name="left_attach">1</property>
+                <property name="left_attach">0</property>
                 <property name="top_attach">1</property>
               </packing>
             </child>

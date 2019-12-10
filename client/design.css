@@ -94,6 +94,30 @@ frame {
 	transition-property: -gtk-icon-transform;
 	transition-duration: .5s;
 }
+.ico {
+	transition-property: -gtk-icon-transform;
+	transition-duration: .65s;
+
+	font: 18px courier;
+	color: rgb(10, 75, 10);
+	border: 5px black;
+	border-radius: 0em;
+	background: rgb(10, 10, 50);
+}
+
+.ico:hover {
+	font: 18px courier;
+	border: 1px solid rgb(10, 200, 10);
+	background: radial-gradient(ellipse at center, rgb(10, 10, 50), #eb2899);
+	transition: background 1s;	
+}
+.ico:active {
+	font: 18px courier;
+	border: 5px rgb(0, 0, 0);
+	background: #eb2899;
+	transition-property: -gtk-icon-transform;
+	transition-duration: .5s;
+}
 .exitstyle {
 	color: rgb(0, 0, 0);
 	background-color: #eb2899;
