@@ -787,6 +787,7 @@
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
                 <property name="model">liststore1</property>
+                <property name="reorderable">True</property>
                 <property name="rubber_banding">True</property>
                 <property name="enable_grid_lines">both</property>
                 <child internal-child="selection">
@@ -799,6 +800,7 @@
               <packing>
                 <property name="left_attach">0</property>
                 <property name="top_attach">1</property>
+                <property name="width">2</property>
               </packing>
             </child>
           </object>
