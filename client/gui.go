@@ -159,6 +159,22 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		box := boxUn.(*gtk.ScrolledWindow)
 		//if box.GetVisible() {
 			box.SetVisible(false)
+		eqUn, err := twoBuilder.GetObject("equipmentWin")
+		if err != nil {
+			panic(err)
+		}
+		eq := eqUn.(*gtk.ScrolledWindow)
+		eq.SetVisible(false)
+
+		invUn, err := twoBuilder.GetObject("inventoryWin")
+		if err != nil {
+			panic(err)
+		}
+		inv := invUn.(*gtk.ScrolledWindow)
+		inv.SetVisible(true)
+
+		fillTree(twoBuilder)
+		inv.ShowAll()
 		//}else {
 		//	box.SetVisible(true)
 		//}
@@ -181,12 +197,18 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		if err != nil {
 			panic(err)
 		}
+		invUn, err := twoBuilder.GetObject("inventoryWin")
+		if err != nil {
+			panic(err)
+		}
+		inv := invUn.(*gtk.ScrolledWindow)
+		inv.SetVisible(false)
 		eqGrid := eqGridUn.(*gtk.ScrolledWindow)
 		if eqGrid.GetVisible() {
 			eqGrid.SetVisible(false)
 		}else {
 			eqGrid.SetVisible(true)
-			fillEq(play, twoBuilder)
+			fillList(twoBuilder)
 			eqGrid.ShowAll()
 		}
 	})
@@ -479,71 +501,102 @@ func fillList(twoBuilder *gtk.Builder) {
 
 
 	twee.SetModel(listStore)
-	twee.SetReorderable(true)
+	twee.SetReorderable(false)
 	twee.SetVisible(true)
 	twee.Show()
-	mainInterfaceUn, err := twoBuilder.GetObject("actionGrid")
-	if err != nil {
-		panic(err)
-	}
-	mainInterface := mainInterfaceUn.(*gtk.Grid)
-	mainInterface.ShowAll()
 }
-func fillEq(play Player, twoBuilder *gtk.Builder) {
-//	eqList := make([]Object, 20, 20)
+func fillTree(twoBuilder *gtk.Builder) {
 
-	eqGridUn, err := twoBuilder.GetObject("equipmentGrid")
+	tweeUn, err := twoBuilder.GetObject("twee1")
 	if err != nil {
 		panic(err)
 	}
-	eqGrid := eqGridUn.(*gtk.Grid)
-	numCount := 0
-	row := 0
-	for i := 0;i < 20;i++ {
-		typeLabel, err := gtk.LabelNew("nothing")
-		if err != nil {
-			panic(err)
-		}
-		itemNameLabel, err := gtk.LabelNew("A nyancat")
-		if err != nil {
-			panic(err)
-		}
-		itemNameLabel.SetText("A nyancat")
-		itemNumberLabel, err := gtk.LabelNew("0")
-		if err != nil {
-			panic(err)
-		}
-		typeStyle, err := typeLabel.GetStyleContext()
-		if err != nil {
-			panic(err)
-		}
-		itemNameStyle, err := itemNameLabel.GetStyleContext()
-		if err != nil {
-			panic(err)
-		}
-		itemNumberStyle, err := itemNumberLabel.GetStyleContext()
-		if err != nil {
-			panic(err)
-		}
-
-		typeStyle.AddClass("smalltalk")
-		itemNameStyle.AddClass("smalltalk")
-		itemNumberStyle.AddClass("smalltalk")
-		typeStyle.AddClass("cel")
-		itemNameStyle.AddClass("cel")
-		itemNumberStyle.AddClass("cel")
-		typeStyle.AddClass("cel:hover")
-		itemNameStyle.AddClass("cel:hover")
-		itemNumberStyle.AddClass("cel:hover")
-		eqGrid.Attach(typeLabel, numCount, row, 1, 1)
-		numCount++
-		eqGrid.Attach(itemNameLabel, numCount, row, 1, 1)
-		numCount++
-		eqGrid.Attach(itemNumberLabel, numCount, row, 1, 1)
-		numCount = 0
-		row++
+	twee := tweeUn.(*gtk.TreeView)
+	listStore, err := gtk.TreeStoreNew(glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING)
+	if err != nil {
+		panic(err)
 	}
-	eqGrid.SetColumnHomogeneous(true)
+
+/*	listStoreUn, err := twoBuilder.GetObject("liststore1")
+	if err != nil {
+		panic(err)
+	}
+	listStore, err := gtk.ListStoreNew()
+	if err != nil {
+		panic(err)
+	}*/
+	firstColumn := createColumnPackStart(twee, "Name", "Nyancat", COLUMN_NAME)
+	twee.AppendColumn(firstColumn)
+	secondColumn := createColumnPackStart(twee, "Item", "4000", COLUMN_ITEM)
+	twee.AppendColumn(secondColumn)
+	thirdColumn := createColumnPackStart(twee, "Value", "1.0", COLUMN_VALUE)
+	twee.AppendColumn(thirdColumn)
+	fourthColumn := createColumnPackStart(twee, "LongName", "A poptart kitten nyans along happily", COLUMN_LONGNAME)
+	twee.AppendColumn(fourthColumn)
+	top := listStore.Append(nil)
+	labelColumns(twee, "Rose", COLUMN_NAME, firstColumn)
+	labelColumns(twee, "4001", COLUMN_ITEM, secondColumn)
+	labelColumns(twee, "5.0", COLUMN_VALUE, thirdColumn)
+	labelColumns(twee, "A wilting red rose.", COLUMN_LONGNAME, fourthColumn)
+	
+	err = listStore.SetValue(top, 0, "portable hole")
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(top, 1, 4002)
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(top, 2, 500.0)
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(top, 3, "An atypical pocket of spacetime.")
+	if err != nil {
+		panic(err)
+	}
+	pos := listStore.Insert(top, 0)
+	err = listStore.SetValue(pos, 0, "nyancat")
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 1, 4000)
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 2, 1.0)
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 3, "nyaaaaaaacat")
+	if err != nil {
+		panic(err)
+	}
+	pos = listStore.Insert(top, 0)
+	err = listStore.SetValue(pos, 0, "rose")
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 1, 4001)
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 2, 50.0)
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 3, "A wilting red rose")
+	if err != nil {
+		panic(err)
+	}
+//	listStore.Insert(top, 0)
+
+
+
+	twee.SetModel(listStore)
+	twee.SetReorderable(false)
+	twee.SetVisible(true)
+	twee.Show()
 }
 
 func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
