@@ -521,7 +521,6 @@
                         <property name="can_focus">True</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
-                        <property name="model">liststore1</property>
                         <property name="reorderable">True</property>
                         <property name="rubber_banding">True</property>
                         <property name="enable_grid_lines">both</property>
@@ -560,7 +559,6 @@
                         <property name="can_focus">True</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
-                        <property name="model">liststore1</property>
                         <property name="reorderable">True</property>
                         <property name="rubber_banding">True</property>
                         <property name="enable_grid_lines">both</property>

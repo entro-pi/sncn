@@ -173,7 +173,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		inv := invUn.(*gtk.ScrolledWindow)
 		inv.SetVisible(true)
 
-		fillTree(twoBuilder)
 		inv.ShowAll()
 		//}else {
 		//	box.SetVisible(true)
@@ -208,7 +207,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			eqGrid.SetVisible(false)
 		}else {
 			eqGrid.SetVisible(true)
-			fillList(twoBuilder)
 			eqGrid.ShowAll()
 		}
 	})
@@ -363,6 +361,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	if err != nil {
 		panic(err)
 	}
+	fillTree(twoBuilder)
 	fillList(twoBuilder)
 	geo := moni.GetGeometry()
 	height := geo.GetHeight()
@@ -379,6 +378,7 @@ const (
 	COLUMN_ITEM = 1
 	COLUMN_VALUE = 2
 	COLUMN_LONGNAME = 3
+	COLUMN_NUMBER = 4
 )
 
 func createColumn(twee *gtk.TreeView, val string, constant int) *gtk.TreeViewColumn {
@@ -400,12 +400,12 @@ func createColumnPackStart(twee *gtk.TreeView, val string, value string, constan
 	if err != nil {
 		panic(err)
 	}
-	renderer, err := gtk.CellRendererTextNew()
+/*	renderer, err := gtk.CellRendererTextNew()
 	if err != nil {
 		panic(err)
-	}
-	col.PackStart(renderer, true)
-	renderer.Set("visible", true)
+	}*/
+//	col.PackStart(renderer, true)
+//	renderer.Set("visible", true)
 //	renderer.Set("text", value)
 	col.SetTitle(val)
 //	col.AddAttribute(renderer, col.GetTitle(), constant)
@@ -436,7 +436,7 @@ func fillList(twoBuilder *gtk.Builder) {
 		panic(err)
 	}
 	twee := tweeUn.(*gtk.TreeView)
-	listStore, err := gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING)
+	listStore, err := gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING, glib.TYPE_INT)
 	if err != nil {
 		panic(err)
 	}
@@ -457,12 +457,14 @@ func fillList(twoBuilder *gtk.Builder) {
 	twee.AppendColumn(thirdColumn)
 	fourthColumn := createColumnPackStart(twee, "LongName", "A poptart kitten nyans along happily", COLUMN_LONGNAME)
 	twee.AppendColumn(fourthColumn)
+	fifthColumn := createColumnPackStart(twee, "Number", "0", COLUMN_NUMBER)
+	twee.AppendColumn(fifthColumn)
 	pos := listStore.Append()
 	labelColumns(twee, "Rose", COLUMN_NAME, firstColumn)
 	labelColumns(twee, "4001", COLUMN_ITEM, secondColumn)
 	labelColumns(twee, "5.0", COLUMN_VALUE, thirdColumn)
 	labelColumns(twee, "A wilting red rose.", COLUMN_LONGNAME, fourthColumn)
-	
+	labelColumns(twee, "0", COLUMN_NUMBER, fifthColumn)
 	err = listStore.SetValue(pos, 0, "nyancat")
 	if err != nil {
 		panic(err)
@@ -476,6 +478,10 @@ func fillList(twoBuilder *gtk.Builder) {
 		panic(err)
 	}
 	err = listStore.SetValue(pos, 3, "nyaaaaaaacat")
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 4, 1)
 	if err != nil {
 		panic(err)
 	}
@@ -496,6 +502,10 @@ func fillList(twoBuilder *gtk.Builder) {
 	if err != nil {
 		panic(err)
 	}
+	err = listStore.SetValue(pos, 4, 1)
+	if err != nil {
+		panic(err)
+	}
 	listStore.Append()
 
 
@@ -512,7 +522,7 @@ func fillTree(twoBuilder *gtk.Builder) {
 		panic(err)
 	}
 	twee := tweeUn.(*gtk.TreeView)
-	listStore, err := gtk.TreeStoreNew(glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING)
+	listStore, err := gtk.TreeStoreNew(glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING, glib.TYPE_INT)
 	if err != nil {
 		panic(err)
 	}
@@ -533,12 +543,14 @@ func fillTree(twoBuilder *gtk.Builder) {
 	twee.AppendColumn(thirdColumn)
 	fourthColumn := createColumnPackStart(twee, "LongName", "A poptart kitten nyans along happily", COLUMN_LONGNAME)
 	twee.AppendColumn(fourthColumn)
+	fifthColumn := createColumnPackStart(twee, "Number", "1", COLUMN_NUMBER)
+	twee.AppendColumn(fifthColumn)
 	top := listStore.Append(nil)
 	labelColumns(twee, "Rose", COLUMN_NAME, firstColumn)
 	labelColumns(twee, "4001", COLUMN_ITEM, secondColumn)
 	labelColumns(twee, "5.0", COLUMN_VALUE, thirdColumn)
 	labelColumns(twee, "A wilting red rose.", COLUMN_LONGNAME, fourthColumn)
-	
+	labelColumns(twee, "1", COLUMN_NUMBER, fifthColumn)
 	err = listStore.SetValue(top, 0, "portable hole")
 	if err != nil {
 		panic(err)
@@ -552,6 +564,10 @@ func fillTree(twoBuilder *gtk.Builder) {
 		panic(err)
 	}
 	err = listStore.SetValue(top, 3, "An atypical pocket of spacetime.")
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(top, 4, 1)
 	if err != nil {
 		panic(err)
 	}
@@ -572,6 +588,10 @@ func fillTree(twoBuilder *gtk.Builder) {
 	if err != nil {
 		panic(err)
 	}
+	err = listStore.SetValue(pos, 4, 1)
+	if err != nil {
+		panic(err)
+	}
 	pos = listStore.Insert(top, 0)
 	err = listStore.SetValue(pos, 0, "rose")
 	if err != nil {
@@ -589,6 +609,11 @@ func fillTree(twoBuilder *gtk.Builder) {
 	if err != nil {
 		panic(err)
 	}
+	err = listStore.SetValue(pos, 4, 1)
+	if err != nil {
+		panic(err)
+	}
+
 //	listStore.Insert(top, 0)
 
 
