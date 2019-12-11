@@ -374,11 +374,12 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 }
 
 const (
-	COLUMN_NAME = 0
-	COLUMN_ITEM = 1
-	COLUMN_VALUE = 2
-	COLUMN_LONGNAME = 3
-	COLUMN_NUMBER = 4
+	COLUMN_SLOT = 0
+	COLUMN_NAME = 1
+	COLUMN_ITEM = 2
+	COLUMN_VALUE = 3
+	COLUMN_LONGNAME = 4
+	COLUMN_NUMBER = 5
 )
 
 func createColumn(twee *gtk.TreeView, val string, constant int) *gtk.TreeViewColumn {
@@ -436,7 +437,7 @@ func fillList(twoBuilder *gtk.Builder) {
 		panic(err)
 	}
 	twee := tweeUn.(*gtk.TreeView)
-	listStore, err := gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING, glib.TYPE_INT)
+	listStore, err := gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING, glib.TYPE_INT)
 	if err != nil {
 		panic(err)
 	}
@@ -449,6 +450,8 @@ func fillList(twoBuilder *gtk.Builder) {
 	if err != nil {
 		panic(err)
 	}*/
+	zeroColumn := createColumnPackStart(twee, "Slot", "", COLUMN_SLOT)
+	twee.AppendColumn(zeroColumn)
 	firstColumn := createColumnPackStart(twee, "Name", "Nyancat", COLUMN_NAME)
 	twee.AppendColumn(firstColumn)
 	secondColumn := createColumnPackStart(twee, "Item", "4000", COLUMN_ITEM)
@@ -460,49 +463,58 @@ func fillList(twoBuilder *gtk.Builder) {
 	fifthColumn := createColumnPackStart(twee, "Number", "0", COLUMN_NUMBER)
 	twee.AppendColumn(fifthColumn)
 	pos := listStore.Append()
+	labelColumns(twee, "Slot", COLUMN_SLOT, zeroColumn)
 	labelColumns(twee, "Rose", COLUMN_NAME, firstColumn)
 	labelColumns(twee, "4001", COLUMN_ITEM, secondColumn)
 	labelColumns(twee, "5.0", COLUMN_VALUE, thirdColumn)
 	labelColumns(twee, "A wilting red rose.", COLUMN_LONGNAME, fourthColumn)
 	labelColumns(twee, "0", COLUMN_NUMBER, fifthColumn)
-	err = listStore.SetValue(pos, 0, "nyancat")
+	err = listStore.SetValue(pos, 0, "Head")
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 1, 4000)
+	err = listStore.SetValue(pos, 1, "nyancat")
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 2, 1.0)
+	err = listStore.SetValue(pos, 2, 4000)
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 3, "nyaaaaaaacat")
+	err = listStore.SetValue(pos, 3, 1.0)
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 4, 1)
+	err = listStore.SetValue(pos, 4, "nyaaaaaaacat")
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 5, 1)
 	if err != nil {
 		panic(err)
 	}
 	pos = listStore.Append()
-	err = listStore.SetValue(pos, 0, "rose")
+	err = listStore.SetValue(pos, 0, "Face")
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 1, 4001)
+	err = listStore.SetValue(pos, 1, "rose")
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 2, 50.0)
+	err = listStore.SetValue(pos, 2, 4001)
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 3, "A wilting red rose")
+	err = listStore.SetValue(pos, 3, 50.0)
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 4, 1)
+	err = listStore.SetValue(pos, 4, "A wilting red rose")
+	if err != nil {
+		panic(err)
+	}
+	err = listStore.SetValue(pos, 5, 1)
 	if err != nil {
 		panic(err)
 	}
@@ -522,7 +534,7 @@ func fillTree(twoBuilder *gtk.Builder) {
 		panic(err)
 	}
 	twee := tweeUn.(*gtk.TreeView)
-	listStore, err := gtk.TreeStoreNew(glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING, glib.TYPE_INT)
+	listStore, err := gtk.TreeStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING, glib.TYPE_INT)
 	if err != nil {
 		panic(err)
 	}
@@ -535,6 +547,8 @@ func fillTree(twoBuilder *gtk.Builder) {
 	if err != nil {
 		panic(err)
 	}*/
+	zeroColumn := createColumnPackStart(twee, "", "", COLUMN_SLOT)
+	twee.AppendColumn(zeroColumn)
 	firstColumn := createColumnPackStart(twee, "Name", "Nyancat", COLUMN_NAME)
 	twee.AppendColumn(firstColumn)
 	secondColumn := createColumnPackStart(twee, "Item", "4000", COLUMN_ITEM)
@@ -546,70 +560,71 @@ func fillTree(twoBuilder *gtk.Builder) {
 	fifthColumn := createColumnPackStart(twee, "Number", "1", COLUMN_NUMBER)
 	twee.AppendColumn(fifthColumn)
 	top := listStore.Append(nil)
+	labelColumns(twee, "", COLUMN_SLOT, zeroColumn)
 	labelColumns(twee, "Rose", COLUMN_NAME, firstColumn)
 	labelColumns(twee, "4001", COLUMN_ITEM, secondColumn)
 	labelColumns(twee, "5.0", COLUMN_VALUE, thirdColumn)
 	labelColumns(twee, "A wilting red rose.", COLUMN_LONGNAME, fourthColumn)
 	labelColumns(twee, "1", COLUMN_NUMBER, fifthColumn)
-	err = listStore.SetValue(top, 0, "portable hole")
+	err = listStore.SetValue(top, COLUMN_NAME, "portable hole")
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(top, 1, 4002)
+	err = listStore.SetValue(top, COLUMN_ITEM, 4002)
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(top, 2, 500.0)
+	err = listStore.SetValue(top, COLUMN_VALUE, 500.0)
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(top, 3, "An atypical pocket of spacetime.")
+	err = listStore.SetValue(top, COLUMN_LONGNAME, "An atypical pocket of spacetime.")
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(top, 4, 1)
+	err = listStore.SetValue(top, COLUMN_NUMBER, 1)
 	if err != nil {
 		panic(err)
 	}
 	pos := listStore.Insert(top, 0)
-	err = listStore.SetValue(pos, 0, "nyancat")
+	err = listStore.SetValue(pos, COLUMN_NAME, "nyancat")
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 1, 4000)
+	err = listStore.SetValue(pos, COLUMN_ITEM, 4000)
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 2, 1.0)
+	err = listStore.SetValue(pos, COLUMN_VALUE, 1.0)
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 3, "nyaaaaaaacat")
+	err = listStore.SetValue(pos, COLUMN_LONGNAME, "nyaaaaaaacat")
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 4, 1)
+	err = listStore.SetValue(pos, COLUMN_NUMBER, 1)
 	if err != nil {
 		panic(err)
 	}
 	pos = listStore.Insert(top, 0)
-	err = listStore.SetValue(pos, 0, "rose")
+	err = listStore.SetValue(pos, COLUMN_NAME, "rose")
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 1, 4001)
+	err = listStore.SetValue(pos, COLUMN_ITEM, 4001)
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 2, 50.0)
+	err = listStore.SetValue(pos, COLUMN_VALUE, 50.0)
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 3, "A wilting red rose")
+	err = listStore.SetValue(pos, COLUMN_LONGNAME, "A wilting red rose")
 	if err != nil {
 		panic(err)
 	}
-	err = listStore.SetValue(pos, 4, 1)
+	err = listStore.SetValue(pos, COLUMN_NUMBER, 1)
 	if err != nil {
 		panic(err)
 	}
