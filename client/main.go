@@ -61,66 +61,7 @@ func main() {
 	go handleBreak()
 
 	fileChange := make(chan bool)
-	if len(os.Args) == 2 {
-	if os.Args[1] == "--gui" {
-		LaunchGUI(fileChange)
-	}
-	if os.Args[1] == "--1920x1080main" {
-			scanner := bufio.NewScanner(os.Stdin)
-		//	fmt.Print("Enter your command")
-			user, pword := LoginSC()
-			fmt.Print("Initializing a player")
-			play := InitPlayer(user, pword)
-			whoList := who(play.Name)
-			fmt.Println(whoList)
-			go actOn(play, fileChange, whoList) //for receiving in Go
-			go watch(play, fileChange)
-			for scanner.Scan() {
-				input := scanner.Text()
-				//Should probably do some error checking before
-				//passing it along
-				if len(strings.Split(input, " ")) <= 1 {
-					continue
-				}else {
-					play, input = parseInput(play, input)
-					doPlayer(input, play, os.Args[1])
-					go watch(play, fileChange)
-					go doInput(input, play, fileChange, whoList)
-					go doWatch(input, play, fileChange)
-			//		fmt.Print("Enter your command")
-				}
-				fmt.Print("\033[26;53H\n")
-
-			}
-		}
-	}
-	if os.Args[1] == "--4x3" {
-                        scanner := bufio.NewScanner(os.Stdin)
-                //      fmt.Print("Enter your command")
-                        user, pword := LoginSC()
-                        fmt.Print("Initializing a player")
-                        play := InitPlayer(user, pword)
-                        whoList := who(play.Name)
-                        fmt.Println(whoList)
-                        go actOn(play, fileChange, whoList) //for receiving in Go
-                        go watch(play, fileChange)
-                        for scanner.Scan() {
-                                input := scanner.Text()
-                                //Should probably do some error checking before
-                                //passing it along
-                                if len(strings.Split(input, " ")) <= 1 {
-                                        continue
-                                }else {
-                                        play, input = parseInput(play, input)
-                                        doPlayer(input, play, os.Args[1])
-                                        go watch(play, fileChange)
-                                        go doInput(input, play, fileChange, whoList)
-                                        go doWatch(input, play, fileChange)
-                        //              fmt.Print("Enter your command")
-                                }
-                                fmt.Print("\033[26;53H\n")
-         	      }
-                }
+	LaunchGUI(fileChange)
 
 }
 
