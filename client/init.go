@@ -1,15 +1,7 @@
 package main
 
 import (
-  "os"
-  "bufio"
-  "context"
-  "time"
-	"strconv"
 	"strings"
-  "go.mongodb.org/mongo-driver/bson"
-  "go.mongodb.org/mongo-driver/mongo"
-  "go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func initDigRoom(digFrame [][]int, zoneVnums string, zoneName string, play Player, vnum int) (Space, int) {
@@ -115,46 +107,3 @@ func InitFight() Fight {
 }
 
 
-func InitZoneSpaces(SpaceRange string, zoneName string, desc string) {
-  userFile, err := os.Open("creds")
-  if err != nil {
-    panic(err)
-  }
-  defer userFile.Close()
-  scanner := bufio.NewScanner(userFile)
-  scanner.Scan()
-  user := scanner.Text()
-  scanner.Scan()
-  pass := scanner.Text()
-  client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://"+user+":"+pass+"@sncn-hifs4.mongodb.net/test?retryWrites=true&w=majority"))
-	if err != nil {
-		panic(err)
-	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
-	if err != nil {
-		panic(err)
-	}
-	collection := client.Database("zones").Collection("Spaces")
-	vnums := strings.Split(SpaceRange, "-")
-	vnumStart, err := strconv.Atoi(vnums[0])
-	if err != nil {
-		panic(err)
-	}
-
-	vnumEnd, err := strconv.Atoi(vnums[1])
-	if err != nil {
-		panic(err)
-	}
-	for i := vnumStart;i < vnumEnd;i++ {
-		var mobiles []int
-		var items []int
-		mobiles = append(mobiles, 0)
-		items = append(items, 0)
-		_, err = collection.InsertOne(context.Background(), bson.M{"vnums":SpaceRange,"zone":zoneName,"vnum":i, "desc":desc,
-							"mobiles": mobiles, "items": items })
-	}
-	if err != nil {
-		panic(err)
-	}
-}
