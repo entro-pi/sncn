@@ -1,0 +1,241 @@
+@keyframes inspectIn {
+	0% {
+		opacity: 0.0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+
+}
+@keyframes mooseOver {
+	0% {
+		background: rgb(10, 10, 50);
+	}
+
+	100% {
+		background: rgb(150, 10, 150);
+	}
+
+}
+
+
+
+
+.post {
+	background-color: rgb(50, 10, 10);
+	color: rgb(10, 250, 10);
+}
+
+.syncro {
+	background-color: rgb(0, 0, 50);
+}
+.syncro:focus {
+	background-color: rgb(10, 10, 50);
+}
+textview {
+	font: 18px courier new;
+	background: rgb(10, 255, 10);
+	background-color: rgb(10, 255, 10);
+
+}
+.notebookstyle {
+	font: 22px courier new;
+	color: rgb(0, 0, 0);
+	opacity: 1.0;
+	background: rgb(10, 255, 10);
+	background-color: rgb(10, 255, 10);
+
+}
+.button {
+	font: 22px courier new;
+	color: rgb(0, 0, 0);
+	background: rgb(175, 50, 50);
+	border: 0px;
+	border-radius: 0em;
+	background-color: rgb(175, 50, 50);
+}
+.button:hover {
+	background: rgb(225, 50, 50);
+	border: 0px;
+	border-radius: 0em;
+	background-color: rgb(225, 50, 50);
+}
+
+frame {
+	border-style: dotted;
+	border-top: 15px;
+	border-bottom: 30px;
+	border-color: rgb(85, 10, 85);
+	font-size: 26px;
+	background-color: transparent;
+}
+.cel {
+	transition-property: -gtk-icon-transform;
+	transition-duration: .65s;
+
+	font: 18px courier;
+	color: rgb(10, 75, 10);
+	border: 5px black;
+	border-radius: 0em;
+	background: rgb(10, 10, 50);
+}
+
+.cel:hover {
+	font: 18px courier;
+	border: 1px solid rgb(10, 200, 10);
+	background: radial-gradient(ellipse at center, rgb(10, 10, 50), #eb2899);
+	transition: background 1s;	
+}
+.cel:active {
+	font: 18px courier;
+	border: 5px rgb(0, 0, 0);
+	background: #eb2899;
+	transition-property: -gtk-icon-transform;
+	transition-duration: .5s;
+}
+.ico {
+	transition-property: -gtk-icon-transform;
+	transition-duration: .65s;
+
+	font: 18px courier;
+	color: rgb(10, 75, 10);
+	border: 5px black;
+	border-radius: 0em;
+	background: rgb(10, 10, 50);
+}
+
+.ico:hover {
+	font: 18px courier;
+	border: 1px solid rgb(10, 200, 10);
+	background: radial-gradient(ellipse at center, rgb(10, 10, 50), #eb2899);
+	transition: background 1s;	
+}
+.ico:active {
+	font: 18px courier;
+	border: 5px rgb(0, 0, 0);
+	background: #eb2899;
+	transition-property: -gtk-icon-transform;
+	transition-duration: .5s;
+}
+.exitstyle {
+	color: rgb(0, 0, 0);
+	background-color: #eb2899;
+}
+.exitstyle:hover {
+	color: rgb(0, 0, 0);
+	background-color: rgb(10, 175, 10);
+}
+.broadcastsstyle {
+	color: #eb2899;
+	background-color: #eb2899;
+}
+.broadcastsstyle:hover {
+	color: rgb(10, 175, 10);
+	background-color: rgb(10, 175, 10);
+}
+.inventorystyle {
+	color: #eb2899;
+	background-color: #eb2899;
+}
+.inventorystyle:hover {
+	color: rgb(10, 175, 10);
+	background-color: rgb(10, 175, 10);
+}
+.equipmentstyle {
+	color: #eb2899;
+	background-color: #eb2899;
+}
+.equipmentstyle:hover {
+	color: rgb(10, 175, 10);
+	background-color: rgb(10, 175, 10);
+}
+.tellsstyle {
+	color: #eb2899;
+	background-color: #eb2899;
+}
+.tellsstyle:hover {
+	color: rgb(10, 175, 10);
+	background-color: rgb(10, 175, 10);
+}
+.sidebar {
+	color: #eb2899;
+	background-color: rgb(85, 10, 85);
+}
+
+.header {
+	animation-duration: 2s;
+	animation-iteration-count: 1;
+	background-color: rgb(10, 250, 10);
+}
+
+.footer:hover {
+	animation-play-state: paused;
+	background-color: rgb(10, 250, 10);
+}
+.header:hover {
+	animation-play-state: paused;
+	background-color: rgb(10, 250, 10);
+}
+
+.footer {
+	animation-duration: 2s;
+	animation-iteration-count: 1;
+	background-color: rgb(10, 250, 10);
+}
+.greenText {
+	background-color: rgb(75, 10, 75);
+	color: rgb(10, 250, 10);
+}
+.loginText {
+	background-color: rgb(5, 10, 5);
+	color: rgb(10, 250, 10);
+}
+.inspectIn {
+	animation-name:inspectIn;
+	animation-duration: .250s;
+	animation-iteration-count: 1;
+}
+
+.inspect {
+	color: rgb(10, 250, 10);
+}
+.contents {
+	font: 16px courier;
+	color: rgb(10, 250, 10);
+}
+
+
+#user {
+	background-color: rgb(50, 175, 50);
+
+}
+
+#user:hover {
+	background-color: rgb(50, 225, 50);
+}
+
+.black {
+	color: rgb(0, 0, 0);
+	background-color: rgb(0, 0, 0);
+}
+.opacGlow {
+	font-size: 18px;
+	color: rgb(10, 10, 50);
+	opacity: 0.5;
+	background-color: rgb(10, 10, 50);
+}
+.glow {
+	font-size: 18px;
+	color: rgb(10, 10, 50);
+	background-color: rgb(75, 10, 50);
+}
+
+.opacGlow:focus {
+	font-size: 18px;
+	color: rgb(50, 10, 50);	
+	opacity: 1;
+	background-color: rgb(50, 10, 50);
+
+}
+
