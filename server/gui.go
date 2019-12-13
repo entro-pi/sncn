@@ -146,7 +146,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			posting.ShowAll()
 		}()
 	})
-	invUn, err := twoBuilder.GetObject("invMain")
+	invUn, err := twoBuilder.GetObject("listTells")
 	if err != nil {
 		panic(err)
 	}
@@ -159,26 +159,11 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		box := boxUn.(*gtk.ScrolledWindow)
 		//if box.GetVisible() {
 			box.SetVisible(false)
-		eqUn, err := twoBuilder.GetObject("equipmentWin")
-		if err != nil {
-			panic(err)
-		}
-		eq := eqUn.(*gtk.ScrolledWindow)
-		eq.SetVisible(false)
-
-		invUn, err := twoBuilder.GetObject("inventoryWin")
-		if err != nil {
-			panic(err)
-		}
-		inv := invUn.(*gtk.ScrolledWindow)
-		inv.SetVisible(true)
-
-		inv.ShowAll()
 		//}else {
 		//	box.SetVisible(true)
 		//}
 	})
-	equipUn, err := twoBuilder.GetObject("equipMain")
+	equipUn, err := twoBuilder.GetObject("broadMain1")
 	if err != nil {
 		panic(err)
 	}
@@ -192,23 +177,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		if box1.GetVisible() {
 			box1.SetVisible(false)
 		}
-		eqGridUn, err := twoBuilder.GetObject("equipmentWin")
-		if err != nil {
-			panic(err)
-		}
-		invUn, err := twoBuilder.GetObject("inventoryWin")
-		if err != nil {
-			panic(err)
-		}
-		inv := invUn.(*gtk.ScrolledWindow)
-		inv.SetVisible(false)
-		eqGrid := eqGridUn.(*gtk.ScrolledWindow)
-		if eqGrid.GetVisible() {
-			eqGrid.SetVisible(false)
-		}else {
-			eqGrid.SetVisible(true)
-			eqGrid.ShowAll()
-		}
+		box1.ShowAll()
 	})
 	wind := appWindow.(*gtk.ApplicationWindow)
 	wind.Fullscreen()
