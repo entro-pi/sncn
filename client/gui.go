@@ -649,8 +649,8 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 //		play := InitPlayer("WEASEL", "lol")
 		broadcastContainer = drawPlainBroadcasts(play)
 	}
-	if len(broadcastContainer) >= 40 {
-		broadcastContainer = broadcastContainer[len(broadcastContainer)-40:len(broadcastContainer)]
+	if len(broadcastContainer) >= 15 {
+		broadcastContainer = broadcastContainer[len(broadcastContainer)-15:len(broadcastContainer)]
 	}
 	for i := 0;i < len(broadcastContainer);i++ {
 		fmt.Println(i)
@@ -840,6 +840,8 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 	}
 	fmt.Print(messHolder)
 	messageLabel.SetText(messHolder)
+	messageLabel.SetJustify(gtk.JUSTIFY_CENTER)
+	messageLabel.SetVAlign(gtk.ALIGN_CENTER)
 
 	fromFieldLabel, err := gtk.LabelNew(name+"field")
 	if err != nil {

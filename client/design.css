@@ -74,21 +74,21 @@ frame {
 	transition-property: -gtk-icon-transform;
 	transition-duration: .65s;
 
-	font: 18px courier;
+	font: 16px courier;
 	color: rgb(10, 75, 10);
 	border: 5px black;
-	border-radius: 0em;
+	border-radius: 15em;
 	background: rgb(10, 10, 50);
 }
 
 .cel:hover {
-	font: 18px courier;
+	font: 16px courier;
 	border: 1px solid rgb(10, 200, 10);
 	background: radial-gradient(ellipse at center, rgb(10, 10, 50), #eb2899);
 	transition: background 1s;	
 }
 .cel:active {
-	font: 18px courier;
+	font: 16px courier;
 	border: 5px rgb(0, 0, 0);
 	background: #eb2899;
 	transition-property: -gtk-icon-transform;
@@ -164,6 +164,7 @@ frame {
 }
 
 .header {
+	border-radius: 5em;
 	animation-duration: 2s;
 	animation-iteration-count: 1;
 	background-color: rgb(10, 250, 10);
@@ -179,6 +180,7 @@ frame {
 }
 
 .footer {
+	border-radius: 5em;
 	animation-duration: 2s;
 	animation-iteration-count: 1;
 	background-color: rgb(10, 250, 10);
