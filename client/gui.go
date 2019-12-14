@@ -159,21 +159,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		box := boxUn.(*gtk.ScrolledWindow)
 		//if box.GetVisible() {
 			box.SetVisible(false)
-		eqUn, err := twoBuilder.GetObject("equipmentWin")
-		if err != nil {
-			panic(err)
-		}
-		eq := eqUn.(*gtk.ScrolledWindow)
-		eq.SetVisible(false)
-
-		invUn, err := twoBuilder.GetObject("inventoryWin")
-		if err != nil {
-			panic(err)
-		}
-		inv := invUn.(*gtk.ScrolledWindow)
-		inv.SetVisible(true)
-
-		inv.ShowAll()
 		//}else {
 		//	box.SetVisible(true)
 		//}
@@ -191,23 +176,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		box1 := box1Un.(*gtk.ScrolledWindow)
 		if box1.GetVisible() {
 			box1.SetVisible(false)
-		}
-		eqGridUn, err := twoBuilder.GetObject("equipmentWin")
-		if err != nil {
-			panic(err)
-		}
-		invUn, err := twoBuilder.GetObject("inventoryWin")
-		if err != nil {
-			panic(err)
-		}
-		inv := invUn.(*gtk.ScrolledWindow)
-		inv.SetVisible(false)
-		eqGrid := eqGridUn.(*gtk.ScrolledWindow)
-		if eqGrid.GetVisible() {
-			eqGrid.SetVisible(false)
-		}else {
-			eqGrid.SetVisible(true)
-			eqGrid.ShowAll()
 		}
 	})
 	wind := appWindow.(*gtk.ApplicationWindow)
@@ -227,14 +195,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		}
 		small := smallUn.(*gtk.ScrolledWindow)
 		small.ShowAll()
-		eqGridUn, err := twoBuilder.GetObject("equipmentWin")
-		if err != nil {
-			panic(err)
-		}
-		eqGrid := eqGridUn.(*gtk.ScrolledWindow)
-		if eqGrid.GetVisible() {
-			eqGrid.SetVisible(false)
-		}
 //		paintOver(twoBuilder)
 /*		butt := assembleBroadButton("0")
 		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
@@ -286,14 +246,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		smallUn, err := twoBuilder.GetObject("smalltalkWin")
 		if err != nil {
 			panic(err)
-		}
-		eqGridUn, err := twoBuilder.GetObject("equipmentWin")
-		if err != nil {
-			panic(err)
-		}
-		eqGrid := eqGridUn.(*gtk.ScrolledWindow)
-		if eqGrid.GetVisible() {
-			eqGrid.SetVisible(false)
 		}
 		small := smallUn.(*gtk.ScrolledWindow)
 		small.ShowAll()
@@ -673,20 +625,42 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 	for i := 0;i < len(buttonContainer);i++ {
 		if numCount < numInRow {
 //			small.Add(buttonContainer[i])
-			small.Attach(buttonContainer[i], numCount, row, 1, 1)
+			buttonContainer[i].SetVAlign(gtk.ALIGN_FILL)
+			buttonContainer[i].SetVExpand(true)
+			box, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
+			if err != nil {
+				panic(err)
+			}
+			box.SetCenterWidget(buttonContainer[i])
+			box.SetChildPacking(buttonContainer[i], true, true, 1, gtk.PACK_START)
+//			box.PackEnd(buttonContainer[i], true, true, 0)
+			box.SetVAlign(gtk.ALIGN_CENTER)
+//			box.SetVExpand(true)
+			small.Attach(box, numCount, row, 1, 1)
 			numCount++
-			small.ShowAll()
+//			small.ShowAll()
 //			fmt.Println("Num in row", numCount)
 		}else {
 //			small.InsertRow(row)
-			small.Attach(buttonContainer[i], numCount, row, 1, 1)
+			buttonContainer[i].SetVAlign(gtk.ALIGN_FILL)
+			buttonContainer[i].SetVExpand(true)
+			box, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
+			if err != nil {
+				panic(err)
+			}
+			box.SetCenterWidget(buttonContainer[i])
+			box.SetChildPacking(buttonContainer[i], true, true, 1, gtk.PACK_START)
+//			box.PackEnd(buttonContainer[i], true, true, 0)
+			box.SetVAlign(gtk.ALIGN_CENTER)
+//			box.SetVExpand(true)
+			small.Attach(box, numCount, row, 1, 1)
 			row++
 			numCount = 0
 //			fmt.Println("row", row)
-			small.ShowAll()
+//			small.ShowAll()
 		}
 	}
-	small.SetRowHomogeneous(true)
+//	small.SetRowHomogeneous(true)
 	small.SetColumnHomogeneous(true)
 	small.ShowAll()
 
