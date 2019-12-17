@@ -252,6 +252,82 @@
       <class name="syncro"/>
     </style>
   </object>
+  <object class="GtkWindow" id="splash">
+    <property name="sensitive">False</property>
+    <property name="can_focus">False</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
+    <property name="resizable">False</property>
+    <property name="window_position">center</property>
+    <property name="default_width">440</property>
+    <property name="default_height">250</property>
+    <property name="type_hint">splashscreen</property>
+    <property name="decorated">False</property>
+    <property name="gravity">center</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkAspectFrame">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label_xalign">0.5</property>
+        <property name="shadow_type">etched-out</property>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">SNOWCRASH.NETWORK</property>
+                <style>
+                  <class name="splash"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">LOGGING IN</property>
+                <style>
+                  <class name="splash"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinner">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="active">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+        <style>
+          <class name="splash"/>
+        </style>
+      </object>
+    </child>
+  </object>
   <object class="GtkTextTagTable" id="texttagtable1">
     <child type="tag">
       <object class="GtkTextTag" id="greenTex">
@@ -436,6 +512,8 @@
                                   <object class="GtkLabel" id="timeDate0">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="margin_left">12</property>
+                                    <property name="margin_right">12</property>
                                     <style>
                                       <class name="header"/>
                                       <class name="header:hover"/>
@@ -466,6 +544,8 @@
                                   <object class="GtkLabel" id="fromField0">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="margin_left">12</property>
+                                    <property name="margin_right">12</property>
                                     <property name="label" translatable="yes">snowcrash.network</property>
                                     <style>
                                       <class name="footer"/>

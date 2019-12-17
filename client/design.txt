@@ -1,0 +1,6 @@
+This is generalized notes for the sncn client project
+
+FROM label needs to move down like three pixels.
+
+TIME label needs to be like two characters shorter
+or a smaller font

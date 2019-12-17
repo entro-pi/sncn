@@ -1,6 +1,7 @@
 package main
 
 import (
+    "time"
     "strconv"
     "strings"
     "log"
@@ -49,7 +50,50 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 
 }
 
+func splash(application *gtk.Application, twoBuilder *gtk.Builder) {
+	splashWindowUn, err := twoBuilder.GetObject("splash")
+	if err != nil {
+		panic(err)
+	}
+	splashWindow := splashWindowUn.(*gtk.Window)
+	splashStyle, err := splashWindow.GetStyleContext()
+	
+	screen, err := splashStyle.GetScreen()
+	disp, err := screen.GetDisplay()
+	if err != nil {
+		panic(err)
+	}
+	splashWindow.Fullscreen()
+	splashWindow.ShowAll()
+	moni, err := disp.GetMonitor(0)
+	if err != nil {
+		panic(err)
+	}
+	geo := moni.GetGeometry()
+	height := geo.GetHeight()
+	width := geo.GetWidth()
+	splashWindow.SetDefaultSize(width, height)
+	splashWindow.Fullscreen()
+        splashWindow.Show()
+	start := time.Now()
+	for {
+		end := time.Now().Sub(start)
+		if end >= (1*time.Second) {
+			splashWindow.GrabFocus()
+			splashWindow.Show()
+		}
+		if end >= (5*time.Second) {
+			splashWindow.Close()
+			break
+		}
+	}
+}
+
 func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) {
+	//launch the splash screen
+	go splash(application, twoBuilder)
+
+
 	// Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("maininterface")
         if err != nil {
@@ -1009,6 +1053,7 @@ func LaunchGUI(fileChange chan bool) {
         		        play := InitPlayer(user, pass)
 				whoList := who(play.Name)
 	                	go func() { actOn(play, fileChange, whoList)}()
+				
 				launch(play, application, twoBuilder)
 			}
 		})
