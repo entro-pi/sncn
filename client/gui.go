@@ -9,7 +9,7 @@ import (
     "fmt"
     "github.com/gotk3/gotk3/glib"
     "github.com/gotk3/gotk3/gtk"
-//    "github.com/gotk3/gotk3/gdk"
+    "github.com/gotk3/gotk3/gdk"
 )
 
 
@@ -50,38 +50,27 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 
 }
 
-func splash(application *gtk.Application, twoBuilder *gtk.Builder) {
+func splash(moni *gdk.Monitor, application *gtk.Application, twoBuilder *gtk.Builder) {
 	splashWindowUn, err := twoBuilder.GetObject("splash")
 	if err != nil {
 		panic(err)
 	}
 	splashWindow := splashWindowUn.(*gtk.Window)
-	splashStyle, err := splashWindow.GetStyleContext()
-	
-	screen, err := splashStyle.GetScreen()
-	disp, err := screen.GetDisplay()
-	if err != nil {
-		panic(err)
-	}
-	splashWindow.Fullscreen()
-	splashWindow.ShowAll()
-	moni, err := disp.GetMonitor(0)
-	if err != nil {
-		panic(err)
-	}
+//	splashWindow.Fullscreen()
+//	splashWindow.ShowAll()
 	geo := moni.GetGeometry()
 	height := geo.GetHeight()
 	width := geo.GetWidth()
 	splashWindow.SetDefaultSize(width, height)
 	splashWindow.Fullscreen()
+	splashWindow.GrabFocus()
         splashWindow.Show()
 	start := time.Now()
 	for {
+//		splashWindow.GrabFocus()
+//		splashWindow.Show()
+		time.Sleep(100*time.Millisecond)
 		end := time.Now().Sub(start)
-		if end >= (1*time.Second) {
-			splashWindow.GrabFocus()
-			splashWindow.Show()
-		}
 		if end >= (5*time.Second) {
 			splashWindow.Close()
 			break
@@ -90,8 +79,6 @@ func splash(application *gtk.Application, twoBuilder *gtk.Builder) {
 }
 
 func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) {
-	//launch the splash screen
-	go splash(application, twoBuilder)
 
 
 	// Create ApplicationWindow
@@ -357,6 +344,8 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	if err != nil {
 		panic(err)
 	}
+	//launch the splash screen
+	go splash(moni, application, twoBuilder)
 	fillTree(twoBuilder)
 	fillList(twoBuilder)
 	geo := moni.GetGeometry()
