@@ -80,7 +80,10 @@
     <property name="hexpand">False</property>
     <property name="vexpand">False</property>
     <property name="resizable">False</property>
+    <property name="window_position">center</property>
+    <property name="type_hint">utility</property>
     <property name="decorated">False</property>
+    <property name="gravity">center</property>
     <property name="show_menubar">False</property>
     <child>
       <placeholder/>
@@ -485,10 +488,6 @@
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
                 <property name="shadow_type">in</property>
-                <property name="min_content_width">855</property>
-                <property name="min_content_height">425</property>
-                <property name="max_content_width">855</property>
-                <property name="max_content_height">425</property>
                 <property name="propagate_natural_width">True</property>
                 <child>
                   <object class="GtkViewport">
@@ -589,19 +588,27 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScrolledWindow">
-                <property name="visible">True</property>
+              <object class="GtkScrolledWindow" id="equipmentWin">
                 <property name="can_focus">True</property>
                 <property name="shadow_type">in</property>
+                <property name="min_content_width">855</property>
+                <property name="max_content_width">855</property>
                 <child>
                   <object class="GtkViewport">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkLabel">
+                      <object class="GtkTreeView" id="twee">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">BATTLESPAM GOES HERE</property>
+                        <property name="can_focus">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="rubber_banding">True</property>
+                        <property name="enable_grid_lines">both</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
                         <style>
                           <class name="greenText"/>
                         </style>
@@ -609,23 +616,52 @@
                     </child>
                   </object>
                 </child>
+                <style>
+                  <class name="greenText"/>
+                </style>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
+                <property name="left_attach">1</property>
+                <property name="top_attach">0</property>
               </packing>
             </child>
             <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
+              <object class="GtkScrolledWindow" id="inventoryWin">
+                <property name="can_focus">True</property>
+                <property name="shadow_type">in</property>
+                <property name="min_content_width">855</property>
+                <property name="max_content_width">855</property>
+                <child>
+                  <object class="GtkViewport">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkTreeView" id="twee1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="rubber_banding">True</property>
+                        <property name="enable_grid_lines">both</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                        <style>
+                          <class name="greenText"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <style>
+                  <class name="greenText"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">0</property>
+              </packing>
             </child>
             <style>
               <class name="smalltalk"/>
@@ -835,74 +871,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScrolledWindow" id="equipmentWin">
+              <object class="GtkLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hexpand">True</property>
+                <property name="can_focus">False</property>
                 <property name="vexpand">True</property>
-                <property name="shadow_type">in</property>
-                <child>
-                  <object class="GtkViewport">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <child>
-                      <object class="GtkTreeView" id="twee">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="hexpand">True</property>
-                        <property name="vexpand">True</property>
-                        <property name="reorderable">True</property>
-                        <property name="rubber_banding">True</property>
-                        <property name="enable_grid_lines">both</property>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
-                        </child>
-                        <style>
-                          <class name="greenText"/>
-                        </style>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <style>
-                  <class name="greenText"/>
-                </style>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScrolledWindow" id="inventoryWin">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
-                <property name="shadow_type">in</property>
-                <child>
-                  <object class="GtkViewport">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <child>
-                      <object class="GtkTreeView" id="twee1">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="hexpand">True</property>
-                        <property name="vexpand">True</property>
-                        <property name="reorderable">True</property>
-                        <property name="rubber_banding">True</property>
-                        <property name="enable_grid_lines">both</property>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
-                        </child>
-                        <style>
-                          <class name="greenText"/>
-                        </style>
-                      </object>
-                    </child>
-                  </object>
-                </child>
+                <property name="label" translatable="yes">PLACEHOLDER</property>
                 <style>
                   <class name="greenText"/>
                 </style>
@@ -911,6 +884,9 @@
                 <property name="left_attach">1</property>
                 <property name="top_attach">1</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
             </child>
           </object>
           <packing>

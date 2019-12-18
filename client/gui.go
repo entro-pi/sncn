@@ -669,8 +669,8 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 	for i := 0;i < len(buttonContainer);i++ {
 		if numCount < numInRow {
 //			small.Add(buttonContainer[i])
-			buttonContainer[i].SetVAlign(gtk.ALIGN_FILL)
-			buttonContainer[i].SetVExpand(true)
+//			buttonContainer[i].SetVAlign(gtk.ALIGN_CENTER)
+//			buttonContainer[i].SetVExpand(true)
 			box, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
 			if err != nil {
 				panic(err)
@@ -678,16 +678,17 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 			box.SetCenterWidget(buttonContainer[i])
 			box.SetChildPacking(buttonContainer[i], true, true, 1, gtk.PACK_START)
 //			box.PackEnd(buttonContainer[i], true, true, 0)
-			box.SetVAlign(gtk.ALIGN_CENTER)
-//			box.SetVExpand(true)
+			box.SetVAlign(gtk.ALIGN_FILL)
+			box.SetVExpand(true)
 			small.Attach(box, numCount, row, 1, 1)
 			numCount++
+			small.Show()
 //			small.ShowAll()
 //			fmt.Println("Num in row", numCount)
 		}else {
 //			small.InsertRow(row)
-			buttonContainer[i].SetVAlign(gtk.ALIGN_FILL)
-			buttonContainer[i].SetVExpand(true)
+//			buttonContainer[i].SetVAlign(gtk.ALIGN_CENTER)
+//			buttonContainer[i].SetVExpand(true)
 			box, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
 			if err != nil {
 				panic(err)
@@ -695,16 +696,17 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 			box.SetCenterWidget(buttonContainer[i])
 			box.SetChildPacking(buttonContainer[i], true, true, 1, gtk.PACK_START)
 //			box.PackEnd(buttonContainer[i], true, true, 0)
-			box.SetVAlign(gtk.ALIGN_CENTER)
-//			box.SetVExpand(true)
+			box.SetVAlign(gtk.ALIGN_FILL)
+			box.SetVExpand(true)
 			small.Attach(box, numCount, row, 1, 1)
 			row++
 			numCount = 0
 //			fmt.Println("row", row)
 //			small.ShowAll()
+			small.Show()
 		}
 	}
-//	small.SetRowHomogeneous(true)
+	small.SetRowHomogeneous(true)
 	small.SetColumnHomogeneous(true)
 	small.ShowAll()
 
@@ -859,7 +861,8 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 	fmt.Print(messHolder)
 	messageLabel.SetText(messHolder)
 	messageLabel.SetJustify(gtk.JUSTIFY_CENTER)
-	messageLabel.SetVAlign(gtk.ALIGN_CENTER)
+	messageLabel.SetVAlign(gtk.ALIGN_FILL)
+	messageLabel.SetVExpand(true)
 
 	fromFieldLabel, err := gtk.LabelNew(name+"field")
 	if err != nil {
