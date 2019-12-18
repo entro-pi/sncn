@@ -1,3 +1,13 @@
+.healthy {
+	background-color: rgb(250, 10, 10);
+}
+.failing {
+	background-color: rgb(50, 10, 50);
+}
+.failed {
+	background-color: rgb(10, 50, 10);
+}
+
 .splash {
 	background-color: #eb2897;
 	color: #fb9d45;
@@ -146,7 +156,6 @@ frame {
 }
 
 .header {
-	border-radius: 5em;
 	animation-duration: 2s;
 	animation-iteration-count: 1;
 	background-color: rgb(10, 250, 10);
@@ -162,13 +171,16 @@ frame {
 }
 
 .footer {
-	border-radius: 5em;
 	animation-duration: 2s;
 	animation-iteration-count: 1;
 	background-color: rgb(10, 250, 10);
 }
 .greenText {
 	background-color: rgb(75, 10, 75);
+	color: rgb(10, 250, 10);
+}
+.gOnB {
+	background-color: rgb(0, 0, 0);
 	color: rgb(10, 250, 10);
 }
 .loginText {
@@ -230,7 +242,7 @@ frame {
 	font: 18px courier;
 	color: rgb(10, 75, 10);
 	border: 5px black;
-	border-radius: 15em;
+	border-radius: 1em;
 	background: rgb(10, 10, 50);
 }
 
@@ -239,7 +251,31 @@ frame {
 	border: 1px solid rgb(10, 200, 10);
 	background: radial-gradient(ellipse at center, rgb(10, 10, 50), #eb2899);
 	transition: background 1s;
-	border-radius: 15em;	
+	border-radius: 1em;	
+}
+.cel:active {
+	font: 18px courier;
+	border: 5px rgb(0, 0, 0);
+	background: #eb2899;
+	transition-property: -gtk-icon-transform;
+	transition-duration: .5s;
+}
+.inspectCel {
+	transition-property: -gtk-icon-transform;
+	transition-duration: .65s;
+
+	font: 18px courier;
+	color: rgb(10, 75, 10);
+	border: 5px black;
+	border-radius: 5em;
+	background: rgb(10, 10, 50);
+}
+.inspectCel:hover {
+	font: 18px courier;
+	border: 1px solid rgb(10, 200, 10);
+	background: radial-gradient(ellipse at center, rgb(10, 10, 50), #eb2899);
+	transition: background 1s;
+	border-radius: 5em;	
 }
 .cel:active {
 	font: 18px courier;

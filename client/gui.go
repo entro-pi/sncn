@@ -7,6 +7,8 @@ import (
     "log"
     "os"
     "fmt"
+    "math"
+    "github.com/gotk3/gotk3/cairo"
     "github.com/gotk3/gotk3/glib"
     "github.com/gotk3/gotk3/gtk"
     "github.com/gotk3/gotk3/gdk"
@@ -111,12 +113,28 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	exit.Connect("clicked", func () {
 		os.Exit(1)
 	})
+	//To populate the text window programmatically we do the following
+	logMainUn, err := twoBuilder.GetObject("mainLog")
+	if err != nil {
+		panic(err)
+	}
+	logMain := logMainUn.(*gtk.Label)
+	buildString := ""
+	for i := 0;i < 45;i++ {
+		buildString += strconv.Itoa(i)+"\n"
+	}
+	logMain.SetText(buildString)
+
+
+
+
 	sendUn, err := twoBuilder.GetObject("Send")
 	if err != nil {
 		panic(err)
 	}
 
 	send := sendUn.(*gtk.Button)
+
 
 	send.Connect("pressed", func() {
 		postingUn, err := twoBuilder.GetObject("postingWin")
@@ -194,6 +212,30 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		//	box.SetVisible(true)
 		//}
 	})
+	//now we test the prompt
+
+	promptUn, err := twoBuilder.GetObject("prompt")
+	if err != nil {
+		panic(err)
+	}
+	prompt := promptUn.(*gtk.DrawingArea)
+	x := 0
+	qAct1Un, err := twoBuilder.GetObject("qAction1")
+	if err != nil {
+		panic(err)
+	}
+	qAct1 := qAct1Un.(*gtk.Button)
+	qAct1.Connect("pressed", func () {
+		x++
+		prompt.QueueDraw()
+	})
+
+	prompt.Connect("draw", func (da *gtk.DrawingArea, cr *cairo.Context) {
+		cr.SetSourceRGB(200, 10, 10)
+		cr.Rectangle(float64(x*20), 40, 20, 20)
+		cr.Fill()
+		fmt.Println("drawing")
+	})
 	equipUn, err := twoBuilder.GetObject("equipMain")
 	if err != nil {
 		panic(err)
@@ -211,6 +253,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	})
 	wind := appWindow.(*gtk.ApplicationWindow)
 	wind.Fullscreen()
+
 	wind.SetResizable(false)
 	wind.SetPosition(gtk.WIN_POS_CENTER)
 	tellsUn, err := twoBuilder.GetObject("tellsMain")
@@ -366,6 +409,114 @@ const (
 	COLUMN_LONGNAME = 4
 	COLUMN_NUMBER = 5
 )
+
+func initColumn(value string, constant int, col *gtk.TreeViewColumn) (*gtk.TreeViewColumn) {
+	healthy, failing, failed := initIcons()
+//	time.Sleep(10*time.Millisecond)
+        renderer, err := gtk.CellRendererPixbufNew()
+        if err != nil {
+                panic(err)
+        }
+	col.PackStart(renderer, true)
+        renderer.Set("visible", true)
+//        renderer.Set("text", value)
+	if value == "failing"  {
+		renderer.Set("pixbuf", failing)
+       	}else if value == "failed" {
+		renderer.Set("pixbuf", failed)
+	}else {
+		renderer.Set("pixbuf", healthy)
+	}
+
+//	col.AddAttribute(renderer, "text", 0)
+        col.SetVisible(true)
+        return col
+
+}
+
+func initIcons() (gdk.Pixbuf, gdk.Pixbuf, gdk.Pixbuf) {
+	healthyImg, err := gtk.ImageNewFromFile("dat/healthy.png")
+	if err != nil {
+		panic(err)
+	}
+	healthy := healthyImg.GetPixbuf()
+	failingImg, err := gtk.ImageNewFromFile("dat/failing.png")
+	if err != nil {
+		panic(err)
+	}
+	failing := failingImg.GetPixbuf()
+	failedImg, err := gtk.ImageNewFromFile("dat/failed.png")
+	if err != nil {
+		panic(err)
+	}
+	failed := failedImg.GetPixbuf()
+	if err != nil {
+		panic(err)
+	}
+	return *healthy, *failing, *failed
+}
+
+func backAndForthProgress(startHealth int, endHealth int, twoBuilder *gtk.Builder, pos *gtk.TreeIter) *gtk.TreeIter {
+	healthBarUn, err := twoBuilder.GetObject("healthBar")
+	if err != nil {
+		panic(err)
+	}
+	healthBar := healthBarUn.(*gtk.TreeView)
+	healthStore, err := gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING)
+	if err != nil {
+		panic(err)
+	}
+	healthBar.SetModel(healthStore)
+//	healthy := " "
+//	failing := " "
+//	failed := " "
+
+//	bar := ""
+	pos = healthStore.Append()
+	for i := 0;i < 100 ;i++ {
+		col := healthBar.GetColumn(i)
+		healthBar.RemoveColumn(col)
+	}
+	healthStore.Clear()
+	percent := math.Floor(float64(startHealth) / float64(endHealth))
+	hundredPer := int(percent * 100)
+	count := 0
+	for i := count;i < hundredPer;i++ {
+		time.Sleep(10*time.Millisecond)
+		col, err := gtk.TreeViewColumnNew()
+		if err != nil {
+			panic(err)
+		}
+		initColumn("healthy", i, col)
+		healthBar.AppendColumn(col)
+//		healthStore.SetValue(pos, i, healthy)
+//		pos = healthStore.Append()
+		count++
+	}
+	col, err := gtk.TreeViewColumnNew()
+	if err != nil {
+		panic(err)
+	}
+	healthBar.AppendColumn(col)
+	initColumn("failing", count, col)
+//	healthStore.SetValue(pos, count, failing)
+//	pos = healthStore.Append()
+	count++
+	for i := count;i < 100;i++ {
+		time.Sleep(10*time.Millisecond)
+		col, err := gtk.TreeViewColumnNew()
+		if err != nil {
+			panic(err)
+		}
+		healthBar.AppendColumn(col)
+		initColumn("failed", i, col)
+//		healthStore.SetValue(pos, i, failed)
+//		pos = healthStore.Append()
+		count++
+	}
+	pos = healthStore.Append()
+	return pos
+}
 
 func createColumn(twee *gtk.TreeView, val string, constant int) *gtk.TreeViewColumn {
 	var renderer *gtk.CellRenderer
@@ -649,7 +800,7 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 	}
 	
 	small := smallUn.(*gtk.Grid)
-	numInRow := 4
+	numInRow := 2
 	for i := 0;i < 12;i++ {
 		small.RemoveRow(0)
 	}
