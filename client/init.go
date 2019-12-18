@@ -62,9 +62,12 @@ func InitPlayer(name string, pass string) Player {
 
 	play.Inventory = make([]InventoryItem, 20, 20)
   play.Equipped = make([]EquipmentItem, 20, 20)
-  play.Rezz = 17
+  play.Rezz = 100
   play.MaxRezz = play.Rezz
-  play.Tech = 17
+  play.Tech = 100
+  play.MaxTech = play.Tech
+  play.Mana = 50
+  play.MaxMana = play.Mana
   play.PlayerHash = hash(name+pass)
 
   var bank Account

@@ -1,11 +1,30 @@
 .healthy {
-	background-color: rgb(250, 10, 10);
+	color: rgb(250, 10, 10);
 }
 .failing {
-	background-color: rgb(50, 10, 50);
+	color: rgb(50, 10, 50);
 }
 .failed {
-	background-color: rgb(10, 50, 10);
+	color: rgb(10, 50, 10);
+}
+
+.techFull {
+	color: rgb(10, 250, 10);
+}
+.techFailing {
+	color: rgb(10, 150, 10);
+}
+.techFailed {
+	color: rgb(10, 50, 10);
+}
+.manaFull {
+	color: rgb(150, 10, 200);
+}
+.manaFailing {
+	color: rgb(150, 10, 150);
+}
+.manaFailed {
+	color: rgb(150, 10, 50);
 }
 
 .splash {

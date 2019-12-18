@@ -268,6 +268,9 @@ type Player struct {
 	MaxRezz int
 	Rezz int
 	Tech int
+	MaxTech int
+	Mana int
+	MaxMana int
 	Fights Fight
 	Won int
 	Found int

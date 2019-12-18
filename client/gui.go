@@ -219,20 +219,54 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	prompt := promptUn.(*gtk.DrawingArea)
-	x := 0
 	qAct1Un, err := twoBuilder.GetObject("qAction1")
 	if err != nil {
 		panic(err)
 	}
 	qAct1 := qAct1Un.(*gtk.Button)
 	qAct1.Connect("pressed", func () {
-		x++
+		play.Rezz -= 10
+		play.Mana -= 10
+		play.Tech -= 10
 		prompt.QueueDraw()
 	})
 
 	prompt.Connect("draw", func (da *gtk.DrawingArea, cr *cairo.Context) {
-		cr.SetSourceRGB(200, 10, 10)
-		cr.Rectangle(float64(x*20), 40, 20, 20)
+		hp := float64(play.Rezz) / float64(play.MaxRezz)
+		hpPercent := int(hp * 100)
+		RezzUn, err := twoBuilder.GetObject("Rezz")
+		if err != nil {
+			panic(err)
+		}
+		Rezz := RezzUn.(*gtk.Label)
+		rezzString := fmt.Sprint(strconv.Itoa(play.Rezz)+"Rezz")
+		Rezz.SetText(rezzString)
+		TechUn, err := twoBuilder.GetObject("Tech")
+		if err != nil {
+			panic(err)
+		}
+		Tech := TechUn.(*gtk.Label)
+		techString := fmt.Sprint(strconv.Itoa(play.Tech)+"Tech")
+		Tech.SetText(techString)
+		ManaUn, err := twoBuilder.GetObject("Mana")
+		if err != nil {
+			panic(err)
+		}
+		Mana := ManaUn.(*gtk.Label)
+		manaString := fmt.Sprint(strconv.Itoa(play.Mana)+"Mana")
+		Mana.SetText(manaString)
+		cr.SetSourceRGB(100, 0, 0)
+		cr.Rectangle(10, 10, float64(hpPercent)*3, 10)
+		cr.Fill()
+		mana := float64(play.Mana) / float64(play.MaxMana)
+		manaPercent := int(mana * 100)
+		cr.SetSourceRGB(150, 0, 200)
+		cr.Rectangle(860, 10, float64(manaPercent)*3, 10)
+		cr.Fill()
+		tech := float64(play.Tech) / float64(play.MaxTech)
+		techPercent := int(tech * 100)
+		cr.SetSourceRGB(0, 200, 0)
+		cr.Rectangle(460, 10, float64(techPercent)*3, 10)
 		cr.Fill()
 		fmt.Println("drawing")
 	})
@@ -1171,6 +1205,7 @@ func LaunchGUI(fileChange chan bool) {
 			if len(userCaps) > 3 && len(pass) > 3 {
         		        play := InitPlayer(user, pass)
 				whoList := who(play.Name)
+//	                	go actOn(play, fileChange, whoList)
 	                	go func() { actOn(play, fileChange, whoList)}()
 				
 				launch(play, application, twoBuilder)
