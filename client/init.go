@@ -66,7 +66,7 @@ func InitPlayer(name string, pass string) Player {
   play.MaxRezz = play.Rezz
   play.Tech = 100
   play.MaxTech = play.Tech
-  play.Mana = 50
+  play.Mana = 100
   play.MaxMana = play.Mana
   play.PlayerHash = hash(name+pass)
 

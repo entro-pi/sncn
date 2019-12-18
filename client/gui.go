@@ -230,10 +230,28 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		play.Tech -= 10
 		prompt.QueueDraw()
 	})
+	qAct2Un, err := twoBuilder.GetObject("qAction2")
+	if err != nil {
+		panic(err)
+	}
+	qAct2 := qAct2Un.(*gtk.Button)
+	qAct2.Connect("pressed", func () {
+		play.Rezz += 10
+		play.Mana += 10
+		play.Tech += 10
+		prompt.QueueDraw()
+	})
 
 	prompt.Connect("draw", func (da *gtk.DrawingArea, cr *cairo.Context) {
+		gridUn, err := twoBuilder.GetObject("actionGrid")
+		if err != nil {
+			panic(err)
+		}
+		grid := gridUn.(*gtk.Grid)
+		gridAlloc :=  grid.GetAllocation()
+		width := gridAlloc.GetWidth()
 		hp := float64(play.Rezz) / float64(play.MaxRezz)
-		hpPercent := int(hp * 100)
+		hpPercent := int((hp * float64(width)) * .33)
 		RezzUn, err := twoBuilder.GetObject("Rezz")
 		if err != nil {
 			panic(err)
@@ -256,17 +274,17 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		manaString := fmt.Sprint(strconv.Itoa(play.Mana)+"Mana")
 		Mana.SetText(manaString)
 		cr.SetSourceRGB(100, 0, 0)
-		cr.Rectangle(10, 10, float64(hpPercent)*3, 10)
+		cr.Rectangle(0, 10, float64(hpPercent), 10)
 		cr.Fill()
 		mana := float64(play.Mana) / float64(play.MaxMana)
-		manaPercent := int(mana * 100)
+		manaPercent := int((mana * float64(width)) * .33)
 		cr.SetSourceRGB(150, 0, 200)
-		cr.Rectangle(860, 10, float64(manaPercent)*3, 10)
+		cr.Rectangle(float64(width) * .66, 10, float64(manaPercent), 10)
 		cr.Fill()
 		tech := float64(play.Tech) / float64(play.MaxTech)
-		techPercent := int(tech * 100)
+		techPercent := int((tech * float64(width)) * .33)
 		cr.SetSourceRGB(0, 200, 0)
-		cr.Rectangle(460, 10, float64(techPercent)*3, 10)
+		cr.Rectangle(float64(width) * 0.33, 10, float64(techPercent), 10)
 		cr.Fill()
 		fmt.Println("drawing")
 	})
