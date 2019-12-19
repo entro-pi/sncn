@@ -117,19 +117,25 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		Name, err := name.GetText()
 		Pass, err := pass.GetText()
 		fmt.Println("CREATE A NEW USER : ",Name," :: PASS :: ",Pass)
-		playNew := InitPlayer(Name, Pass)
-		yamlPlay, err := yaml.Marshal(playNew)
-		if err != nil {
-			panic(err)
+		Name = strings.ToUpper(Name)
+		if _, err := os.Stat("../pot/pfiles/"+Name+".yaml"); err == nil {
+			fmt.Println("\033[38:2:200:0:0mPLAYERFILE EXISTS\033[0m")
+			createPopup.Close()
+		}else {
+			playNew := InitPlayer(Name, Pass)
+			yamlPlay, err := yaml.Marshal(playNew)
+			if err != nil {
+				panic(err)
+			}
+			file, err := os.OpenFile("../pot/pfiles/"+Name+".yaml", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				panic(err)
+			}
+			defer file.Close()
+			file.Write(yamlPlay)
+			readYamlFile(Name)
+			//get the values of the player and do the thing
 		}
-		file, err := os.OpenFile("../pot/pfiles.yaml", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			panic(err)
-		}
-		defer file.Close()
-		file.Write(yamlPlay)
-		readYamlFile()
-		//get the values of the player and do the thing
 	})
 
 	cancelCreatePlayerUn, err := twoBuilder.GetObject("cancelCreatePlayer")
@@ -414,23 +420,21 @@ const (
 	COLUMN_NUMBER = 5
 )
 
-func readYamlFile() {
-	file, err := os.OpenFile("../pot/pfiles.yaml", os.O_RDONLY, 0400)
+func readYamlFile(Name string) {
+	file, err := os.OpenFile("../pot/pfiles/"+Name+".yaml", os.O_RDONLY, 0400)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 	data, err := ioutil.ReadAll(file)
-	playList := make(map[map[interface{}]interface{}]int)
+	playList := make(map[interface{}]interface{})
 //	playList := make(map[interface{}]interface{})
 	err = yaml.Unmarshal([]byte(data), playList)
 	if err != nil {
 		panic(err)
 	}
-	for i := 0;i < len(playList);i++ {
-		if playList["name"] != nil {
-			fmt.Println(playList["name"])
-		}
+	if playList["name"] != nil {
+		fmt.Println(playList["name"])
 	}
 
 }
