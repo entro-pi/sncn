@@ -62,6 +62,10 @@ textview {
 	background-color: rgb(225, 50, 50);
 }
 
+.gonB {
+	background-color: rgb(0, 0, 0);
+	color: rgb(0, 200, 0);
+}
 frame {
 	border-style: dotted;
 	border-top: 15px;

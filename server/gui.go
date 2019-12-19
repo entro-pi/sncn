@@ -80,6 +80,53 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	exit.Connect("clicked", func () {
 		os.Exit(1)
 	})
+	createPlayerUn, err := twoBuilder.GetObject("createPlayerButton")
+	if err != nil {
+		panic(err)
+	}
+	createPopupUn, err := twoBuilder.GetObject("createPlayer")
+	if err != nil {
+		panic(err)
+	}
+	createPopup := createPopupUn.(*gtk.Window)
+
+	createPlayer := createPlayerUn.(*gtk.Button)
+	createPlayer.Connect("clicked", func() {
+		createPopup.Show()
+	})
+	okCreatePlayerUn, err := twoBuilder.GetObject("okCreatePlayer")
+	if err != nil {
+		panic(err)
+	}
+	okCreatePlayer := okCreatePlayerUn.(*gtk.Button)
+	okCreatePlayer.Connect("clicked", func () {
+		nameUn, err := twoBuilder.GetObject("createPlayerName")
+		if err != nil {
+			panic(err)
+		}
+		name := nameUn.(*gtk.Entry)
+		passUn, err := twoBuilder.GetObject("createPlayerPass")
+		if err != nil {
+			panic(err)
+		}
+		pass := passUn.(*gtk.Entry)
+		Name, err := name.GetText()
+		Pass, err := pass.GetText()
+		fmt.Println("CREATE A NEW USER : ",Name," :: PASS :: ",Pass)
+		//get the values of the player and do the thing
+	})
+
+	cancelCreatePlayerUn, err := twoBuilder.GetObject("cancelCreatePlayer")
+	if err != nil {
+		panic(err)
+	}
+	cancelCreatePlayer := cancelCreatePlayerUn.(*gtk.Button)
+	cancelCreatePlayer.Connect("clicked", func () {
+		//cancel the thingy
+		createPopup.Close()
+	})
+
+
 	sendUn, err := twoBuilder.GetObject("Send")
 	if err != nil {
 		panic(err)

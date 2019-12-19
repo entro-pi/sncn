@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/gotk3/gotk3"
+	"github.com/gotk3/gotk3/gtk"
 )
 
 
