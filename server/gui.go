@@ -118,9 +118,17 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		Pass, err := pass.GetText()
 		fmt.Println("CREATE A NEW USER : ",Name," :: PASS :: ",Pass)
 		Name = strings.ToUpper(Name)
+		inspectUn, err := twoBuilder.GetObject("inspectMess")
+		if err != nil {
+			panic(err)
+		}
+		inspect := inspectUn.(*gtk.Label)
 		if _, err := os.Stat("../pot/pfiles/"+Name+".yaml"); err == nil {
 			fmt.Println("\033[38:2:200:0:0mPLAYERFILE EXISTS\033[0m")
-			createPopup.Close()
+			//Change this so it will change the contents of
+			//the popup when clicked
+			inspect.SetText("ERROR\nPLAYERFILE EXISTS")
+			//createPopup.SetText("Playerfile exists!")
 		}else {
 			playNew := InitPlayer(Name, Pass)
 			yamlPlay, err := yaml.Marshal(playNew)
@@ -134,6 +142,8 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			defer file.Close()
 			file.Write(yamlPlay)
 			readYamlFile(Name)
+			createPopup.Close()
+			inspect.SetText("Playerfile "+Name+" created")
 			//get the values of the player and do the thing
 		}
 	})
@@ -420,7 +430,7 @@ const (
 	COLUMN_NUMBER = 5
 )
 
-func readYamlFile(Name string) {
+func readYamlFile(Name string) map[interface{}]interface{} {
 	file, err := os.OpenFile("../pot/pfiles/"+Name+".yaml", os.O_RDONLY, 0400)
 	if err != nil {
 		panic(err)
@@ -436,7 +446,7 @@ func readYamlFile(Name string) {
 	if playList["name"] != nil {
 		fmt.Println(playList["name"])
 	}
-
+	return playList
 }
 func createColumn(twee *gtk.TreeView, val string, constant int) *gtk.TreeViewColumn {
 	var renderer *gtk.CellRenderer
