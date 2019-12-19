@@ -84,6 +84,39 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	exit.Connect("clicked", func () {
 		os.Exit(1)
 	})
+	createRoomPopupUn, err := twoBuilder.GetObject("createRoom")
+	if err != nil {
+		panic(err)
+	}
+	createRoomPopup := createRoomPopupUn.(*gtk.Window)
+	createRoomUn, err := twoBuilder.GetObject("createRoomButton")
+	if err != nil {
+		panic(err)
+	}
+	createRoom := createRoomUn.(*gtk.Button)
+	createRoom.Connect("clicked", func() {
+		createRoomPopup.Show()
+		fmt.Println("create room button clicked")
+	})
+	createRoomCreateUn, err := twoBuilder.GetObject("createRoomCreate")
+	if err != nil {
+		panic(err)
+	}
+	createRoomCreate := createRoomCreateUn.(*gtk.Button)
+	createRoomCreate.Connect("clicked", func() {
+		//create the yaml file here
+		fmt.Println("Created room")
+	})
+	exitCreateRoomUn, err := twoBuilder.GetObject("exitCreateRoom")
+	if err != nil {
+		panic(err)
+	}
+	exitCreateRoom := exitCreateRoomUn.(*gtk.Button)
+	exitCreateRoom.Connect("clicked", func() {
+		createRoomPopup.Close()
+	})
+
+
 	createPlayerUn, err := twoBuilder.GetObject("createPlayerButton")
 	if err != nil {
 		panic(err)
