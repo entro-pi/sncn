@@ -6,7 +6,10 @@ import (
     "log"
     "os"
     "fmt"
-    "encoding/json"
+    "io/ioutil"
+//    "bytes"
+    "github.com/go-yaml/yaml"
+//    "encoding/json"
     "github.com/gotk3/gotk3/glib"
     "github.com/gotk3/gotk3/gtk"
 //    "github.com/gotk3/gotk3/gdk"
@@ -115,11 +118,17 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		Pass, err := pass.GetText()
 		fmt.Println("CREATE A NEW USER : ",Name," :: PASS :: ",Pass)
 		playNew := InitPlayer(Name, Pass)
-		jsonPlay, err := json.Marshal(playNew)
+		yamlPlay, err := yaml.Marshal(playNew)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(string(jsonPlay))
+		file, err := os.OpenFile("../pot/pfiles.yaml", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+		file.Write(yamlPlay)
+		readYamlFile()
 		//get the values of the player and do the thing
 	})
 
@@ -405,6 +414,26 @@ const (
 	COLUMN_NUMBER = 5
 )
 
+func readYamlFile() {
+	file, err := os.OpenFile("../pot/pfiles.yaml", os.O_RDONLY, 0400)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	data, err := ioutil.ReadAll(file)
+	playList := make(map[map[interface{}]interface{}]int)
+//	playList := make(map[interface{}]interface{})
+	err = yaml.Unmarshal([]byte(data), playList)
+	if err != nil {
+		panic(err)
+	}
+	for i := 0;i < len(playList);i++ {
+		if playList["name"] != nil {
+			fmt.Println(playList["name"])
+		}
+	}
+
+}
 func createColumn(twee *gtk.TreeView, val string, constant int) *gtk.TreeViewColumn {
 	var renderer *gtk.CellRenderer
 

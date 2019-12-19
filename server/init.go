@@ -46,7 +46,7 @@ func InitPlayer(name string, pass string) Player {
 	inv = append(inv, 1)
 	play.Name = name
 	play.Title = "The Unknown"
-  play.Classes = make([]Class, 10, 10)
+  play.Classes = make([]Class, 1, 1)
   var rip Skill
   rip.Name = "overcharge"
   rip.DamType = "slash"
@@ -62,9 +62,12 @@ func InitPlayer(name string, pass string) Player {
 
   play.Inventory = make([]InventoryItem, 1, 1)
   play.Equipped = make([]EquipmentItem, 1, 1)
-  play.Rezz = 17
+  play.Rezz = 100
   play.MaxRezz = play.Rezz
-  play.Tech = 17
+  play.Tech = 100
+  play.MaxTech = play.Tech
+  play.Mana = 100
+  play.MaxMana = play.Mana
   play.PlayerHash = hash(name+pass)
 
   var bank Account
