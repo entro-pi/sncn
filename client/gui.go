@@ -223,12 +223,57 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	if err != nil {
 		panic(err)
 	}
-	qAct1 := qAct1Un.(*gtk.Button)
+	//testing
+	gridUn, err := twoBuilder.GetObject("actionGrid")
+	if err != nil {
+		panic(err)
+	}
+	//grid := gridUn.(*gtk.Grid)
+	//gridAlloc :=  grid.GetAllocation()
+	//width := gridAlloc.GetWidth()
+	play.Rezz -= 1
+	//hp := float64(play.Rezz) / float64(play.MaxRezz)
+	RezzUn, err := twoBuilder.GetObject("Rezz")
+	if err != nil {
+		panic(err)
+	}
+	Rezz := RezzUn.(*gtk.Label)
+	rezzString := fmt.Sprint(strconv.Itoa(play.Rezz)+"Rezz")
+	Rezz.SetText(rezzString)
+	TechUn, err := twoBuilder.GetObject("Tech")
+	if err != nil {
+		panic(err)
+	}
+	Tech := TechUn.(*gtk.Label)
+	techString := fmt.Sprint(strconv.Itoa(play.Tech)+"Tech")
+	Tech.SetText(techString)
+	ManaUn, err := twoBuilder.GetObject("Mana")
+	if err != nil {
+		panic(err)
+	}
+	Mana := ManaUn.(*gtk.Label)
+	manaString := fmt.Sprint(strconv.Itoa(play.Mana)+"Mana")
+	Mana.SetText(manaString)
+/*	var hpPercent int
+	var manaPercent int
+	var techPercent int
+*/	qAct1 := qAct1Un.(*gtk.Button)
+	RezzToAdd := 0
 	qAct1.Connect("pressed", func () {
-		play.Rezz -= 10
+		RezzToAdd = 10
 		play.Mana -= 10
 		play.Tech -= 10
 		prompt.QueueDraw()
+		for i := 0;i < RezzToAdd;i++ {
+			time.Sleep(10 * time.Millisecond)
+
+			play.Rezz -= 1
+			play.Mana -= 1
+			play.Tech -= 1
+			fmt.Println("drawing")
+			prompt.QueueDraw()
+			gtk.MainIterationDo(true)
+		}
 	})
 	qAct2Un, err := twoBuilder.GetObject("qAction2")
 	if err != nil {
@@ -243,50 +288,35 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	})
 
 	prompt.Connect("draw", func (da *gtk.DrawingArea, cr *cairo.Context) {
-		gridUn, err := twoBuilder.GetObject("actionGrid")
-		if err != nil {
-			panic(err)
-		}
-		grid := gridUn.(*gtk.Grid)
-		gridAlloc :=  grid.GetAllocation()
-		width := gridAlloc.GetWidth()
-		hp := float64(play.Rezz) / float64(play.MaxRezz)
-		hpPercent := int((hp * float64(width)) * .33)
-		RezzUn, err := twoBuilder.GetObject("Rezz")
-		if err != nil {
-			panic(err)
-		}
-		Rezz := RezzUn.(*gtk.Label)
-		rezzString := fmt.Sprint(strconv.Itoa(play.Rezz)+"Rezz")
-		Rezz.SetText(rezzString)
-		TechUn, err := twoBuilder.GetObject("Tech")
-		if err != nil {
-			panic(err)
-		}
-		Tech := TechUn.(*gtk.Label)
-		techString := fmt.Sprint(strconv.Itoa(play.Tech)+"Tech")
-		Tech.SetText(techString)
-		ManaUn, err := twoBuilder.GetObject("Mana")
-		if err != nil {
-			panic(err)
-		}
-		Mana := ManaUn.(*gtk.Label)
-		manaString := fmt.Sprint(strconv.Itoa(play.Mana)+"Mana")
-		Mana.SetText(manaString)
-		cr.SetSourceRGB(100, 0, 0)
-		cr.Rectangle(0, 10, float64(hpPercent), 10)
-		cr.Fill()
-		mana := float64(play.Mana) / float64(play.MaxMana)
-		manaPercent := int((mana * float64(width)) * .33)
-		cr.SetSourceRGB(150, 0, 200)
-		cr.Rectangle(float64(width) * .66, 10, float64(manaPercent), 10)
-		cr.Fill()
-		tech := float64(play.Tech) / float64(play.MaxTech)
-		techPercent := int((tech * float64(width)) * .33)
-		cr.SetSourceRGB(0, 200, 0)
-		cr.Rectangle(float64(width) * 0.33, 10, float64(techPercent), 10)
-		cr.Fill()
-		fmt.Println("drawing")
+			grid := gridUn.(*gtk.Grid)
+			gridAlloc :=  grid.GetAllocation()
+			width := gridAlloc.GetWidth()
+			hp := float64(play.Rezz) / float64(play.MaxRezz)
+			hpPercent := int((hp * float64(width)) * .33)
+			Rezz := RezzUn.(*gtk.Label)
+			rezzString := fmt.Sprint(strconv.Itoa(play.Rezz)+"Rezz")
+			Rezz.SetText(rezzString)
+			Tech := TechUn.(*gtk.Label)
+			techString := fmt.Sprint(strconv.Itoa(play.Tech)+"Tech")
+			Tech.SetText(techString)
+			Mana := ManaUn.(*gtk.Label)
+			manaString := fmt.Sprint(strconv.Itoa(play.Mana)+"Mana")
+			Mana.SetText(manaString)
+			cr.SetSourceRGB(100, 0, 0)
+			cr.Rectangle(0, 10, float64(hpPercent), 10)
+			cr.Fill()
+			mana := float64(play.Mana) / float64(play.MaxMana)
+			manaPercent := int((mana * float64(width)) * .33)
+			cr.SetSourceRGB(150, 0, 200)
+			cr.Rectangle(float64(width) * .66, 10, float64(manaPercent), 10)
+			cr.Fill()
+			tech := float64(play.Tech) / float64(play.MaxTech)
+			techPercent := int((tech * float64(width)) * .33)
+			cr.SetSourceRGB(0, 200, 0)
+			cr.Rectangle(float64(width) * 0.33, 10, float64(techPercent), 10)
+			cr.Fill()
+//			da.Show()
+//			fmt.Println("drawing")
 	})
 	equipUn, err := twoBuilder.GetObject("equipMain")
 	if err != nil {
@@ -444,9 +474,9 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	fillTree(twoBuilder)
 	fillList(twoBuilder)
 	geo := moni.GetGeometry()
-	height := geo.GetHeight()
-	width := geo.GetWidth()
-	wind.SetDefaultSize(width, height)
+	heightD := geo.GetHeight()
+	widthD := geo.GetWidth()
+	wind.SetDefaultSize(widthD, heightD)
 	wind.Fullscreen()
         wind.Show()
 	application.AddWindow(wind)
