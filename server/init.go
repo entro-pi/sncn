@@ -60,8 +60,8 @@ func InitPlayer(name string, pass string) Player {
   blast.Name = "blast"
   play.Classes[0].Spells = append(play.Classes[0].Spells, blast)
 
-	play.Inventory = make([]InventoryItem, 20, 20)
-  play.Equipped = make([]EquipmentItem, 20, 20)
+  play.Inventory = make([]InventoryItem, 1, 1)
+  play.Equipped = make([]EquipmentItem, 1, 1)
   play.Rezz = 17
   play.MaxRezz = play.Rezz
   play.Tech = 17
@@ -72,12 +72,12 @@ func InitPlayer(name string, pass string) Player {
   bank.Amount = 0.0
   play.BankAccount = bank
 
-	play.Str = 1
-	play.Int = 1
-	play.Dex = 1
-	play.Wis = 1
-	play.Con = 1
-	play.Cha = 1
+	play.Str = 10
+	play.Int = 10
+	play.Dex = 10
+	play.Wis = 10
+	play.Con = 10
+	play.Cha = 10
   play.Channels = append(play.Channels, "")
 	return play
 

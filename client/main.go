@@ -167,8 +167,6 @@ func who(playName string) []string {
 func doPlayer(input string, play Player, format string) {
 	
 	if format == "--1920x1080main" {
-		play = decompEq(play)
-		play = decompInv(play)
 		
 
 		DescribePlayer(play)

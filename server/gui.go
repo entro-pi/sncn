@@ -6,6 +6,7 @@ import (
     "log"
     "os"
     "fmt"
+    "encoding/json"
     "github.com/gotk3/gotk3/glib"
     "github.com/gotk3/gotk3/gtk"
 //    "github.com/gotk3/gotk3/gdk"
@@ -113,6 +114,12 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		Name, err := name.GetText()
 		Pass, err := pass.GetText()
 		fmt.Println("CREATE A NEW USER : ",Name," :: PASS :: ",Pass)
+		playNew := InitPlayer(Name, Pass)
+		jsonPlay, err := json.Marshal(playNew)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(string(jsonPlay))
 		//get the values of the player and do the thing
 	})
 

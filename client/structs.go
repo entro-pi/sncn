@@ -228,8 +228,6 @@ type Player struct {
 	Hostname string
 	Name string
 	Title string
-	ItemBank InventoryBank
-	EqBank EquipmentBank
 	Inventory []InventoryItem
 	Equipped []EquipmentItem
 	CoreBoard string
@@ -264,13 +262,12 @@ type Player struct {
 	Slain int
 	Hoarded int
 
-
+	MaxTech int
+	MaxMana int
+	Mana int
 	MaxRezz int
 	Rezz int
 	Tech int
-	MaxTech int
-	Mana int
-	MaxMana int
 	Fights Fight
 	Won int
 	Found int
