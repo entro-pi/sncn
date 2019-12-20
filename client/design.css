@@ -63,10 +63,10 @@
 }
 
 .syncro {
-	background-color: rgb(0, 0, 50);
+	background-color: #eb2897;
 }
 .syncro:focus {
-	background-color: rgb(10, 10, 50);
+	background-color: #eb2897;
 }
 textview {
 	font: 18px courier new;
@@ -84,17 +84,15 @@ textview {
 }
 .button {
 	font: 22px courier new;
-	color: rgb(0, 0, 0);
-	background: rgb(50, 175, 50);
+	background: #fb9d45;
+
 	border: 0px;
 	border-radius: 0em;
-	background-color: rgb(50, 175, 50);
 }
 .button:hover {
-	background: rgb(50, 225, 50);
+	background: #bb9d45;
 	border: 0px;
 	border-radius: 0em;
-	background-color: rgb(50, 225, 50);
 }
 
 frame {

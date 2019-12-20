@@ -963,10 +963,6 @@
                 <property name="wrap_mode">word-char</property>
                 <property name="track_visited_links">False</property>
                 <property name="yalign">0.5</property>
-                <attributes>
-                  <attribute name="foreground" value="#11ebffff26d4"/>
-                  <attribute name="background" value="#070612123a3a"/>
-                </attributes>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -1022,10 +1018,6 @@
                 <property name="wrap_mode">word-char</property>
                 <property name="track_visited_links">False</property>
                 <property name="yalign">0.5</property>
-                <attributes>
-                  <attribute name="foreground" value="#11ebffff26d4"/>
-                  <attribute name="background" value="#090916164040"/>
-                </attributes>
               </object>
               <packing>
                 <property name="expand">True</property>
