@@ -48,7 +48,7 @@
             <property name="layout_style">start</property>
             <child>
               <object class="GtkButton" id="cancelCreatePlayer">
-                <property name="label" translatable="yes">Exit</property>
+                <property name="label" translatable="yes">Close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -652,9 +652,6 @@
                           </packing>
                         </child>
                         <child>
-                          <placeholder/>
-                        </child>
-                        <child>
                           <object class="GtkButton" id="Send">
                             <property name="label" translatable="yes">Send</property>
                             <property name="visible">True</property>
@@ -683,6 +680,9 @@
                             <property name="fill">True</property>
                             <property name="position">3</property>
                           </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                       </object>
                     </child>
@@ -967,7 +967,7 @@
             <property name="can_focus">False</property>
             <child>
               <object class="GtkButton" id="exitCreateRoom">
-                <property name="label" translatable="yes">Exit</property>
+                <property name="label" translatable="yes">Close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>

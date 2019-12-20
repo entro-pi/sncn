@@ -105,7 +105,16 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	createRoomCreate := createRoomCreateUn.(*gtk.Button)
 	createRoomCreate.Connect("clicked", func() {
 		//create the yaml file here
-		fmt.Println("Created room")
+		inspectUn, err := twoBuilder.GetObject("inspectMess")
+		if err != nil {
+			panic(err)
+		}
+		inspect := inspectUn.(*gtk.Label)
+		fmt.Println("\033[38:2:0:200:0mCREATED ROOM\033[0m")
+		//Change this so it will change the contents of
+		//the popup when clicked
+		inspect.SetText("ROOM CREATED")
+
 	})
 	exitCreateRoomUn, err := twoBuilder.GetObject("exitCreateRoom")
 	if err != nil {
