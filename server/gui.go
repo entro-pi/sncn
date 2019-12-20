@@ -1069,7 +1069,7 @@ func LaunchGUI(fileChange chan bool) {
     // shutdown ->  performs shutdown tasks
     // Setup activate signal with a closure function.
     application.Connect("activate", func() {
-	    twoBuilder, err := gtk.BuilderNewFromFile("twobutton.glade")
+	    twoBuilder, err := gtk.BuilderNewFromFile("server.glade")
 	    if err != nil {
 		panic(err)
 		}

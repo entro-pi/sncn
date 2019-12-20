@@ -628,7 +628,7 @@
                           <object class="GtkLabel" id="postingPlayer">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">CURRENT PLAYER</property>
+                            <property name="label" translatable="yes">SEND BROADCAST</property>
                             <style>
                               <class name="greenText"/>
                             </style>
@@ -650,6 +650,9 @@
                             <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                         <child>
                           <object class="GtkButton" id="Send">
@@ -708,6 +711,7 @@
                       <object class="GtkBox" id="inspect">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkButton" id="inspec">
                             <property name="visible">True</property>
@@ -782,6 +786,44 @@
                             <property name="expand">False</property>
                             <property name="fill">True</property>
                             <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="homogeneous">True</property>
+                            <child>
+                              <object class="GtkButton" id="createRoomButton">
+                                <property name="label" translatable="yes">Create Room</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="createPlayerButton">
+                                <property name="label" translatable="yes">Create Player</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
@@ -888,32 +930,6 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="createPlayerButton">
-                <property name="label" translatable="yes">Create Player</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">5</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="createRoomButton">
-                <property name="label" translatable="yes">Create Room</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">6</property>
               </packing>
             </child>
           </object>
@@ -1032,7 +1048,6 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -1074,7 +1089,6 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -1233,7 +1247,6 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -1299,7 +1312,6 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
