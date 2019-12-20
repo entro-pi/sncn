@@ -90,23 +90,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
             log.Fatal("Could not create application window.", err)
         }
 	exitUn, err := twoBuilder.GetObject("exitMain")
-	postUn, err := twoBuilder.GetObject("postBuf")
-	if err != nil {
-		panic(err)
-	}
-	post := postUn.(*gtk.TextBuffer)
-	start, end := post.GetBounds()
-	tagUn, err := twoBuilder.GetObject("greenTex")
-	if err != nil {
-		panic(err)
-	}
-	tag := tagUn.(*gtk.TextTag)
-	post.ApplyTag(tag, start, end)
-	post.Connect("insert-text", func () {
-		start, end := post.GetBounds()
-
-		post.ApplyTag(tag, start, end)
-	})
 	if err != nil {
 		panic(err)
 	}
@@ -163,9 +146,8 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		if err != nil {
 			panic(err)
 		}
-		input := inputUn.(*gtk.TextBuffer)
-		start, end := input.GetBounds()
-		inputText, err := input.GetText(start, end, false)
+		input := inputUn.(*gtk.Entry)
+		inputText, err := input.GetText()
 		if err != nil {
 			panic(err)
 		}
