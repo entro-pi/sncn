@@ -114,6 +114,38 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		//Change this so it will change the contents of
 		//the popup when clicked
 		inspect.SetText("ROOM CREATED")
+		applyVnumUn, err := twoBuilder.GetObject("applyVnum")
+		if err != nil {
+			panic(err)
+		}
+		applyVnum := applyVnumUn.(*gtk.CheckButton)
+		if applyVnum.GetActive() {
+			fmt.Println("Make vnum yaml")
+		}
+		applyDescUn, err := twoBuilder.GetObject("applyDesc")
+		if err != nil {
+			panic(err)
+		}
+		applyDesc := applyDescUn.(*gtk.CheckButton)
+		if applyDesc.GetActive() {
+			fmt.Println("Make desc yaml")
+		}
+		applyExitUn, err := twoBuilder.GetObject("applyExit")
+		if err != nil {
+			panic(err)
+		}
+		applyExit := applyExitUn.(*gtk.CheckButton)
+		if applyExit.GetActive() {
+			fmt.Println("Make exit yaml")
+		}
+		applyExitSpecUn, err := twoBuilder.GetObject("applySpecExit")
+		if err != nil {
+			panic(err)
+		}
+		applyExitSpec := applyExitSpecUn.(*gtk.CheckButton)
+		if applyExitSpec.GetActive() {
+			fmt.Println("Make Special exit yaml")
+		}
 
 	})
 	exitCreateRoomUn, err := twoBuilder.GetObject("exitCreateRoom")
