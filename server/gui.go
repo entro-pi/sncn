@@ -102,6 +102,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	if err != nil {
 		panic(err)
 	}
+	var roomYaml []byte
 	createRoomCreate := createRoomCreateUn.(*gtk.Button)
 	createRoomCreate.Connect("clicked", func() {
 		//create the yaml file here
@@ -144,7 +145,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		}
 		applyExitSpec := applyExitSpecUn.(*gtk.CheckButton)
 		if applyExitSpec.GetActive() {
-			fmt.Println("Make Special exit yaml")
+			fmt.Println("Make special exit yaml")
 		}
 
 	})
