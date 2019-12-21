@@ -520,22 +520,33 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	rezzGL := rezzGLUn.(*gtk.GLArea)
 	fmt.Println(rezzGL)
-	rezzGL.Connect("render", func (area *gtk.GLArea) {
+	startDelta := time.Now()
+	rezzGL.AddTickCallback(render, uintptr(0))
+	rezzGL.SetAutoRender(true)
+	rezzGL.Connect("create-context", func (area *gtk.GLArea) {
 		gl.Init()
 		area.MakeCurrent()
-		render(area)
 		fmt.Println(area.GetError())
-		//render(area)
-		//area.QueueRender()
 	})
-//	render(rezzGL)
+	rezzGL.Connect("render", func (area *gtk.GLArea)  {
+		renderRezz(startDelta)
+	})
         wind.Show()
 	application.AddWindow(wind)
 
 }
-func render(glarea *gtk.GLArea) bool {
 
-		gl.ClearColor(1.0, 0, 0, 1.0)
+
+func render(widget *gtk.Widget, frameClock *gdk.FrameClock, Userdata uintptr) bool {
+	widget.QueueDraw()
+	return true
+}
+func renderRezz(delta time.Time) bool {
+	tick := time.Now().Sub(delta)
+	deltaSin := float64(tick.Seconds())
+	
+	colorRed := float32(math.Sin(float64(deltaSin)))
+		gl.ClearColor(colorRed, 0, 0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
 }
