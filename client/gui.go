@@ -13,6 +13,7 @@ import (
     "github.com/gotk3/gotk3/glib"
     "github.com/gotk3/gotk3/gtk"
     "github.com/gotk3/gotk3/gdk"
+    "github.com/go-gl/gl/v4.1-core/gl"
 )
 
 
@@ -82,7 +83,6 @@ func splash(moni *gdk.Monitor, application *gtk.Application, twoBuilder *gtk.Bui
 }
 
 func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) {
-
 
 	// Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("maininterface")
@@ -216,13 +216,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	//width := gridAlloc.GetWidth()
 	play.Rezz -= 1
 	//hp := float64(play.Rezz) / float64(play.MaxRezz)
-	RezzUn, err := twoBuilder.GetObject("Rezz")
-	if err != nil {
-		panic(err)
-	}
-	Rezz := RezzUn.(*gtk.Label)
-	rezzString := fmt.Sprint(strconv.Itoa(play.Rezz)+"Rezz")
-	Rezz.SetText(rezzString)
 	TechUn, err := twoBuilder.GetObject("Tech")
 	if err != nil {
 		panic(err)
@@ -277,9 +270,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				grid := gridUn.(*gtk.Grid)
 				gridAlloc :=  grid.GetAllocation()
 				width := gridAlloc.GetWidth()
-				Rezz := RezzUn.(*gtk.Label)
-				rezzString := fmt.Sprint(strconv.Itoa(play.Rezz)+"Rezz")
-				Rezz.SetText(rezzString)
 				Tech := TechUn.(*gtk.Label)
 				techString := fmt.Sprint(strconv.Itoa(play.Tech)+"Tech")
 				Tech.SetText(techString)
@@ -516,7 +506,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	//launch the splash screen
-	go splash(moni, application, twoBuilder)
+	//go splash(moni, application, twoBuilder)
 	fillTree(twoBuilder)
 	fillList(twoBuilder)
 	geo := moni.GetGeometry()
@@ -524,10 +514,32 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	widthD := geo.GetWidth()
 	wind.SetDefaultSize(widthD, heightD)
 	wind.Fullscreen()
+	rezzGLUn, err := twoBuilder.GetObject("RezzGL")
+	if err != nil {
+		panic(err)
+	}
+	rezzGL := rezzGLUn.(*gtk.GLArea)
+	fmt.Println(rezzGL)
+	rezzGL.Connect("render", func (area *gtk.GLArea) {
+		gl.Init()
+		area.MakeCurrent()
+		render(area)
+		fmt.Println(area.GetError())
+		//render(area)
+		//area.QueueRender()
+	})
+//	render(rezzGL)
         wind.Show()
 	application.AddWindow(wind)
 
 }
+func render(glarea *gtk.GLArea) bool {
+
+		gl.ClearColor(1.0, 0, 0, 1.0)
+		gl.Clear(gl.COLOR_BUFFER_BIT)
+	return true
+}
+
 
 const (
 	COLUMN_SLOT = 0
