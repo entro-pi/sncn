@@ -216,20 +216,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	//width := gridAlloc.GetWidth()
 	play.Rezz -= 1
 	//hp := float64(play.Rezz) / float64(play.MaxRezz)
-	TechUn, err := twoBuilder.GetObject("Tech")
-	if err != nil {
-		panic(err)
-	}
-	Tech := TechUn.(*gtk.Label)
-	techString := fmt.Sprint(strconv.Itoa(play.Tech)+"Tech")
-	Tech.SetText(techString)
-	ManaUn, err := twoBuilder.GetObject("Mana")
-	if err != nil {
-		panic(err)
-	}
-	Mana := ManaUn.(*gtk.Label)
-	manaString := fmt.Sprint(strconv.Itoa(play.Mana)+"Mana")
-	Mana.SetText(manaString)
 /*	var hpPercent int
 	var manaPercent int
 	var techPercent int
@@ -270,12 +256,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				grid := gridUn.(*gtk.Grid)
 				gridAlloc :=  grid.GetAllocation()
 				width := gridAlloc.GetWidth()
-				Tech := TechUn.(*gtk.Label)
-				techString := fmt.Sprint(strconv.Itoa(play.Tech)+"Tech")
-				Tech.SetText(techString)
-				Mana := ManaUn.(*gtk.Label)
-				manaString := fmt.Sprint(strconv.Itoa(play.Mana)+"Mana")
-				Mana.SetText(manaString)
 
 				hp := float64(RezzAmount) / float64(play.MaxRezz)
 				hpPercent := int((hp * float64(width)) * .33)
@@ -531,6 +511,26 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	rezzGL.Connect("render", func (area *gtk.GLArea)  {
 		renderRezz(startDelta)
 	})
+	techGLUn, err := twoBuilder.GetObject("TechGL")
+	if err != nil {
+		panic(err)
+	}
+	techGL := techGLUn.(*gtk.GLArea)
+	techGL.AddTickCallback(render, uintptr(0))
+	techGL.SetAutoRender(true)
+	techGL.Connect("render", func (area *gtk.GLArea) {
+		renderTech(startDelta)
+	})
+	manaGLUn, err := twoBuilder.GetObject("ManaGL")
+	if err != nil {
+		panic(err)
+	}
+	manaGL := manaGLUn.(*gtk.GLArea)
+	manaGL.AddTickCallback(render, uintptr(0))
+	manaGL.SetAutoRender(true)
+	manaGL.Connect("render", func (area *gtk.GLArea) {
+		renderMana(startDelta)
+	})
         wind.Show()
 	application.AddWindow(wind)
 
@@ -545,8 +545,26 @@ func renderRezz(delta time.Time) bool {
 	tick := time.Now().Sub(delta)
 	deltaSin := float64(tick.Seconds())
 	
-	colorRed := float32(math.Sin(float64(deltaSin)))
+	colorRed := float32(math.Sin(float64(deltaSin) * 4))
 		gl.ClearColor(colorRed, 0, 0, 1.0)
+		gl.Clear(gl.COLOR_BUFFER_BIT)
+	return true
+}
+func renderTech(delta time.Time) bool {
+	tick := time.Now().Sub(delta)
+	deltaSin := float64(tick.Seconds())
+	
+	colorGreen := float32(math.Sin(float64(deltaSin) * 3))
+		gl.ClearColor(0, colorGreen, 0, 1.0)
+		gl.Clear(gl.COLOR_BUFFER_BIT)
+	return true
+}
+func renderMana(delta time.Time) bool {
+	tick := time.Now().Sub(delta)
+	deltaSin := float64(tick.Seconds())
+	
+	colorPurp := float32(math.Sin(float64(deltaSin) * 2))
+		gl.ClearColor(colorPurp, 0, colorPurp, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
 }
