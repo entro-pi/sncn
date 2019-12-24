@@ -33,26 +33,6 @@
 }
 
 
-@keyframes inspectIn {
-	0% {
-		opacity: 0.0;
-	}
-
-	100% {
-		opacity: 1;
-	}
-
-}
-@keyframes mooseOver {
-	0% {
-		background: rgb(10, 10, 50);
-	}
-
-	100% {
-		background: rgb(150, 10, 150);
-	}
-
-}
 
 
 
