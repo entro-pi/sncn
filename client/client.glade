@@ -417,90 +417,33 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkScrolledWindow">
+                  <object class="GtkBox" id="inspect">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="shadow_type">in</property>
-                    <property name="min_content_width">40</property>
-                    <property name="min_content_height">10</property>
-                    <property name="max_content_width">40</property>
-                    <property name="max_content_height">10</property>
+                    <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkViewport">
+                      <object class="GtkButton" id="inspec">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
                         <child>
-                          <object class="GtkBox" id="inspect">
+                          <object class="GtkBox" id="inspectBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkButton" id="inspec">
+                              <object class="GtkLabel" id="inspectWho">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="hexpand">True</property>
-                                <property name="vexpand">True</property>
-                                <child>
-                                  <object class="GtkBox" id="inspectBox">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="orientation">vertical</property>
-                                    <child>
-                                      <object class="GtkLabel" id="inspectWho">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">name</property>
-                                        <attributes>
-                                          <attribute name="foreground" value="#11ebffff26d4"/>
-                                        </attributes>
-                                        <style>
-                                          <class name="inspect"/>
-                                        </style>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="inspectMess">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="justify">center</property>
-                                        <style>
-                                          <class name="contents"/>
-                                        </style>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">True</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="inspectTime">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">time</property>
-                                        <attributes>
-                                          <attribute name="foreground" value="#11ebffff26d4"/>
-                                        </attributes>
-                                        <style>
-                                          <class name="inspect"/>
-                                        </style>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">2</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                </child>
+                                <property name="can_focus">False</property>
+                                <property name="hexpand">False</property>
+                                <property name="vexpand">False</property>
+                                <property name="label" translatable="yes">name</property>
+                                <attributes>
+                                  <attribute name="foreground" value="#11ebffff26d4"/>
+                                </attributes>
                                 <style>
-                                  <class name="inspectCel"/>
-                                  <class name="inspectCel:hover"/>
+                                  <class name="inspect"/>
                                 </style>
                               </object>
                               <packing>
@@ -509,9 +452,59 @@
                                 <property name="position">0</property>
                               </packing>
                             </child>
+                            <child>
+                              <object class="GtkLabel" id="inspectMess">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="hexpand">False</property>
+                                <property name="vexpand">False</property>
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <property name="wrap_mode">word-char</property>
+                                <property name="width_chars">8</property>
+                                <property name="max_width_chars">8</property>
+                                <style>
+                                  <class name="contents"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="inspectTime">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="hexpand">False</property>
+                                <property name="vexpand">False</property>
+                                <property name="label" translatable="yes">time</property>
+                                <attributes>
+                                  <attribute name="foreground" value="#11ebffff26d4"/>
+                                </attributes>
+                                <style>
+                                  <class name="inspect"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
                           </object>
                         </child>
+                        <style>
+                          <class name="inspectCel"/>
+                          <class name="inspectCel:hover"/>
+                        </style>
                       </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
