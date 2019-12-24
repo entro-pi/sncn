@@ -65,9 +65,6 @@
 .syncro {
 	background-color: #eb2897;
 }
-.syncro:focus {
-	background-color: #eb2897;
-}
 textview {
 	font: 18px courier new;
 	background: rgb(10, 255, 10);
@@ -86,11 +83,6 @@ textview {
 	font: 22px courier new;
 	background: #fb9d45;
 
-	border: 0px;
-	border-radius: 0em;
-}
-.button:hover {
-	background: #bb9d45;
 	border: 0px;
 	border-radius: 0em;
 }
@@ -114,12 +106,6 @@ frame {
 	background: rgb(10, 10, 50);
 }
 
-.ico:hover {
-	font: 18px courier;
-	border: 1px solid rgb(10, 200, 10);
-	background: radial-gradient(ellipse at center, rgb(10, 10, 50), #eb2899);
-	transition: background 1s;	
-}
 .ico:active {
 	font: 18px courier;
 	border: 5px rgb(0, 0, 0);
@@ -131,41 +117,21 @@ frame {
 	color: rgb(0, 0, 0);
 	background-color: #eb2899;
 }
-.exitstyle:hover {
-	color: rgb(0, 0, 0);
-	background-color: rgb(10, 175, 10);
-}
 .broadcastsstyle {
 	color: #eb2899;
 	background-color: #eb2899;
-}
-.broadcastsstyle:hover {
-	color: rgb(10, 175, 10);
-	background-color: rgb(10, 175, 10);
 }
 .inventorystyle {
 	color: #eb2899;
 	background-color: #eb2899;
 }
-.inventorystyle:hover {
-	color: rgb(10, 175, 10);
-	background-color: rgb(10, 175, 10);
-}
 .equipmentstyle {
 	color: #eb2899;
 	background-color: #eb2899;
 }
-.equipmentstyle:hover {
-	color: rgb(10, 175, 10);
-	background-color: rgb(10, 175, 10);
-}
 .tellsstyle {
 	color: #eb2899;
 	background-color: #eb2899;
-}
-.tellsstyle:hover {
-	color: rgb(10, 175, 10);
-	background-color: rgb(10, 175, 10);
 }
 .sidebar {
 	color: #eb2899;
@@ -178,14 +144,6 @@ frame {
 	background-color: rgb(10, 250, 10);
 }
 
-.footer:hover {
-	animation-play-state: paused;
-	background-color: rgb(10, 250, 10);
-}
-.header:hover {
-	animation-play-state: paused;
-	background-color: rgb(10, 250, 10);
-}
 
 .footer {
 	animation-duration: 2s;
@@ -224,9 +182,6 @@ frame {
 
 }
 
-#user:hover {
-	background-color: rgb(50, 225, 50);
-}
 
 .black {
 	color: rgb(0, 0, 0);
@@ -244,13 +199,6 @@ frame {
 	background-color: rgb(75, 10, 50);
 }
 
-.opacGlow:focus {
-	font-size: 18px;
-	color: rgb(50, 10, 50);	
-	opacity: 1;
-	background-color: rgb(50, 10, 50);
-
-}
 
 .cel {
 	transition-property: -gtk-icon-transform;
@@ -263,13 +211,6 @@ frame {
 	background: rgb(10, 10, 50);
 }
 
-.cel:hover {
-	font: 18px courier;
-	border: 1px solid rgb(10, 200, 10);
-	background: radial-gradient(ellipse at center, rgb(10, 10, 50), #eb2899);
-	transition: background 1s;
-	border-radius: 1em;	
-}
 .cel:active {
 	font: 18px courier;
 	border: 5px rgb(0, 0, 0);
@@ -286,13 +227,6 @@ frame {
 	border: 5px black;
 	border-radius: 5em;
 	background: rgb(10, 10, 50);
-}
-.inspectCel:hover {
-	font: 18px courier;
-	border: 1px solid rgb(10, 200, 10);
-	background: radial-gradient(ellipse at center, rgb(10, 10, 50), #eb2899);
-	transition: background 1s;
-	border-radius: 5em;	
 }
 .cel:active {
 	font: 18px courier;

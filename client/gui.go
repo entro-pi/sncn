@@ -510,6 +510,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	})
 	rezzGL.Connect("render", func (area *gtk.GLArea)  {
 		renderRezz(startDelta)
+		wind.Show()
 	})
 	techGLUn, err := twoBuilder.GetObject("TechGL")
 	if err != nil {
@@ -520,6 +521,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	techGL.SetAutoRender(true)
 	techGL.Connect("render", func (area *gtk.GLArea) {
 		renderTech(startDelta)
+		wind.Show()
 	})
 	manaGLUn, err := twoBuilder.GetObject("ManaGL")
 	if err != nil {
@@ -530,6 +532,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	manaGL.SetAutoRender(true)
 	manaGL.Connect("render", func (area *gtk.GLArea) {
 		renderMana(startDelta)
+		wind.Show()
 	})
         wind.Show()
 	application.AddWindow(wind)
