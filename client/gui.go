@@ -202,33 +202,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	prompt := promptUn.(*gtk.DrawingArea)
-	//testing
-	//grid := gridUn.(*gtk.Grid)
-	//gridAlloc :=  grid.GetAllocation()
-	//width := gridAlloc.GetWidth()
 	play.Rezz -= 1
-	//hp := float64(play.Rezz) / float64(play.MaxRezz)
-/*	var hpPercent int
-	var manaPercent int
-	var techPercent int
-	qAct1 := qAct1Un.(*gtk.Button)
-	RezzToAdd := 0
-	qAct1.Connect("pressed", func () {
-		RezzToAdd = 10
-		play.Mana -= 10
-		play.Tech -= 10
-		prompt.QueueDraw()
-		for i := 0;i < RezzToAdd;i++ {
-			time.Sleep(10 * time.Millisecond)
-
-			play.Rezz -= 1
-			play.Mana -= 1
-			play.Tech -= 1
-//			fmt.Println("drawing")
-			prompt.QueueDraw()
-			gtk.MainIterationDo(false)
-		}
-	})*/
 	qAct2Un, err := twoBuilder.GetObject("qAction2")
 	if err != nil {
 		panic(err)
@@ -276,87 +250,19 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	small := smallUn.(*gtk.ScrolledWindow)
+//	fill(play, twoBuilder, true)
+	
 	tells.Connect("clicked", func () {
-		fill(play, twoBuilder, true)
 		small.Show()
-//		paintOver(twoBuilder)
-/*		butt := assembleBroadButton("0")
-		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
-		if err != nil {
-			panic(err)
-		}
-		small := smallUn.(*gtk.Grid)
-		numBroad++
-		colCount++
-		small.Add(butt)
-		//small.InsertColumn(colCount)
-		wind.ShowAll()
-		if colCount == 4 {
-			colCount = 1
-			small.InsertRow(rowCount)
-			rowCount++
-		}
-		eqGridUn, err := twoBuilder.GetObject("equipmentWin")
-		if err != nil {
-			panic(err)
-		}
-		eqGrid := eqGridUn.(*gtk.ScrolledWindow)
-		if eqGrid.GetVisible() {
-			eqGrid.SetVisible(false)
-		}else {
-			eqGrid.SetVisible(true)
-			fillEq(play, twoBuilder)
-			eqGrid.ShowAll()
-		}
-		
-		box1Un, err := twoBuilder.GetObject("smalltalkgrid")
-		if err != nil {
-			panic(err)
-		}
-		box1 := box1Un.(*gtk.Grid)
-		if box1.GetVisible {
-			box1.SetVisible(false)
-		}else {
-			box1.SetVisible(true)
-		}*/
 	})
 	broadUn, err := twoBuilder.GetObject("broadMain")
 	if err != nil {
 		panic(err)
 	}
 	broad := broadUn.(*gtk.Button)
+	fill(play, twoBuilder, false)
 	broad.Connect("clicked", func () {
-		fill(play, twoBuilder, false)
 		small.Show()
-		/*
-		butt := assembleBroadButton("0")
-		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
-		if err != nil {
-			panic(err)
-		}
-		small := smallUn.(*gtk.Grid)
-		numBroad++
-		colCount++
-		small.Add(butt)
-		//small.InsertColumn(colCount)
-		wind.ShowAll()
-		if colCount == 4 {
-			colCount = 1
-			small.InsertRow(rowCount)
-			rowCount++
-		}*/
-
-		/*
-		box1Un, err := twoBuilder.GetObject("smalltalkgrid")
-		if err != nil {
-			panic(err)
-		}
-		box1 := box1Un.(*gtk.Grid)
-		if box1.GetVisible {
-			box1.SetVisible(false)
-		}else {
-			box1.SetVisible(true)
-		}*/
 	})
 	windowWidget, err := wind.GetStyleContext()
 	if err != nil {
