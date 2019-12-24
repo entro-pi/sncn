@@ -510,7 +510,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	})
 	rezzGL.Connect("render", func (area *gtk.GLArea)  {
 		renderRezz(startDelta)
-		wind.Show()
 	})
 	techGLUn, err := twoBuilder.GetObject("TechGL")
 	if err != nil {
@@ -521,7 +520,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	techGL.SetAutoRender(true)
 	techGL.Connect("render", func (area *gtk.GLArea) {
 		renderTech(startDelta)
-		wind.Show()
 	})
 	manaGLUn, err := twoBuilder.GetObject("ManaGL")
 	if err != nil {
@@ -532,7 +530,15 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	manaGL.SetAutoRender(true)
 	manaGL.Connect("render", func (area *gtk.GLArea) {
 		renderMana(startDelta)
-		wind.Show()
+	})
+	sideGLUn, err := twoBuilder.GetObject("sideGL")
+	if err != nil {
+		panic(err)
+	}
+	sideGL := sideGLUn.(*gtk.GLArea)
+	sideGL.AddTickCallback(render, uintptr(0))
+	sideGL.Connect("render", func (area *gtk.GLArea) {
+		renderMana(startDelta)
 	})
         wind.Show()
 	application.AddWindow(wind)
@@ -549,9 +555,8 @@ func renderRezz(delta time.Time) bool {
 	deltaSin := float64(tick.Seconds())
 	
 	colorRed := float32(math.Sin(float64(deltaSin) * 4))
-		gl.ClearColor(colorRed+1.0, 0, 0, 1.0)
-		gl.Clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
-//		gl.Clear(gl.COLOR_BUFFER_BIT)
+		gl.ClearColor(colorRed, 0, 0, 1.0)
+		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
 }
 func renderTech(delta time.Time) bool {
@@ -559,9 +564,8 @@ func renderTech(delta time.Time) bool {
 	deltaSin := float64(tick.Seconds())
 	
 	colorGreen := float32(math.Sin(float64(deltaSin) * 3))
-		gl.ClearColor(0, colorGreen+1.0, 0, 1.0)
-		gl.Clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
-//		gl.Clear(gl.COLOR_BUFFER_BIT)
+		gl.ClearColor(0, colorGreen, 0, 1.0)
+		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
 }
 func renderMana(delta time.Time) bool {
@@ -569,9 +573,8 @@ func renderMana(delta time.Time) bool {
 	deltaSin := float64(tick.Seconds())
 	
 	colorPurp := float32(math.Sin(float64(deltaSin) * 2))
-		gl.ClearColor(colorPurp+1.0, 0, colorPurp+1.0, 1.0)
-		gl.Clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
-	gl.Flush()
+		gl.ClearColor(colorPurp, 0, colorPurp, 1.0)
+		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
 }
 
