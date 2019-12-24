@@ -85,6 +85,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 //	var roomYaml []byte
 	createRoomCreate := createRoomCreateUn.(*gtk.Button)
 	createRoomCreate.Connect("clicked", func() {
+		var newRoom Space
 		//create the yaml file here
 		inspectUn, err := twoBuilder.GetObject("inspectMess")
 		if err != nil {
@@ -102,6 +103,17 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		applyVnum := applyVnumUn.(*gtk.CheckButton)
 		if applyVnum.GetActive() {
 			fmt.Println("Make vnum yaml")
+			entryVnumUn, err := twoBuilder.GetObject("entryVnum")
+			if err != nil {
+				panic(err)
+			}
+			entryVnum := entryVnumUn.(*gtk.Entry)
+			value, err := entryVnum.GetText()
+			if err != nil {
+				panic(err)
+			}
+			newRoom.Vnums = value
+			fmt.Println(newRoom.Vnums)
 		}
 		applyDescUn, err := twoBuilder.GetObject("applyDesc")
 		if err != nil {
@@ -110,6 +122,17 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		applyDesc := applyDescUn.(*gtk.CheckButton)
 		if applyDesc.GetActive() {
 			fmt.Println("Make desc yaml")
+			entryDescUn, err := twoBuilder.GetObject("entryDesc")
+			if err != nil {
+				panic(err)
+			}
+			entryDesc := entryDescUn.(*gtk.Entry)
+			value, err := entryDesc.GetText()
+			if err != nil {
+				panic(err)
+			}
+			newRoom.Desc = value
+			fmt.Println(newRoom.Desc)
 		}
 		applyExitUn, err := twoBuilder.GetObject("applyExit")
 		if err != nil {
@@ -118,6 +141,123 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		applyExit := applyExitUn.(*gtk.CheckButton)
 		if applyExit.GetActive() {
 			fmt.Println("Make exit yaml")
+			NorthUn, err := twoBuilder.GetObject("North")
+			SouthUn, err := twoBuilder.GetObject("South")
+			EastUn, err := twoBuilder.GetObject("East")
+			WestUn, err := twoBuilder.GetObject("West")
+			NorthWestUn, err := twoBuilder.GetObject("NorthWest")
+			NorthEastUn, err := twoBuilder.GetObject("NorthEast")
+			SouthWestUn, err := twoBuilder.GetObject("SouthWest")
+			SouthEastUn, err := twoBuilder.GetObject("SouthEast")
+			NorthEntUn, err := twoBuilder.GetObject("NEntry")
+			SouthEntUn, err := twoBuilder.GetObject("SEntry")
+			EastEntUn, err := twoBuilder.GetObject("EEntry")
+			WestEntUn, err := twoBuilder.GetObject("WEntry")
+			NWEntUn, err := twoBuilder.GetObject("NWEntry")
+			NEEntUn, err := twoBuilder.GetObject("NEEntry")
+			SWEntUn, err := twoBuilder.GetObject("SWEntry")
+			SEEntUn, err := twoBuilder.GetObject("SEEntry")
+			if err != nil {
+				panic(err)
+			}
+			North := NorthUn.(*gtk.CheckButton)
+			South := SouthUn.(*gtk.CheckButton)
+			East := EastUn.(*gtk.CheckButton)
+			West := WestUn.(*gtk.CheckButton)
+			NorthWest := NorthWestUn.(*gtk.CheckButton)
+			NorthEast := NorthEastUn.(*gtk.CheckButton)
+			SouthWest := SouthWestUn.(*gtk.CheckButton)
+			SouthEast := SouthEastUn.(*gtk.CheckButton)
+			NEnt := NorthEntUn.(*gtk.Entry)
+			SEnt := SouthEntUn.(*gtk.Entry)
+			EEnt := EastEntUn.(*gtk.Entry)
+			WEnt := WestEntUn.(*gtk.Entry)
+			NEEnt := NEEntUn.(*gtk.Entry)
+			NWEnt := NWEntUn.(*gtk.Entry)
+			SEEnt := SEEntUn.(*gtk.Entry)
+			SWEnt := SWEntUn.(*gtk.Entry)
+
+			if North.GetActive() {
+				value, err := NEnt.GetText()
+				if err != nil {
+					panic(err)
+				}
+				newRoom.Exits.North, err = strconv.Atoi(value)
+				if err != nil {
+					panic(err)
+				}
+			}
+			if South.GetActive() {
+				value, err := SEnt.GetText()
+				if err != nil {
+					panic(err)
+				}
+				newRoom.Exits.South, err = strconv.Atoi(value)
+				if err != nil {
+					panic(err)
+				}
+			}
+			if East.GetActive() {
+				value, err := EEnt.GetText()
+				if err != nil {
+					panic(err)
+				}
+				newRoom.Exits.East, err = strconv.Atoi(value)
+				if err != nil {
+					panic(err)
+				}
+			}
+			if West.GetActive() {
+				value, err := WEnt.GetText()
+				if err != nil {
+					panic(err)
+				}
+				newRoom.Exits.West, err = strconv.Atoi(value)
+				if err != nil {
+					panic(err)
+				}
+			}
+			if NorthWest.GetActive() {
+				value, err := NWEnt.GetText()
+				if err != nil {
+					panic(err)
+				}
+				newRoom.Exits.NorthWest, err = strconv.Atoi(value)
+				if err != nil {
+					panic(err)
+				}
+			}
+			if NorthEast.GetActive() {
+				value, err := NEEnt.GetText()
+				if err != nil {
+					panic(err)
+				}
+				newRoom.Exits.NorthEast, err = strconv.Atoi(value)
+				if err != nil {
+					panic(err)
+				}
+			}
+			if SouthWest.GetActive() {
+				value, err := SWEnt.GetText()
+				if err != nil {
+					panic(err)
+				}
+				newRoom.Exits.SouthWest, err = strconv.Atoi(value)
+				if err != nil {
+					panic(err)
+				}
+			}
+			if SouthEast.GetActive() {
+				value, err := SEEnt.GetText()
+				if err != nil {
+					panic(err)
+				}
+				newRoom.Exits.SouthEast, err = strconv.Atoi(value)
+				if err != nil {
+					panic(err)
+				}
+			}
+			fmt.Println(newRoom.Exits)
 		}
 		applyExitSpecUn, err := twoBuilder.GetObject("applySpecExit")
 		if err != nil {
