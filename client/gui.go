@@ -549,7 +549,7 @@ func renderRezz(delta time.Time) bool {
 	deltaSin := float64(tick.Seconds())
 	
 	colorRed := float32(math.Sin(float64(deltaSin) * 4))
-		gl.ClearColor(colorRed, 0, 0, 1.0)
+		gl.ClearColor(colorRed+1.0, 0, 0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
 //		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
@@ -559,7 +559,7 @@ func renderTech(delta time.Time) bool {
 	deltaSin := float64(tick.Seconds())
 	
 	colorGreen := float32(math.Sin(float64(deltaSin) * 3))
-		gl.ClearColor(0, colorGreen, 0, 1.0)
+		gl.ClearColor(0, colorGreen+1.0, 0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
 //		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
@@ -569,7 +569,7 @@ func renderMana(delta time.Time) bool {
 	deltaSin := float64(tick.Seconds())
 	
 	colorPurp := float32(math.Sin(float64(deltaSin) * 2))
-		gl.ClearColor(colorPurp, 0, colorPurp, 1.0)
+		gl.ClearColor(colorPurp+1.0, 0, colorPurp+1.0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
 	gl.Flush()
 	return true
