@@ -677,9 +677,12 @@
                           <object class="GtkGLArea" id="RezzGL">
                             <property name="height_request">20</property>
                             <property name="visible">True</property>
-                            <property name="app_paintable">True</property>
+                            <property name="sensitive">False</property>
                             <property name="can_focus">False</property>
-                            <property name="auto_render">False</property>
+                            <property name="double_buffered">False</property>
+                            <property name="has_alpha">True</property>
+                            <property name="has_depth_buffer">True</property>
+                            <property name="has_stencil_buffer">True</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -691,9 +694,12 @@
                           <object class="GtkGLArea" id="TechGL">
                             <property name="height_request">20</property>
                             <property name="visible">True</property>
-                            <property name="app_paintable">True</property>
+                            <property name="sensitive">False</property>
                             <property name="can_focus">False</property>
-                            <property name="auto_render">False</property>
+                            <property name="double_buffered">False</property>
+                            <property name="has_alpha">True</property>
+                            <property name="has_depth_buffer">True</property>
+                            <property name="has_stencil_buffer">True</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -705,9 +711,12 @@
                           <object class="GtkGLArea" id="ManaGL">
                             <property name="height_request">20</property>
                             <property name="visible">True</property>
-                            <property name="app_paintable">True</property>
+                            <property name="sensitive">False</property>
                             <property name="can_focus">False</property>
-                            <property name="auto_render">False</property>
+                            <property name="double_buffered">False</property>
+                            <property name="has_alpha">True</property>
+                            <property name="has_depth_buffer">True</property>
+                            <property name="has_stencil_buffer">True</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
