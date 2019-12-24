@@ -95,7 +95,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		fmt.Println("\033[38:2:0:200:0mCREATED ROOM\033[0m")
 		//Change this so it will change the contents of
 		//the popup when clicked
-		inspect.SetText("ROOM CREATED")
 		applyVnumUn, err := twoBuilder.GetObject("applyVnum")
 		if err != nil {
 			panic(err)
@@ -267,6 +266,25 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		if applyExitSpec.GetActive() {
 			fmt.Println("Make special exit yaml")
 		}
+		roomYaml, err := yaml.Marshal(newRoom)
+		if err != nil {
+			panic(err)
+		}
+		_, err = os.Stat("../pot/zones/"+newRoom.Vnums+".yaml")
+		if err != nil {
+			fmt.Println("Does not exist, continue")
+			f, err := os.Create("../pot/zones/"+newRoom.Vnums+".yaml")
+			if err != nil {
+				panic(err)
+			}
+			f.WriteString(string(roomYaml))
+			f.Sync()
+			f.Close()
+			inspect.SetText("ROOM CREATED")
+		}else {
+			inspect.SetText("ROOM EXISTS, ROOM NOT CREATED")
+		}
+		fmt.Println(string(roomYaml))
 
 	})
 	exitCreateRoomUn, err := twoBuilder.GetObject("exitCreateRoom")

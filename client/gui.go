@@ -8,6 +8,8 @@ import (
     "os"
     "fmt"
     "math"
+    "io/ioutil"
+    "github.com/go-yaml/yaml"
     "github.com/gotk3/gotk3/cairo"
     "github.com/gotk3/gotk3/glib"
     "github.com/gotk3/gotk3/gtk"
@@ -400,6 +402,25 @@ const (
 	COLUMN_LONGNAME = 4
 	COLUMN_NUMBER = 5
 )
+
+func showRoom(path string) string {
+	var space Space
+	f, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	roomContents, err := ioutil.ReadAll(f)
+	if err != nil {
+		panic(err)
+	}
+	err = yaml.Unmarshal(roomContents, &space)
+	if err != nil {
+		panic(err)
+	}
+	return space.Desc
+
+}
+
 
 func initColumn(value string, constant int, col *gtk.TreeViewColumn) (*gtk.TreeViewColumn) {
 	healthy, failing, failed := initIcons()
