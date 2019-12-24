@@ -1,6 +1,11 @@
 package main
 
 import (
+	"time"
+	"fmt"
+	"os"
+	"io/ioutil"
+	"github.com/go-yaml/yaml"
 	"strings"
 )
 
@@ -80,6 +85,33 @@ func InitPlayer(name string, pass string) Player {
 	play.Cha = 10
   play.Channels = append(play.Channels, "")
 	return play
+
+}
+func LogPlayerIn(name string, pass string) Player {
+	upperName := strings.ToUpper(name)
+	fileName := upperName+".yaml"
+	file, err := os.Open("../pot/pfiles/"+fileName)
+	if err != nil {
+		panic(err)
+	}
+	fileRaw, err := ioutil.ReadAll(file)
+	if err != nil {
+		panic(err)
+	}
+	player := Player{}
+	err = yaml.Unmarshal(fileRaw, &player)
+	if err != nil {
+		panic(err)
+	}
+	if player.PlayerHash == hash(name+pass) {
+		return player
+	}else {
+		time.Sleep(5*time.Second)
+		fmt.Println("Incorrect password.")
+		os.Exit(1)
+	}
+	player = InitPlayer("nil", "nil")
+	return player
 
 }
 func InitObject() Object {

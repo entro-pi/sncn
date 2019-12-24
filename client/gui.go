@@ -103,12 +103,13 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	logMain := logMainUn.(*gtk.Label)
-	buildString := ""
+	/*buildString := ""
 	for i := 0;i < 45;i++ {
 		buildString += strconv.Itoa(i)+"\n"
 	}
 	logMain.SetText(buildString)
-
+*/	
+	logMain.SetText("You are here, floating in the void.\n A single lamppost shines light upon a small cobbstone square.\nA fountain pours water out endlessly into space.")
 
 
 
@@ -1347,7 +1348,9 @@ func LaunchGUI(fileChange chan bool) {
 			fmt.Print(pass)
 			fmt.Println("b2 clicked")
 			if len(userCaps) > 3 && len(pass) > 3 {
-        		        play := InitPlayer(user, pass)
+        		        play := LogPlayerIn(user, pass)
+
+//				play := InitPlayer(user, pass)
 				whoList := who(play.Name)
 //	                	go actOn(play, fileChange, whoList)
 	                	go func() { actOn(play, fileChange, whoList)}()
