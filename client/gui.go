@@ -271,14 +271,14 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	tells := tellsUn.(*gtk.Button)
+	smallUn, err := twoBuilder.GetObject("smalltalkWin")
+	if err != nil {
+		panic(err)
+	}
+	small := smallUn.(*gtk.ScrolledWindow)
 	tells.Connect("clicked", func () {
 		fill(play, twoBuilder, true)
-		smallUn, err := twoBuilder.GetObject("smalltalkWin")
-		if err != nil {
-			panic(err)
-		}
-		small := smallUn.(*gtk.ScrolledWindow)
-		small.ShowAll()
+		small.Show()
 //		paintOver(twoBuilder)
 /*		butt := assembleBroadButton("0")
 		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
@@ -327,11 +327,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	broad := broadUn.(*gtk.Button)
 	broad.Connect("clicked", func () {
 		fill(play, twoBuilder, false)
-		smallUn, err := twoBuilder.GetObject("smalltalkWin")
-		if err != nil {
-			panic(err)
-		}
-		small := smallUn.(*gtk.ScrolledWindow)
 		small.Show()
 		/*
 		butt := assembleBroadButton("0")
