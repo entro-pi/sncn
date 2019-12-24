@@ -8,7 +8,6 @@ import (
     "os"
     "fmt"
     "math"
-    "math/rand"
     "github.com/gotk3/gotk3/cairo"
     "github.com/gotk3/gotk3/glib"
     "github.com/gotk3/gotk3/gtk"
@@ -203,15 +202,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	prompt := promptUn.(*gtk.DrawingArea)
-	qAct1Un, err := twoBuilder.GetObject("qAction1")
-	if err != nil {
-		panic(err)
-	}
 	//testing
-	gridUn, err := twoBuilder.GetObject("actionGrid")
-	if err != nil {
-		panic(err)
-	}
 	//grid := gridUn.(*gtk.Grid)
 	//gridAlloc :=  grid.GetAllocation()
 	//width := gridAlloc.GetWidth()
@@ -220,7 +211,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 /*	var hpPercent int
 	var manaPercent int
 	var techPercent int
-*/	qAct1 := qAct1Un.(*gtk.Button)
+	qAct1 := qAct1Un.(*gtk.Button)
 	RezzToAdd := 0
 	qAct1.Connect("pressed", func () {
 		RezzToAdd = 10
@@ -237,7 +228,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			prompt.QueueDraw()
 			gtk.MainIterationDo(false)
 		}
-	})
+	})*/
 	qAct2Un, err := twoBuilder.GetObject("qAction2")
 	if err != nil {
 		panic(err)
@@ -250,89 +241,9 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		prompt.QueueDraw()
 	})
 
-	RezzAmount := play.Rezz
 	prompt.Connect("draw", func (da *gtk.DrawingArea, cr *cairo.Context) {
-			if play.Rezz < RezzAmount {
-				
-				grid := gridUn.(*gtk.Grid)
-				gridAlloc :=  grid.GetAllocation()
-				width := gridAlloc.GetWidth()
 
-				hp := float64(RezzAmount) / float64(play.MaxRezz)
-				hpPercent := int((hp * float64(width)) * .33)
-
-				cr.SetSourceRGB(100, 10, 10)
-				randWhite := rand.Intn(10)
-				cr.Rectangle(0, 10, float64(hpPercent+randWhite), 25)
-				cr.Fill()
-				time.Sleep(10 * time.Millisecond)
-				cr.SetSourceRGB(5, 0, 0)
-				randBlack := rand.Intn(9)
-				cr.Rectangle(0, 10, float64(hpPercent+randBlack), 25)
-				cr.Fill()
-				time.Sleep(10 * time.Millisecond)
-				cr.SetSourceRGB(100, 0, 0)
-				randWhite = rand.Intn(9)
-				cr.Rectangle(0, 10, float64(hpPercent+randWhite), 25)
-				cr.Fill()
-				time.Sleep(10 * time.Millisecond)
-				cr.SetSourceRGB(5, 0, 0)
-				randBlack = rand.Intn(8)
-				cr.Rectangle(0, 10, float64(hpPercent+randBlack), 25)
-				cr.Fill()
-				time.Sleep(10 * time.Millisecond)
-				cr.SetSourceRGB(100, 0, 0)
-				randWhite = rand.Intn(8)
-				cr.Rectangle(0, 10, float64(hpPercent+randWhite), 25)
-				cr.Fill()
-				time.Sleep(10 * time.Millisecond)
-				cr.SetSourceRGB(5, 0, 0)
-				randBlack = rand.Intn(15)
-				cr.Rectangle(0, 10, float64(hpPercent+randBlack), 25)
-				cr.Fill()
-				time.Sleep(10 * time.Millisecond)
-				cr.SetSourceRGB(100, 0, 0)
-				randWhite = rand.Intn(7)
-				cr.Rectangle(0, 10, float64(hpPercent+randWhite), 25)
-				cr.Fill()
-				time.Sleep(10 * time.Millisecond)
-				cr.SetSourceRGB(5, 0, 0)
-				randBlack = rand.Intn(10)
-				cr.Rectangle(0, 10, float64(hpPercent+randBlack), 25)
-				cr.Fill()
-				time.Sleep(10 * time.Millisecond)
-				mana := float64(play.Mana) / float64(play.MaxMana)
-				manaPercent := int((mana * float64(width)) * .33)
-				cr.SetSourceRGB(150, 0, 200)
-				cr.Rectangle(float64(width) * .66, 10, float64(manaPercent), 25)
-				cr.Fill()
-				tech := float64(play.Tech) / float64(play.MaxTech)
-				techPercent := int((tech * float64(width)) * .33)
-				cr.SetSourceRGB(0, 200, 0)
-				cr.Rectangle(float64(width) * 0.33, 10, float64(techPercent), 25)
-				cr.Fill()
-				time.Sleep(10 * time.Millisecond)
-				
-				//Transformation has been applied
-				RezzAmount = play.Rezz
-				hp = float64(play.Rezz) / float64(play.MaxRezz)
-				hpPercent = int((hp * float64(width)) * .33)
-
-				cr.SetSourceRGB(200, 0, 0)
-				cr.Rectangle(0, 10, float64(hpPercent), 25)
-				cr.Fill()
-				mana = float64(play.Mana) / float64(play.MaxMana)
-				manaPercent = int((mana * float64(width)) * .33)
-				cr.SetSourceRGB(150, 0, 200)
-				cr.Rectangle(float64(width) * .66, 10, float64(manaPercent), 25)
-				cr.Fill()
-				tech = float64(play.Tech) / float64(play.MaxTech)
-				techPercent = int((tech * float64(width)) * .33)
-				cr.SetSourceRGB(0, 200, 0)
-				cr.Rectangle(float64(width) * 0.33, 10, float64(techPercent), 25)
-				cr.Fill()
-			}
-//			da.Show()
+			da.Show()
 //			fmt.Println("drawing")
 	})
 	equipUn, err := twoBuilder.GetObject("equipMain")
@@ -421,7 +332,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			panic(err)
 		}
 		small := smallUn.(*gtk.ScrolledWindow)
-		small.ShowAll()
+		small.Show()
 		/*
 		butt := assembleBroadButton("0")
 		smallUn, err := twoBuilder.GetObject("smalltalkgrid")
