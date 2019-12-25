@@ -392,7 +392,7 @@ func doGUIInput(play Player, input string) {
 			Body: []byte(body),
 		})
 	}else if room {
-		body += "::=::SENDTO::WEASEL::SENDTO::"
+		body += "::=::SENDTO::"+strings.ToUpper(tellTo)+"::SENDTO::"
 		err = ch.Publish(
 		"ballast", //exchange
 		tellTo+".room", // routing key
