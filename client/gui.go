@@ -274,7 +274,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	broad := broadUn.(*gtk.Button)
-	fill(play, twoBuilder, false)
+	go fill(play, twoBuilder, false)
 	broad.Connect("clicked", func () {
 		small.Show()
 	})

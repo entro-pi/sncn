@@ -131,10 +131,14 @@ frame {
 	background-color: rgb(10, 250, 10);
 }
 .greenText {
-	background-color: rgb(75, 10, 75);
-	color: rgb(10, 250, 10);
+	background-color: #eb2897;
+	color: rgb(0, 0, 0);
 }
 .gOnB {
+	background-color: rgb(0, 0, 0);
+	color: rgb(0, 0, 0);
+}
+.gOnBl {
 	background-color: rgb(0, 0, 0);
 	color: rgb(10, 250, 10);
 }
@@ -188,16 +192,9 @@ frame {
 	color: rgb(10, 75, 10);
 	border: 5px black;
 	border-radius: 1em;
-	background: rgb(10, 10, 50);
+	background: rgb(95, 0, 85);
 }
 
-.cel:active {
-	font: 18px courier;
-	border: 5px rgb(0, 0, 0);
-	background: #eb2899;
-	transition-property: -gtk-icon-transform;
-	transition-duration: .5s;
-}
 .inspectCel {
 	transition-property: -gtk-icon-transform;
 	transition-duration: .65s;
@@ -206,12 +203,5 @@ frame {
 	color: rgb(10, 75, 10);
 	border: 5px black;
 	border-radius: 5em;
-	background: rgb(10, 10, 50);
-}
-.cel:active {
-	font: 18px courier;
-	border: 5px rgb(0, 0, 0);
-	background: #eb2899;
-	transition-property: -gtk-icon-transform;
-	transition-duration: .5s;
+	background: rgb(95, 0, 85);
 }
