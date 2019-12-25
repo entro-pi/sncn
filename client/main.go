@@ -549,7 +549,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 						if err != nil {
 							panic(err)
 						}
-						f.WriteString(strings.Split(message, "::ROOM::")[2])
+						f.WriteString(strings.Split(message, "|")[1])
 						f.Sync()
 						f.Close()
 						forever <- true

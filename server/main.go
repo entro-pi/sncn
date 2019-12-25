@@ -552,7 +552,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 					space := getDir(currentRoom, "north")
 					tellTo := strings.Split(message, "::SENDER::")[1]
 					fmt.Println(tellTo+"moving")
-					body := "::SENDER::SERVER::SENDER::"+string(space)+"::=::SENDTO::"+strings.ToUpper(tellTo)+"::SENDTO::"
+					body := "::SENDER::SERVER::SENDER::|"+string(space)+"|::=::SENDTO::"+strings.ToUpper(tellTo)+"::SENDTO::"
 					err = ch.Publish(
 					"ballast", //exchange
 					tellTo+".tell", // routing key
