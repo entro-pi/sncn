@@ -8,8 +8,8 @@ func initDigRoom(digFrame [][]int, zoneVnums string, zoneName string, play Playe
 	var dg Space
 	dg.Vnums = zoneVnums
 	dg.Zone = zoneName
-	dg.ZonePos = make([]int, 2)
-	dg.ZoneMap = digFrame
+	dg.RoomPos = make([]int, 2)
+	dg.RoomMap = digFrame
 	//todo directions
 	vnum += 1
 	dg.Vnum = vnum

@@ -27,11 +27,11 @@ func digDug(pos []int, play Player, digFrame [][]int, digNums string, digZone st
 	populated[digNum] = dg
 	dg.Vnum = digNum
 	digFrame[pos[0]][pos[1]] = 8
-	dg.ZonePos = dg.ZonePos[:0]
-	dg.ZonePos = append(dg.ZonePos, pos[0])
-	dg.ZonePos = append(dg.ZonePos, pos[1])
+	dg.RoomPos = dg.RoomPos[:0]
+	dg.RoomPos = append(dg.RoomPos, pos[0])
+	dg.RoomPos = append(dg.RoomPos, pos[1])
 	fmt.Println("dug ", dg)
-	drawDig(digFrame, dg.ZonePos)
+	drawDig(digFrame, dg.RoomPos)
 	//updateRoom(play, populated)
 	fmt.Println("Dug ", digNum, " rooms of ", digVnumEnd)
 	return digNum, dg

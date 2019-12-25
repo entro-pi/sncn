@@ -127,8 +127,8 @@ type Space struct{
 	Room dngn.Room
 	Vnums string
 	Zone string
-	ZonePos []int
-	ZoneMap [][]int
+	RoomPos []int
+	RoomMap [][]int
 	Vnum int
 	Desc string
 	Mobiles []int
