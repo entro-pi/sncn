@@ -59,7 +59,10 @@ func handleBreak() {
 
 func main() {
 	go handleBreak()
-
+	if len(os.Args) <= 1 {
+		fmt.Println("Usage is <server> --headless OR --admin")
+		os.Exit(1)
+	}
 	fileChange := make(chan bool)
 	if os.Args[1] == "--headless" {
 		for {
@@ -67,9 +70,9 @@ func main() {
 			play := InitPlayer("noone", "noop")
 			actOn(play, fileChange, whoList )
 		}
+	}else if os.Args[1] == "--admin" {
+		LaunchGUI(fileChange)
 	}
-	LaunchGUI(fileChange)
-
 }
 
 func parseInput(play Player, input string) (Player, string) {
