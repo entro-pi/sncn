@@ -395,7 +395,7 @@ func doGUIInput(play Player, input string) {
 	}else if room {
 		//add direction here later
 		//TODO
-		body += "::=::ROOM::NORTH::ROOM::" + " ::=::SENDTO::SERVER::SENDTO::"
+		body += "::=::ROOM::"+play.CurrentRoom.Vnums+"::ROOM::" + " ::=::SENDTO::SERVER::SENDTO::"
 		err = ch.Publish(
 		"ballast", //exchange
 		tellTo+".room", //routing key

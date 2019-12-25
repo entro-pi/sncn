@@ -11,6 +11,7 @@ import (
 	"os"
 	"io/ioutil"
 	"log"
+	"github.com/go-yaml/yaml"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/fsnotify/fsnotify"
 	"github.com/streadway/amqp"
@@ -547,9 +548,11 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 					}
 				}else if strings.Contains(message, "::ROOM::") {
 					//TODO add directional mapping
+					currentRoom := strings.Split(message, "::ROOM::")[1]
+					space := getDir(currentRoom, "north")
 					tellTo := strings.Split(message, "::SENDER::")[1]
 					fmt.Println(tellTo+"moving")
-					body := "::SENDER::SERVER::SENDER::GONORTH::=::SENDTO::"+strings.ToUpper(tellTo)+"::SENDTO::"
+					body := "::SENDER::SERVER::SENDER::"+string(space)+"::=::SENDTO::"+strings.ToUpper(tellTo)+"::SENDTO::"
 					err = ch.Publish(
 					"ballast", //exchange
 					tellTo+".tell", // routing key
@@ -568,6 +571,61 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 	}
 }
 
+func getRoom(room string) Space {
+	var currentRoom Space
+	f, err := os.Open("../pot/zones/"+room+".yaml")
+	if err != nil {
+		fmt.Println("That room doesn't exist")
+		currentRoom.Desc =  "INVALID"
+		return currentRoom
+	}
+	fRaw, err := ioutil.ReadAll(f)
+	if err != nil {
+		panic(err)
+	}
+	err = yaml.Unmarshal(fRaw, &currentRoom)
+	if err != nil {
+		panic(err)
+	}
+	f.Close()
+	return currentRoom
+}
+
+
+func getDir(startRoom string, exit string) []byte {
+	var goingTo Space
+	exit = strings.ToUpper(exit)
+	currentRoom := getRoom(startRoom)
+	switch exit {
+	case "NORTH":
+		goingTo = getRoom(strconv.Itoa(currentRoom.Exits.North))
+	case "SOUTH":
+		goingTo = getRoom(strconv.Itoa(currentRoom.Exits.South))
+	case "EAST":
+		goingTo = getRoom(strconv.Itoa(currentRoom.Exits.East))
+	case "WEST":
+		goingTo = getRoom(strconv.Itoa(currentRoom.Exits.West))
+	case "NORTHWEST":
+		goingTo = getRoom(strconv.Itoa(currentRoom.Exits.NorthWest))
+	case "NORTHEAST":
+		goingTo = getRoom(strconv.Itoa(currentRoom.Exits.NorthEast))
+	case "SOUTHWEST":
+		goingTo = getRoom(strconv.Itoa(currentRoom.Exits.SouthWest))
+	case "SOUTHEAST":
+		goingTo = getRoom(strconv.Itoa(currentRoom.Exits.SouthEast))
+	default:
+		fmt.Println("That exit doesn't exist")
+
+	}
+	if currentRoom.Desc != "INVALID" {
+		goingToByte, err := yaml.Marshal(goingTo)
+		if err != nil {
+			panic(err)
+		}
+		return goingToByte
+	}
+	return nil
+}
 
 
 func watch(play Player, fileChange chan bool) {

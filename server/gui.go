@@ -175,7 +175,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			NWEnt := NWEntUn.(*gtk.Entry)
 			SEEnt := SEEntUn.(*gtk.Entry)
 			SWEnt := SWEntUn.(*gtk.Entry)
-
+			//TODO check for no length entries and log the error rather than panicing
 			if North.GetActive() {
 				value, err := NEnt.GetText()
 				if err != nil {
