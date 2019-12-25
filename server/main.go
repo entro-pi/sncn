@@ -61,6 +61,13 @@ func main() {
 	go handleBreak()
 
 	fileChange := make(chan bool)
+	if os.Args[1] == "--headless" {
+		for {
+			var whoList []string
+			play := InitPlayer("noone", "noop")
+			actOn(play, fileChange, whoList )
+		}
+	}
 	LaunchGUI(fileChange)
 
 }
@@ -278,6 +285,13 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 		})
 
 	}
+		err = ch.QueueBind(
+	                q.Name, //queue name
+	                "*.room", //routing key
+	                "ballast", //exchange
+	                false,
+	                nil,
+	        )
 
 //	fmt.Print("\033[26;53H\n")
 	log.Printf(" [x] Sent %s", body)
@@ -295,6 +309,7 @@ func doGUIInput(play Player, input string) {
 	inputArray := strings.Split(input, "::SENDER::")
 	tellToArray := strings.Split(input, "@")
 	tellTo := ""
+	room := false
 	if len(tellToArray) > 1 {
 		direct = true
 		tellTo = tellToArray[1]
@@ -373,6 +388,19 @@ func doGUIInput(play Player, input string) {
 			ContentType: "text/plain",
 			Body: []byte(body),
 		})
+	}else if room {
+		body += "::=::SENDTO::WEASEL::SENDTO::"
+		err = ch.Publish(
+		"ballast", //exchange
+		tellTo+".room", // routing key
+		false, //mandatory
+		false, //immediate
+		amqp.Publishing {
+			ContentType: "text/plain",
+			Body: []byte(body),
+		})
+
+
 	}else {
 		body += "::=::SENDTO::ALL::SENDTO::"
 		err = ch.Publish(
@@ -448,6 +476,13 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 		false,
 		nil,
 	)
+	err = ch.QueueBind(
+		q.Name, //queue name
+		"*.room", //routing key
+		"ballast", //exchange
+		false,
+		nil,
+	)
 	failOnError(err, "Failed to bind a queue")
 	msgs, err := ch.Consume(
 		q.Name, //queue
@@ -471,7 +506,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 				fmt.Println("Message!")
 				message := string(msg.Body)
 
-				if strings.Split(message, "::SENDTO::")[1] == play.Name {
+				if strings.Split(message, "::SENDTO::")[1] == play.Name && !strings.Contains(message, "::ROOM::"){
 
 					log.Printf("\033[38:2:150:150:0mReceived a tell: %s\033[0m", msg.Body)
 						if !strings.Contains(message, "!:::tick:::!") {
@@ -507,6 +542,21 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 
 						//go doWatch(string(msg.Body), blank, fileChange)
 					}
+				}else if strings.Contains(message, "::ROOM::") {
+					//TODO add directional mapping
+					tellTo := strings.Split(message, "::SENDER::")[1]
+					fmt.Println(tellTo+"moving")
+					body := "::SENDER::SERVER::SENDER::GONORTH::=::SENDTO::"+strings.ToUpper(tellTo)+"::SENDTO::"
+					err = ch.Publish(
+					"ballast", //exchange
+					tellTo+".tell", // routing key
+					false, //mandatory
+					false, //immediate
+					amqp.Publishing {
+						ContentType: "text/plain",
+						Body: []byte(body),
+					})
+
 				}
 			}
 		}()

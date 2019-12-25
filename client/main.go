@@ -395,7 +395,7 @@ func doGUIInput(play Player, input string) {
 	}else if room {
 		//add direction here later
 		//TODO
-		body += "::=::ROOM::NORTH::ROOM::" + " ::=::SENDTO::"+strings.ToUpper(play.Name)+"::SENDTO::"
+		body += "::=::ROOM::NORTH::ROOM::" + " ::=::SENDTO::SERVER::SENDTO::"
 		err = ch.Publish(
 		"ballast", //exchange
 		tellTo+".room", //routing key
@@ -476,13 +476,6 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 	err = ch.QueueBind(
 		q.Name, //queue name
 		play.Name+".tell", //routing key
-		"ballast", //exchange
-		false,
-		nil,
-	)
-	err = ch.QueueBind(
-		q.Name, //queue name
-		play.Name+".room", //routing key
 		"ballast", //exchange
 		false,
 		nil,

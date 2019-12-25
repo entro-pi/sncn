@@ -308,6 +308,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	if err != nil {
 		panic(err)
 	}
+
 	moni, err := disp.GetMonitorAtWindow(window)
 	if err != nil {
 		panic(err)
