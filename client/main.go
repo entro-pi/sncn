@@ -180,6 +180,7 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 	conn, err := amqp.Dial(connection)
 
 	direct := false
+	room := false
 
 	//Determine if we're sending to anyone in particular
 
@@ -194,6 +195,10 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 	if inputArray[0] == "tell" {
 		direct = true
 		tellTo = inputArray[1]
+	}
+	if inputArray[0] == "North" {
+		direct = true
+		room = true
 	}
 	/*for i := 0;i < len(whoList);i++ {
 		fmt.Println(inputArray[1])
@@ -277,6 +282,16 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 			Body: []byte(body),
 		})
 
+	}else if room {
+		err = ch.Publish(
+		"ballast", //exchange
+		tellTo+".room", //routing key
+		false, //mandatory
+		false, //immediate
+		amqp.Publishing {
+			ContentType: "text/plain",
+			Body: []byte(body),
+		})
 	}
 
 //	fmt.Print("\033[26;53H\n")
@@ -289,9 +304,8 @@ func doGUIInput(play Player, input string) {
 	conn, err := amqp.Dial(connection)
 
 	direct := false
-
+	room := false
 	//Determine if we're sending to anyone in particular
-
 	inputArray := strings.Split(input, "::SENDER::")
 	tellToArray := strings.Split(input, "@")
 	tellTo := ""
@@ -300,6 +314,11 @@ func doGUIInput(play Player, input string) {
 		tellTo = tellToArray[1]
 	}else {
 		tellTo = ""
+	}
+	if strings.Contains(input, "NORTH") {
+		room = true
+		direct = true
+		tellTo = strings.ToUpper(play.Name)
 	}
 	/*for i := 0;i < len(whoList);i++ {
 		fmt.Println(inputArray[1])
@@ -361,12 +380,25 @@ func doGUIInput(play Player, input string) {
 	for i := 0;i < len(inputArray);i++ {
 		body += inputArray[i]+" "
 	}
-	if direct {
+	if direct && !room {
 		body += "::=::SENDTO::"+tellTo+"::SENDTO::"
 		//body = strings.ReplaceAll(body, "broadcast", "tell")
 		err = ch.Publish(
 		"ballast", //exchange
 		tellTo+".tell", // routing key
+		false, //mandatory
+		false, //immediate
+		amqp.Publishing {
+			ContentType: "text/plain",
+			Body: []byte(body),
+		})
+	}else if room {
+		//add direction here later
+		//TODO
+		body += "::=::ROOM::NORTH::ROOM::" + " ::=::SENDTO::"+strings.ToUpper(play.Name)+"::SENDTO::"
+		err = ch.Publish(
+		"ballast", //exchange
+		tellTo+".room", //routing key
 		false, //mandatory
 		false, //immediate
 		amqp.Publishing {
@@ -448,6 +480,13 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 		false,
 		nil,
 	)
+	err = ch.QueueBind(
+		q.Name, //queue name
+		play.Name+".room", //routing key
+		"ballast", //exchange
+		false,
+		nil,
+	)
 	failOnError(err, "Failed to bind a queue")
 	msgs, err := ch.Consume(
 		q.Name, //queue
@@ -471,7 +510,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 				fmt.Println("Message!")
 				message := string(msg.Body)
 
-				if strings.Split(message, "::SENDTO::")[1] == play.Name {
+				if strings.Split(message, "::SENDTO::")[1] == play.Name && !strings.Contains(message, "::ROOM::"){
 
 					log.Printf("\033[38:2:150:150:0mReceived a tell: %s\033[0m", msg.Body)
 						if !strings.Contains(message, "!:::tick:::!") {
@@ -507,6 +546,22 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 
 						//go doWatch(string(msg.Body), blank, fileChange)
 					}
+				}else {
+					roomNum := strings.Split(message, "::ROOM::")[1]
+
+					fmt.Println(play.Name+"Moving "+roomNum)
+					if strings.Contains(message, "::ROOM::") {
+//						roomNum := strings.Split(message, "::ROOM::")[1]
+						f, err := os.Create("../pot/zones/"+roomNum+".yaml")
+						if err != nil {
+							panic(err)
+						}
+						f.WriteString(strings.Split(message, "::ROOM::")[2])
+						f.Sync()
+						f.Close()
+						forever <- true
+					}
+
 				}
 			}
 		}()

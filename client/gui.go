@@ -137,7 +137,19 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		spinner.Start()
 		posting.ShowAll()
 	})
-
+	inputMainUn, err := twoBuilder.GetObject("inputMain")
+	if err != nil {
+		panic(err)
+	}
+	inputMain := inputMainUn.(*gtk.Entry)
+	inputMain.Connect("activate", func() {
+		input, err := inputMain.GetText()
+		if err != nil {
+			panic(err)
+		}
+		doGUIInput(play, input)
+		inputMain.SetText("")
+	})
 	send.Connect("clicked", func() {
 		smallUn, err := twoBuilder.GetObject("smalltalkWin")
 		if err != nil {
