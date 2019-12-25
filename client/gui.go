@@ -810,8 +810,8 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 //		play := InitPlayer("WEASEL", "lol")
 		broadcastContainer = drawPlainBroadcasts(play)
 	}
-	if len(broadcastContainer) >= 15 {
-		broadcastContainer = broadcastContainer[len(broadcastContainer)-15:len(broadcastContainer)]
+	if len(broadcastContainer) >= 6 {
+		broadcastContainer = broadcastContainer[len(broadcastContainer)-6:len(broadcastContainer)]
 	}
 	for i := 0;i < len(broadcastContainer);i++ {
 		fmt.Println(i)
@@ -825,7 +825,7 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 	}
 	
 	small := smallUn.(*gtk.Grid)
-	numInRow := 2
+	numInRow := 0
 	for i := 0;i < 12;i++ {
 		small.RemoveRow(0)
 	}
@@ -1003,7 +1003,7 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 	count := 0
 	for i := 0;i < len(mess);i++ {
 		count++
-		if count == 12 {
+		if count == 140 {
 			addNewLine = true
 		}
 		if addNewLine && mess[i] == ' ' {
