@@ -180,7 +180,6 @@
   </object>
   <object class="GtkListStore" id="liststore1"/>
   <object class="GtkListStore" id="liststore2"/>
-  <object class="GtkEntryBuffer" id="loginbuffer"/>
   <object class="GtkApplicationWindow" id="maininterface">
     <property name="can_focus">False</property>
     <property name="hexpand">True</property>
@@ -222,72 +221,13 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkButton" id="broadcast">
+                          <object class="GtkIconView" id="nyan">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="hexpand">False</property>
-                            <property name="vexpand">False</property>
-                            <child>
-                              <object class="GtkBox">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="hexpand">False</property>
-                                <property name="vexpand">False</property>
-                                <property name="orientation">vertical</property>
-                                <child>
-                                  <object class="GtkLabel" id="timeDate0">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <style>
-                                      <class name="header"/>
-                                      <class name="header:hover"/>
-                                      <class name="spinner"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="message0">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <style>
-                                      <class name="contents"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="fromField0">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">snowcrash.network</property>
-                                    <style>
-                                      <class name="footer"/>
-                                      <class name="footer:hover"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="pack_type">end</property>
-                                    <property name="position">2</property>
-                                  </packing>
-                                </child>
-                              </object>
-                            </child>
-                            <style>
-                              <class name="cel"/>
-                              <class name="cel:hover"/>
-                            </style>
+                            <property name="margin">6</property>
+                            <property name="hexpand">True</property>
+                            <property name="vexpand">True</property>
+                            <property name="model">liststore2</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -1246,6 +1186,7 @@
       <class name="gonB"/>
     </style>
   </object>
+  <object class="GtkEntryBuffer" id="loginbuffer"/>
   <object class="GtkEntryBuffer" id="passwordbuffer"/>
   <object class="GtkApplicationWindow" id="mainwindow">
     <property name="can_focus">False</property>
