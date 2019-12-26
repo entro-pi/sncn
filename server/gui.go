@@ -469,12 +469,19 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 		if box1.GetVisible() {
 			box1.SetVisible(false)
 		}
-		box1.ShowAll()
+		fillList(pList, twoBuilder)
+		//box1.ShowAll()
 		for i := range pList {
 			if pList[i].Name != "null" {
 				fmt.Println(pList[i].Name)
 			}
 		}
+		equipmentWinUn, err := twoBuilder.GetObject("equipmentWin")
+		if err != nil {
+			panic(err)
+		}
+		equipmentWin := equipmentWinUn.(*gtk.ScrolledWindow)
+		equipmentWin.ShowAll()
 	})
 	wind := appWindow.(*gtk.ApplicationWindow)
 	wind.Fullscreen()
@@ -628,7 +635,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 		panic(err)
 	}
 	fillTree(twoBuilder)
-	fillList(twoBuilder)
+	//fillList(twoBuilder)
 	geo := moni.GetGeometry()
 	height := geo.GetHeight()
 	width := geo.GetWidth()
@@ -787,13 +794,15 @@ func fillWorld(world []Space, twoBuilder *gtk.Builder) {
 }
 
 
-func fillList(twoBuilder *gtk.Builder) {
+func fillList(players []Player, twoBuilder *gtk.Builder) {
 
 	tweeUn, err := twoBuilder.GetObject("twee")
 	if err != nil {
 		panic(err)
 	}
+
 	twee := tweeUn.(*gtk.TreeView)
+	twee.SetVisible(true)
 	listStore, err := gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING, glib.TYPE_INT)
 	if err != nil {
 		panic(err)
@@ -807,75 +816,45 @@ func fillList(twoBuilder *gtk.Builder) {
 	if err != nil {
 		panic(err)
 	}*/
-	zeroColumn := createColumnPackStart(twee, "Slot", "", COLUMN_SLOT)
+	zeroColumn := createColumnPackStart(twee, "Name", "", COLUMN_SLOT)
 	twee.AppendColumn(zeroColumn)
-	firstColumn := createColumnPackStart(twee, "Name", "Nyancat", COLUMN_NAME)
+	firstColumn := createColumnPackStart(twee, "Name", "", COLUMN_NAME)
 	twee.AppendColumn(firstColumn)
-	secondColumn := createColumnPackStart(twee, "Item", "4000", COLUMN_ITEM)
+	secondColumn := createColumnPackStart(twee, "Item", "", COLUMN_ITEM)
 	twee.AppendColumn(secondColumn)
-	thirdColumn := createColumnPackStart(twee, "Value", "1.0", COLUMN_VALUE)
+	thirdColumn := createColumnPackStart(twee, "Value", "", COLUMN_VALUE)
 	twee.AppendColumn(thirdColumn)
-	fourthColumn := createColumnPackStart(twee, "LongName", "A poptart kitten nyans along happily", COLUMN_LONGNAME)
+	fourthColumn := createColumnPackStart(twee, "LongName", "", COLUMN_LONGNAME)
 	twee.AppendColumn(fourthColumn)
-	fifthColumn := createColumnPackStart(twee, "Number", "0", COLUMN_NUMBER)
+	fifthColumn := createColumnPackStart(twee, "Number", "", COLUMN_NUMBER)
 	twee.AppendColumn(fifthColumn)
 	pos := listStore.Append()
-	labelColumns(twee, "Slot", COLUMN_SLOT, zeroColumn)
-	labelColumns(twee, "Rose", COLUMN_NAME, firstColumn)
-	labelColumns(twee, "4001", COLUMN_ITEM, secondColumn)
-	labelColumns(twee, "5.0", COLUMN_VALUE, thirdColumn)
-	labelColumns(twee, "A wilting red rose.", COLUMN_LONGNAME, fourthColumn)
-	labelColumns(twee, "0", COLUMN_NUMBER, fifthColumn)
-	err = listStore.SetValue(pos, 0, "Head")
-	if err != nil {
-		panic(err)
+	labelColumns(twee, "Name", COLUMN_SLOT, zeroColumn)
+	labelColumns(twee, "Title", COLUMN_NAME, firstColumn)
+	labelColumns(twee, "", COLUMN_ITEM, secondColumn)
+	labelColumns(twee, "", COLUMN_VALUE, thirdColumn)
+	labelColumns(twee, "", COLUMN_LONGNAME, fourthColumn)
+	labelColumns(twee, "", COLUMN_NUMBER, fifthColumn)
+	for i := 0;i < len(players);i++ {
+		if players[i].Name != "null" || players[i].Name == "" {
+			fmt.Println("Set values for "+players[i].Name)
+			err = listStore.SetValue(pos, 0, players[i].Name)
+			if err != nil {
+				panic(err)
+			}
+			err = listStore.SetValue(pos, 1, players[i].Title)
+			if err != nil {
+				panic(err)
+			}
+			err = listStore.SetValue(pos, 2, len(players[i].Inventory))
+			if err != nil {
+				panic(err)
+			}
+			
+			pos = listStore.Append()
+			
+		}
 	}
-	err = listStore.SetValue(pos, 1, "nyancat")
-	if err != nil {
-		panic(err)
-	}
-	err = listStore.SetValue(pos, 2, 4000)
-	if err != nil {
-		panic(err)
-	}
-	err = listStore.SetValue(pos, 3, 1.0)
-	if err != nil {
-		panic(err)
-	}
-	err = listStore.SetValue(pos, 4, "nyaaaaaaacat")
-	if err != nil {
-		panic(err)
-	}
-	err = listStore.SetValue(pos, 5, 1)
-	if err != nil {
-		panic(err)
-	}
-	pos = listStore.Append()
-	err = listStore.SetValue(pos, 0, "Face")
-	if err != nil {
-		panic(err)
-	}
-	err = listStore.SetValue(pos, 1, "rose")
-	if err != nil {
-		panic(err)
-	}
-	err = listStore.SetValue(pos, 2, 4001)
-	if err != nil {
-		panic(err)
-	}
-	err = listStore.SetValue(pos, 3, 50.0)
-	if err != nil {
-		panic(err)
-	}
-	err = listStore.SetValue(pos, 4, "A wilting red rose")
-	if err != nil {
-		panic(err)
-	}
-	err = listStore.SetValue(pos, 5, 1)
-	if err != nil {
-		panic(err)
-	}
-	listStore.Append()
 
 
 
