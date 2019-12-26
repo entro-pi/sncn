@@ -19,8 +19,27 @@
 
 }
 
-
-
+.GonB {
+	font: 18px courier new;
+	border: 0em;
+	border-radius: 0em;	
+	color: rgb(0, 200, 0);
+	background: rgb(0, 0, 0);
+	
+	background-color: rgb(0, 0, 0);
+}
+.GonB:hover {
+	border: 0em;
+	border-radius: 0em;	
+	color: rgb(150, 0, 150);
+	background: rgb(0, 0, 0);
+	
+	background-color: rgb(0, 0, 0);
+}
+.gonBl {
+	background-color: rgb(95, 0, 75);
+	color: rgb(0, 0, 0);
+}
 
 .post {
 	background-color: rgb(50, 10, 10);
@@ -62,10 +81,6 @@ textview {
 	background-color: rgb(225, 50, 50);
 }
 
-.gonB {
-	background-color: rgb(0, 0, 0);
-	color: rgb(0, 200, 0);
-}
 frame {
 	border-style: dotted;
 	border-top: 15px;

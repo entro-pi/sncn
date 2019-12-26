@@ -59,8 +59,8 @@ func handleBreak() {
 }
 
 func populateWorld() []Space {
-	rooms := make([]Space, 4000, 4000)
-	files := make([]string, 4000, 4000)
+	rooms := make([]Space, 250, 250)
+	files := make([]string, 250, 250)
 	prefix := "../pot/zones/"
 	count := 0
 	err := filepath.Walk(prefix, func(path string, info os.FileInfo, err error) error {

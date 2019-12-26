@@ -442,6 +442,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 	}
 	inv := invUn.(*gtk.Button)
 	inv.Connect("clicked", func (button *gtk.Button) {
+		world = populateWorld()
 		fillWorld(world, twoBuilder)
 	/*	boxUn, err := twoBuilder.GetObject("smalltalkWin")
 		if err != nil {
@@ -713,10 +714,13 @@ func fillWorld(world []Space, twoBuilder *gtk.Builder) {
 		panic(err)
 	}
 	grid := gridUn.(*gtk.Grid)
+	for i := 0;i < 500;i++ {
+		grid.RemoveRow(0)
+	}
 	count := 0
 	row := 0
 	for _, room := range world {
-		roomButton, err := gtk.LabelNew(room.Vnums)
+		roomButton, err := gtk.ButtonNewWithLabel(room.Vnums)
 		if err != nil {
 			panic(err)
 		}
@@ -724,18 +728,24 @@ func fillWorld(world []Space, twoBuilder *gtk.Builder) {
 		if err != nil {
 			panic(err)
 		}
-		styleCtx.AddClass("gonBl")
-		roomButton.SetVExpand(true)
-		roomButton.SetHExpand(true)
-		grid.Attach(roomButton, count, row, 1, 1)
-//		grid.InsertColumn(1)
-		if count == 50 {
-//			grid.InsertRow(1)
-			row++
-			count = 0
+		if room.Vnums == "0000" {
+			styleCtx.AddClass("gonBl")
+		}else {
+			styleCtx.AddClass("GonB")
+			styleCtx.AddClass("GonB:hover")
 		}
-		count++
-//		grid.Attach(roomButton, i, i, 50, 50)
+		roomButton.SetVExpand(true)
+			roomButton.SetHExpand(true)
+			grid.Attach(roomButton, count, row, 1, 1)
+	//		grid.InsertColumn(1)
+			if count == 20 {
+	//			grid.InsertRow(1)
+				row++
+				count = 0
+			}
+			count++
+	//		grid.Attach(roomButton, i, i, 50, 50)
+		
 	}
 	grid.ShowAll()
 
