@@ -460,6 +460,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 		panic(err)
 	}
 	equip := equipUn.(*gtk.Button)
+	fillList(pList, twoBuilder)
 	equip.Connect("clicked", func () {
 		box1Un, err := twoBuilder.GetObject("smalltalkWin")
 		if err != nil {
@@ -468,8 +469,11 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 		box1 := box1Un.(*gtk.ScrolledWindow)
 		if box1.GetVisible() {
 			box1.SetVisible(false)
+			box1.ShowAll()
+		}else {
+			box1.SetVisible(true)
+//			box1.ShowAll()
 		}
-		fillList(pList, twoBuilder)
 		//box1.ShowAll()
 		for i := range pList {
 			if pList[i].Name != "null" {
@@ -481,6 +485,11 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 			panic(err)
 		}
 		equipmentWin := equipmentWinUn.(*gtk.ScrolledWindow)
+		if !equipmentWin.GetVisible() {
+			equipmentWin.SetVisible(true)
+		}else {
+			equipmentWin.SetVisible(false)
+		}
 		equipmentWin.ShowAll()
 	})
 	wind := appWindow.(*gtk.ApplicationWindow)
@@ -803,7 +812,7 @@ func fillList(players []Player, twoBuilder *gtk.Builder) {
 
 	twee := tweeUn.(*gtk.TreeView)
 	twee.SetVisible(true)
-	listStore, err := gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_FLOAT, glib.TYPE_STRING, glib.TYPE_INT)
+	listStore, err := gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_INT, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_INT)
 	if err != nil {
 		panic(err)
 	}
@@ -818,15 +827,15 @@ func fillList(players []Player, twoBuilder *gtk.Builder) {
 	}*/
 	zeroColumn := createColumnPackStart(twee, "Name", "", COLUMN_SLOT)
 	twee.AppendColumn(zeroColumn)
-	firstColumn := createColumnPackStart(twee, "Name", "", COLUMN_NAME)
+	firstColumn := createColumnPackStart(twee, "Title", "", COLUMN_NAME)
 	twee.AppendColumn(firstColumn)
-	secondColumn := createColumnPackStart(twee, "Item", "", COLUMN_ITEM)
+	secondColumn := createColumnPackStart(twee, "Items", "", COLUMN_ITEM)
 	twee.AppendColumn(secondColumn)
-	thirdColumn := createColumnPackStart(twee, "Value", "", COLUMN_VALUE)
+	thirdColumn := createColumnPackStart(twee, "Location", "", COLUMN_VALUE)
 	twee.AppendColumn(thirdColumn)
 	fourthColumn := createColumnPackStart(twee, "LongName", "", COLUMN_LONGNAME)
 	twee.AppendColumn(fourthColumn)
-	fifthColumn := createColumnPackStart(twee, "Number", "", COLUMN_NUMBER)
+	fifthColumn := createColumnPackStart(twee, "Placeholder", "", COLUMN_NUMBER)
 	twee.AppendColumn(fifthColumn)
 	pos := listStore.Append()
 	labelColumns(twee, "Name", COLUMN_SLOT, zeroColumn)
@@ -850,7 +859,11 @@ func fillList(players []Player, twoBuilder *gtk.Builder) {
 			if err != nil {
 				panic(err)
 			}
-			
+			err = listStore.SetValue(pos, 3, players[i].CurrentRoom.Vnums)
+			if err != nil {
+				panic(err)
+			}
+
 			pos = listStore.Append()
 			
 		}
