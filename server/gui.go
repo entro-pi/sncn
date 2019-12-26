@@ -724,6 +724,35 @@ func fillWorld(world []Space, twoBuilder *gtk.Builder) {
 		if err != nil {
 			panic(err)
 		}
+		inspectUn, err := twoBuilder.GetObject("inspectMess")
+		if err != nil {
+			panic(err)
+		}
+		inspect := inspectUn.(*gtk.Label)
+		roomButton.Connect("clicked", func(label *gtk.Button) {
+			world := populateWorld()
+			for c := 0;c < len(world);c++ {
+				value, err := label.GetLabel()
+				if err != nil {
+					panic(err)
+				}
+				if world[c].Vnums == value {
+					fullText := ""
+					fullText = "DESC :"+world[c].Desc
+					fullText += "\n"
+					fullText += world[c].Vnums+"\n"
+					fullText += "North :" +strconv.Itoa(world[c].Exits.North)+"\n"
+					fullText += "NorthEast :" +strconv.Itoa(world[c].Exits.NorthEast)+"\n"
+					fullText += "NorthWest :" +strconv.Itoa(world[c].Exits.NorthWest)+"\n"
+					fullText += "West :" +strconv.Itoa(world[c].Exits.West)+"\n"
+					fullText += "East :" +strconv.Itoa(world[c].Exits.East)+"\n"
+					fullText += "South :" +strconv.Itoa(world[c].Exits.South)+"\n"
+					fullText += "SouthEast :" +strconv.Itoa(world[c].Exits.SouthEast)+"\n"
+					fullText += "SouthWest :" +strconv.Itoa(world[c].Exits.SouthWest)+"\n"
+					inspect.SetText(fullText)
+				}
+			}
+		})
 		styleCtx, err := roomButton.GetStyleContext()
 		if err != nil {
 			panic(err)
