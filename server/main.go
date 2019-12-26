@@ -1,6 +1,7 @@
 package main
 
 import (
+	"path/filepath"
 	"strconv"
 	"time"
 	"context"
@@ -57,6 +58,40 @@ func handleBreak() {
 
 }
 
+func populateWorld() []Space {
+	var rooms []Space
+	var files []string
+	prefix := "../pot/zones/"
+	err := filepath.Walk(prefix, func(path string, info os.FileInfo, err error) error {
+		files = append(files, path)
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, room := range files {
+		var roomSpace Space
+		if room != "../pot/zones/" {
+			f, err := os.Open(room)
+			if err != nil {
+				panic(err)
+			}
+			fRaw, err := ioutil.ReadAll(f)
+			if err != nil {
+				panic(err)
+			}
+			err = yaml.Unmarshal(fRaw, &roomSpace)
+			if err != nil {
+				panic(err)
+			}
+			rooms = append(rooms, roomSpace)
+
+		}
+	}
+	return rooms
+}
+
 
 func main() {
 	go handleBreak()
@@ -64,6 +99,8 @@ func main() {
 		fmt.Println("Usage is <server> --headless OR --admin")
 		os.Exit(1)
 	}
+	world := populateWorld()
+	fmt.Println(world)
 	fileChange := make(chan bool)
 	if os.Args[1] == "--headless" {
 		for {
