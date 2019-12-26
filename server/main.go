@@ -59,19 +59,27 @@ func handleBreak() {
 }
 
 func populateWorld() []Space {
-	var rooms []Space
-	var files []string
+	rooms := make([]Space, 4000, 4000)
+	files := make([]string, 4000, 4000)
 	prefix := "../pot/zones/"
+	count := 0
 	err := filepath.Walk(prefix, func(path string, info os.FileInfo, err error) error {
-		files = append(files, path)
+		files[count] = path
+		count++
 		return nil
 	})
 	if err != nil {
 		panic(err)
 	}
 
-	for _, room := range files {
+	for i, room := range files {
 		var roomSpace Space
+		if len(room) <= 3 {
+			roomSpace.Vnums = "0000"
+			rooms[i] = roomSpace
+			continue
+		}
+
 		if room[len(room)-5:] == ".yaml" {
 			f, err := os.Open(room)
 			if err != nil {
@@ -85,9 +93,13 @@ func populateWorld() []Space {
 			if err != nil {
 				panic(err)
 			}
-			rooms = append(rooms, roomSpace)
+			rooms[i] = roomSpace
+
+		}else {
+			roomSpace.Vnums = "0000"
 
 		}
+	
 	}
 	return rooms
 }
@@ -109,7 +121,7 @@ func main() {
 			actOn(play, fileChange, whoList )
 		}
 	}else if os.Args[1] == "--admin" {
-		LaunchGUI(fileChange)
+		LaunchGUI(fileChange, world)
 	}
 }
 

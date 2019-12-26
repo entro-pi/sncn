@@ -53,7 +53,7 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 
 }
 
-func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) {
+func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, world []Space) {
 	// Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("maininterface")
         if err != nil {
@@ -371,7 +371,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		createPopup.Close()
 	})
 
-
 	sendUn, err := twoBuilder.GetObject("Send")
 	if err != nil {
 		panic(err)
@@ -437,13 +436,14 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			posting.ShowAll()
 		}()
 	})
-	invUn, err := twoBuilder.GetObject("listTells")
+	invUn, err := twoBuilder.GetObject("showRooms")
 	if err != nil {
 		panic(err)
 	}
 	inv := invUn.(*gtk.Button)
 	inv.Connect("clicked", func (button *gtk.Button) {
-		boxUn, err := twoBuilder.GetObject("smalltalkWin")
+		fillWorld(world, twoBuilder)
+	/*	boxUn, err := twoBuilder.GetObject("smalltalkWin")
 		if err != nil {
 			panic(err)
 		}
@@ -452,7 +452,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			box.SetVisible(false)
 		//}else {
 		//	box.SetVisible(true)
-		//}
+		//}*/
 	})
 	equipUn, err := twoBuilder.GetObject("broadMain1")
 	if err != nil {
@@ -707,6 +707,41 @@ func labelColumns(twee *gtk.TreeView, value string, constant int, col *gtk.TreeV
 	return col
 
 }
+func fillWorld(world []Space, twoBuilder *gtk.Builder) {
+	gridUn, err := twoBuilder.GetObject("smalltalkGrid")
+	if err != nil {
+		panic(err)
+	}
+	grid := gridUn.(*gtk.Grid)
+	count := 0
+	row := 0
+	for _, room := range world {
+		roomButton, err := gtk.LabelNew(room.Vnums)
+		if err != nil {
+			panic(err)
+		}
+		styleCtx, err := roomButton.GetStyleContext()
+		if err != nil {
+			panic(err)
+		}
+		styleCtx.AddClass("gonBl")
+		roomButton.SetVExpand(true)
+		roomButton.SetHExpand(true)
+		grid.Attach(roomButton, count, row, 1, 1)
+//		grid.InsertColumn(1)
+		if count == 50 {
+//			grid.InsertRow(1)
+			row++
+			count = 0
+		}
+		count++
+//		grid.Attach(roomButton, i, i, 50, 50)
+	}
+	grid.ShowAll()
+
+
+}
+
 
 func fillList(twoBuilder *gtk.Builder) {
 
@@ -1232,7 +1267,7 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 }
 
 
-func LaunchGUI(fileChange chan bool) {
+func LaunchGUI(fileChange chan bool, world []Space) {
     // Create Gtk Application, change appID to your application domain name reversed.
     const appID = "org.gtk.sncn"
     application, err := gtk.ApplicationNew(appID, glib.APPLICATION_FLAGS_NONE)
@@ -1287,7 +1322,7 @@ func LaunchGUI(fileChange chan bool) {
         		        play := InitPlayer(user, pass)
 				whoList := who(play.Name)
 	                	go func() { actOn(play, fileChange, whoList)}()
-				launch(play, application, twoBuilder)
+				launch(play, application, twoBuilder, world)
 			}
 		})
 

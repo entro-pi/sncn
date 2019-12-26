@@ -180,6 +180,7 @@
   </object>
   <object class="GtkListStore" id="liststore1"/>
   <object class="GtkListStore" id="liststore2"/>
+  <object class="GtkEntryBuffer" id="loginbuffer"/>
   <object class="GtkApplicationWindow" id="maininterface">
     <property name="can_focus">False</property>
     <property name="hexpand">True</property>
@@ -221,18 +222,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkIconView" id="nyan">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="margin">6</property>
-                            <property name="hexpand">True</property>
-                            <property name="vexpand">True</property>
-                            <property name="model">liststore2</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
-                          </packing>
+                          <placeholder/>
                         </child>
                         <style>
                           <class name="greenText"/>
@@ -605,8 +595,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="listTells">
-                <property name="label" translatable="yes">List Tells</property>
+              <object class="GtkButton" id="showRooms">
+                <property name="label" translatable="yes">showRooms</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -1312,7 +1302,6 @@
       <class name="gonB"/>
     </style>
   </object>
-  <object class="GtkEntryBuffer" id="loginbuffer"/>
   <object class="GtkEntryBuffer" id="passwordbuffer"/>
   <object class="GtkApplicationWindow" id="mainwindow">
     <property name="can_focus">False</property>
