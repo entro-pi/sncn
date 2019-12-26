@@ -72,7 +72,7 @@ func populateWorld() []Space {
 
 	for _, room := range files {
 		var roomSpace Space
-		if room != "../pot/zones/" {
+		if room[len(room)-5:] == ".yaml" {
 			f, err := os.Open(room)
 			if err != nil {
 				panic(err)
