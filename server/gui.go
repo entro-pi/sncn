@@ -53,7 +53,7 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 
 }
 
-func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, world []Space) {
+func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, world []Space, pList []Player) {
 	// Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("maininterface")
         if err != nil {
@@ -455,7 +455,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 		//	box.SetVisible(true)
 		//}*/
 	})
-	equipUn, err := twoBuilder.GetObject("broadMain1")
+	equipUn, err := twoBuilder.GetObject("playersMain")
 	if err != nil {
 		panic(err)
 	}
@@ -470,6 +470,11 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 			box1.SetVisible(false)
 		}
 		box1.ShowAll()
+		for i := range pList {
+			if pList[i].Name != "null" {
+				fmt.Println(pList[i].Name)
+			}
+		}
 	})
 	wind := appWindow.(*gtk.ApplicationWindow)
 	wind.Fullscreen()
@@ -1306,7 +1311,7 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 }
 
 
-func LaunchGUI(fileChange chan bool, world []Space) {
+func LaunchGUI(fileChange chan bool, world []Space, pList []Player) {
     // Create Gtk Application, change appID to your application domain name reversed.
     const appID = "org.gtk.sncn"
     application, err := gtk.ApplicationNew(appID, glib.APPLICATION_FLAGS_NONE)
@@ -1361,7 +1366,7 @@ func LaunchGUI(fileChange chan bool, world []Space) {
         		        play := InitPlayer(user, pass)
 				whoList := who(play.Name)
 	                	go func() { actOn(play, fileChange, whoList)}()
-				launch(play, application, twoBuilder, world)
+				launch(play, application, twoBuilder, world, pList)
 			}
 		})
 

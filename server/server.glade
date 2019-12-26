@@ -670,8 +670,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="broadMain1">
-                <property name="label" translatable="yes">List Broadcasts</property>
+              <object class="GtkButton" id="playersMain">
+                <property name="label" translatable="yes">List Players</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>

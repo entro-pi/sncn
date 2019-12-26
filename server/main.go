@@ -58,6 +58,46 @@ func handleBreak() {
 
 }
 
+func readPfiles() []Player {
+	players := make([]Player, 250, 250)
+	files := make([]string, 250, 250)
+	prefix := "../pot/pfiles/"
+	count := 0
+	err := filepath.Walk(prefix, func(path string, info os.FileInfo, err error) error {
+		files[count] = path
+		count++
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	for i, player := range files {
+		var play Player
+		if len(player) <= 3 {
+			play.Name = "null"
+			players[i] = play
+			continue
+		}
+		if player[len(player)-5:] == ".yaml" {
+			f, err := os.Open(player)
+			if err != nil {
+				panic(err)
+			}
+			fRaw, err := ioutil.ReadAll(f)
+			if err != nil {
+				panic(err)
+			}
+			err = yaml.Unmarshal(fRaw, &play)
+			if err != nil {
+				panic(err)
+			}
+			players[i] = play
+
+		}
+	}
+	return players
+}
+
 func populateWorld() []Space {
 	rooms := make([]Space, 250, 250)
 	files := make([]string, 250, 250)
@@ -111,6 +151,7 @@ func main() {
 		fmt.Println("Usage is <server> --headless OR --admin")
 		os.Exit(1)
 	}
+	pList := readPfiles()
 	world := populateWorld()
 	fmt.Println(world)
 	fileChange := make(chan bool)
@@ -121,7 +162,7 @@ func main() {
 			actOn(play, fileChange, whoList )
 		}
 	}else if os.Args[1] == "--admin" {
-		LaunchGUI(fileChange, world)
+		LaunchGUI(fileChange, world, pList)
 	}
 }
 
