@@ -481,8 +481,9 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		area.MakeCurrent()
 		fmt.Println(area.GetError())
 	})
+	GLCount := 1
 	rezzGL.Connect("render", func (area *gtk.GLArea)  {
-		renderRezz(play)
+		GLCount = renderRezz(play, GLCount)
 	})
 	techGLUn, err := twoBuilder.GetObject("TechGL")
 	if err != nil {
@@ -492,7 +493,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	techGL.AddTickCallback(render, uintptr(0))
 	techGL.SetAutoRender(true)
 	techGL.Connect("render", func (area *gtk.GLArea) {
-		renderTech(play)
+		GLCount = renderTech(play, GLCount)
 	})
 	manaGLUn, err := twoBuilder.GetObject("ManaGL")
 	if err != nil {
@@ -502,7 +503,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	manaGL.AddTickCallback(render, uintptr(0))
 	manaGL.SetAutoRender(true)
 	manaGL.Connect("render", func (area *gtk.GLArea) {
-		renderMana(play)
+		GLCount = renderMana(play, GLCount)
 	})
 	sideGLUn, err := twoBuilder.GetObject("sideGL")
 	if err != nil {
@@ -511,7 +512,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	sideGL := sideGLUn.(*gtk.GLArea)
 	sideGL.AddTickCallback(render, uintptr(0))
 	sideGL.Connect("render", func (area *gtk.GLArea) {
-		renderMana(play)
+		GLCount = renderMana(play, GLCount)
 	})
         wind.Show()
 	application.AddWindow(wind)
@@ -523,32 +524,41 @@ func render(widget *gtk.Widget, frameClock *gdk.FrameClock, Userdata uintptr) bo
 	widget.QueueDraw()
 	return true
 }
-func renderRezz(play Player) bool {
+func renderRezz(play Player, count int) int {
+	if count >= 60 {
+		count = 1
+	}
 	delta := play.MaxRezz - play.Rezz
-	deltaSin := float64(delta) / 60.0
-	
-	colorRed := float32(math.Cos(float64(deltaSin)))
+	deltaSin := (float64(delta) / 60.0)
+	count++
+	colorRed := float32(math.Cos(float64(deltaSin)) )
 		gl.ClearColor(colorRed, 0, 0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
-	return true
+	return count
 }
-func renderTech(play Player) bool {
+func renderTech(play Player, count int) int {
+	if count >= 60 {
+		count = 1
+	}
 	delta := play.MaxTech - play.Tech
-	deltaSin := float64(delta) / 60.0
-	
-	colorGreen := float32(math.Cos(float64(deltaSin)))
+	deltaSin :=  (float64(delta) / 60.0)
+	count++
+	colorGreen := float32(math.Cos(float64(deltaSin)) )
 		gl.ClearColor(0, colorGreen, 0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
-	return true
+	return count
 }
-func renderMana(play Player) bool {
+func renderMana(play Player, count int) int {
+	if count >= 60 {
+		count = 1
+	}
 	delta := play.MaxMana - play.Mana
-	deltaSin := float64(delta) / 60.0
-	
-	colorPurp := float32(math.Cos(float64(deltaSin)))
+	deltaSin :=  (float64(delta) / 60.0)
+	count++
+	colorPurp := float32(math.Cos(float64(deltaSin)) )
 		gl.ClearColor(colorPurp, 0, colorPurp, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
-	return true
+	return count
 }
 
 
