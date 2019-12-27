@@ -175,6 +175,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 			NWEnt := NWEntUn.(*gtk.Entry)
 			SEEnt := SEEntUn.(*gtk.Entry)
 			SWEnt := SWEntUn.(*gtk.Entry)
+			newRoom.ExitMap = make(map[string]int, 8)
 			//TODO check for no length entries and log the error rather than panicing
 			if North.GetActive() {
 				value, err := NEnt.GetText()
@@ -182,6 +183,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 					panic(err)
 				}
 				newRoom.Exits.North, err = strconv.Atoi(value)
+				newRoom.ExitMap["North"], err = strconv.Atoi(value)
 				if err != nil {
 					panic(err)
 				}
@@ -192,6 +194,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 					panic(err)
 				}
 				newRoom.Exits.South, err = strconv.Atoi(value)
+				newRoom.ExitMap["South"], err = strconv.Atoi(value)
 				if err != nil {
 					panic(err)
 				}
@@ -202,6 +205,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 					panic(err)
 				}
 				newRoom.Exits.East, err = strconv.Atoi(value)
+				newRoom.ExitMap["East"], err = strconv.Atoi(value)
 				if err != nil {
 					panic(err)
 				}
@@ -212,6 +216,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 					panic(err)
 				}
 				newRoom.Exits.West, err = strconv.Atoi(value)
+				newRoom.ExitMap["West"], err = strconv.Atoi(value)
 				if err != nil {
 					panic(err)
 				}
@@ -222,6 +227,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 					panic(err)
 				}
 				newRoom.Exits.NorthWest, err = strconv.Atoi(value)
+				newRoom.ExitMap["NorthWest"], err = strconv.Atoi(value)
 				if err != nil {
 					panic(err)
 				}
@@ -232,6 +238,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 					panic(err)
 				}
 				newRoom.Exits.NorthEast, err = strconv.Atoi(value)
+				newRoom.ExitMap["NorthEast"], err = strconv.Atoi(value)
 				if err != nil {
 					panic(err)
 				}
@@ -242,6 +249,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 					panic(err)
 				}
 				newRoom.Exits.SouthWest, err = strconv.Atoi(value)
+				newRoom.ExitMap["SouthWest"], err = strconv.Atoi(value)
 				if err != nil {
 					panic(err)
 				}
@@ -252,6 +260,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 					panic(err)
 				}
 				newRoom.Exits.SouthEast, err = strconv.Atoi(value)
+				newRoom.ExitMap["SouthEast"], err = strconv.Atoi(value)
 				if err != nil {
 					panic(err)
 				}

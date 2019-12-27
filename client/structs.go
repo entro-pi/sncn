@@ -136,6 +136,7 @@ type Space struct{
 	Items []int
 	CoreBoard string
 	Exits Exit
+	ExitMap map[string]int
 	Altered bool
 }
 type Exit struct {
