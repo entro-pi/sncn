@@ -54,6 +54,11 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 }
 
 func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, world map[string]*Space, pList []Player) {
+
+	fmt.Println(walkRooms(world["4000"]))
+	for _, value := range world {
+		fmt.Println(value.Vnums)
+	}
 	// Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("maininterface")
         if err != nil {

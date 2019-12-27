@@ -19,7 +19,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func walkRooms(root *Space) {
+func walkRooms(root *Space) map[string]*Space {
 	visited := make(map[string]*Space)
 	queue := list.New()
 
@@ -31,7 +31,7 @@ func walkRooms(root *Space) {
 
 		qnode := queue.Front()
 
-		for id, room := range qnode.Value.(*Space).ExitMap {
+		for id, room := range qnode.Value.(*Space).ExitRooms {
 			if _, ok := visited[id]; !ok {
 
 				visited[id] = qnode.Value.(*Space)
@@ -40,6 +40,7 @@ func walkRooms(root *Space) {
 		}
 		queue.Remove(qnode)
 	}
+	return visited
 }
 
 func failOnError(err error, msg string) {
