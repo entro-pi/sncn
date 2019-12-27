@@ -112,7 +112,48 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 */	
 	logMain.SetText("You are here, floating in the void.\n A single lamppost shines light upon a small cobbstone square.\nA fountain pours water out endlessly into space.")
 
+	mapBoxUn, err := twoBuilder.GetObject("mapBox")
+	if err != nil {
+		panic(err)
+	}
+	numCol := 7
+	numRow := 10
+	boxMap := make([]*gtk.Button, numCol*numRow)
+	mapBox := mapBoxUn.(*gtk.Box)
+	mapGrid, err := gtk.GridNew()
+	if err != nil {
+		panic(err)
+	}
+	mapBox.Add(mapGrid)
+	col := 1
+	row := 1
+	for i := 0;i < numCol * numRow;i++ {
+		roomButton, err := gtk.ButtonNewWithLabel("0000")
+		if err != nil {
+			panic(err)
+		}
+		boxMap[i] = roomButton
+		mapGrid.Attach(boxMap[i], col, row, 1, 1)
+		if col == numCol {
+			col = 1
+			row++
+		}else {
+			col++
+		}
+	}
 
+	//now loop over the in place map
+	for i := 0;i < len(boxMap);i++ {
+		if i == (len(boxMap) / 2) {
+			boxMap[i-4].SetLabel("ROOT")
+			boxStyle, err := boxMap[i-4].GetStyleContext()
+			if err != nil {
+				panic(err)
+			}
+			boxStyle.AddClass("gOnBl")
+		}
+	}
+	mapBox.ShowAll()
 
 	sendUn, err := twoBuilder.GetObject("Send")
 	if err != nil {
@@ -328,7 +369,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	rezzGL := rezzGLUn.(*gtk.GLArea)
 	fmt.Println(rezzGL)
-	startDelta := time.Now()
+	//startDelta := time.Now()
 	rezzGL.AddTickCallback(render, uintptr(0))
 	rezzGL.SetAutoRender(true)
 	rezzGL.Connect("create-context", func (area *gtk.GLArea) {
@@ -337,7 +378,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		fmt.Println(area.GetError())
 	})
 	rezzGL.Connect("render", func (area *gtk.GLArea)  {
-		renderRezz(startDelta)
+		renderRezz()
 	})
 	techGLUn, err := twoBuilder.GetObject("TechGL")
 	if err != nil {
@@ -347,7 +388,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	techGL.AddTickCallback(render, uintptr(0))
 	techGL.SetAutoRender(true)
 	techGL.Connect("render", func (area *gtk.GLArea) {
-		renderTech(startDelta)
+		renderTech()
 	})
 	manaGLUn, err := twoBuilder.GetObject("ManaGL")
 	if err != nil {
@@ -357,7 +398,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	manaGL.AddTickCallback(render, uintptr(0))
 	manaGL.SetAutoRender(true)
 	manaGL.Connect("render", func (area *gtk.GLArea) {
-		renderMana(startDelta)
+		renderMana()
 	})
 	sideGLUn, err := twoBuilder.GetObject("sideGL")
 	if err != nil {
@@ -366,7 +407,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	sideGL := sideGLUn.(*gtk.GLArea)
 	sideGL.AddTickCallback(render, uintptr(0))
 	sideGL.Connect("render", func (area *gtk.GLArea) {
-		renderMana(startDelta)
+		renderMana()
 	})
         wind.Show()
 	application.AddWindow(wind)
@@ -378,29 +419,26 @@ func render(widget *gtk.Widget, frameClock *gdk.FrameClock, Userdata uintptr) bo
 	widget.QueueDraw()
 	return true
 }
-func renderRezz(delta time.Time) bool {
-	tick := time.Now().Sub(delta)
-	deltaSin := float64(tick.Seconds())
+func renderRezz() bool {
+	deltaSin := float64(1.0)
 	
-	colorRed := float32(math.Sin(float64(deltaSin) * 4))
+	colorRed := float32(math.Sin(float64(deltaSin)))
 		gl.ClearColor(colorRed, 0, 0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
 }
-func renderTech(delta time.Time) bool {
-	tick := time.Now().Sub(delta)
-	deltaSin := float64(tick.Seconds())
+func renderTech() bool {
+	deltaSin := float64(1.0)
 	
-	colorGreen := float32(math.Sin(float64(deltaSin) * 3))
+	colorGreen := float32(math.Sin(float64(deltaSin)))
 		gl.ClearColor(0, colorGreen, 0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
 }
-func renderMana(delta time.Time) bool {
-	tick := time.Now().Sub(delta)
-	deltaSin := float64(tick.Seconds())
+func renderMana() bool {
+	deltaSin := float64(1.0)
 	
-	colorPurp := float32(math.Sin(float64(deltaSin) * 2))
+	colorPurp := float32(math.Sin(float64(deltaSin)))
 		gl.ClearColor(colorPurp, 0, colorPurp, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true

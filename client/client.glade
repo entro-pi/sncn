@@ -532,7 +532,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkBox" id="mapBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="vexpand">False</property>
@@ -600,22 +600,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="mapSpace">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="hexpand">True</property>
-                                <property name="vexpand">True</property>
-                                <property name="label" translatable="yes">MAP GO HERE?</property>
-                                <style>
-                                  <class name="greenText"/>
-                                </style>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="pack_type">end</property>
-                                <property name="position">4</property>
-                              </packing>
+                              <placeholder/>
                             </child>
                           </object>
                         </child>
@@ -789,41 +774,8 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
-                                  <object class="GtkButton" id="killSwitch">
+                                  <object class="GtkButton" id="qAction4">
                                     <property name="label" translatable="yes">button</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="lookSwitch">
-                                    <property name="label" translatable="yes">LOOK</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="qAction1">
-                                    <property name="label" translatable="yes">QA1</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="qAction2">
-                                    <property name="label" translatable="yes">qAct2</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
@@ -844,7 +796,40 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="qAction4">
+                                  <object class="GtkButton" id="qAction2">
+                                    <property name="label" translatable="yes">qAct2</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="qAction1">
+                                    <property name="label" translatable="yes">QA1</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="lookSwitch">
+                                    <property name="label" translatable="yes">LOOK</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="killSwitch">
                                     <property name="label" translatable="yes">button</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
