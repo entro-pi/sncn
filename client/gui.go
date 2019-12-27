@@ -142,6 +142,8 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		if err != nil {
 			panic(err)
 		}
+		roomButton.SetHExpand(true)
+		roomButton.SetVExpand(true)
 		boxMap[i] = roomButton
 		mapGrid.Attach(boxMap[i], col, row, 1, 1)
 		if col == numCol {
@@ -167,6 +169,8 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			if err != nil {
 				panic(err)
 			}
+			roomButton.SetHExpand(true)
+			roomButton.SetVExpand(true)
 			boxMap[i] = roomButton
 			mapGrid.Attach(boxMap[i], col, row, 1, 1)
 			if col == numCol {
@@ -178,15 +182,42 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			mapGrid.ShowAll()
 		}
 	})
+	rootClicked := false
+	rootPos := 0
 	//now loop over the in place map
-	for i := 0;i < len(boxMap);i++ {
+	for i := 0;i < len(boxMap)-2;i++ {
 		if i == (len(boxMap) / 2) {
+			rootPos = i-4
 			boxMap[i-4].SetLabel("ROOT")
 			boxStyle, err := boxMap[i-4].GetStyleContext()
 			if err != nil {
 				panic(err)
 			}
 			boxStyle.AddClass("gOnBl")
+		}
+		if i > 1 && i < len(boxMap) {
+			boxMap[i].Connect("clicked", func() {
+				ctxL, err := boxMap[rootPos+1].GetStyleContext()
+				ctxR, err := boxMap[rootPos-1].GetStyleContext()
+				ctxT, err := boxMap[rootPos+numCol].GetStyleContext()
+				ctxB, err := boxMap[rootPos-numCol].GetStyleContext()
+				if err != nil {
+					panic(err)
+				}
+				if !rootClicked {
+					ctxL.AddClass("button")
+					ctxR.AddClass("button")
+					ctxT.AddClass("button")
+					ctxB.AddClass("button")
+					rootClicked = true
+				}else {
+					ctxL.RemoveClass("button")
+					ctxR.RemoveClass("button")
+					ctxT.RemoveClass("button")
+					ctxB.RemoveClass("button")
+					rootClicked = false
+				}
+			})
 		}
 	}
 	mapBox.ShowAll()
