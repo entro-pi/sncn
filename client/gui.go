@@ -10,7 +10,7 @@ import (
     "math"
     "io/ioutil"
     "github.com/go-yaml/yaml"
-    "github.com/gotk3/gotk3/cairo"
+//    "github.com/gotk3/gotk3/cairo"
     "github.com/gotk3/gotk3/glib"
     "github.com/gotk3/gotk3/gtk"
     "github.com/gotk3/gotk3/gdk"
@@ -323,9 +323,36 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	if err != nil {
 		panic(err)
 	}
-	prompt := promptUn.(*gtk.DrawingArea)
+	prompt := promptUn.(*gtk.Box)
+	//Populate the prompt with the player's hp and mana etc...
+	hpText, err := gtk.ButtonNewWithLabel(strconv.Itoa(play.Rezz))
+	techText, err := gtk.ButtonNewWithLabel(strconv.Itoa(play.Tech))
+	manaText, err := gtk.ButtonNewWithLabel(strconv.Itoa(play.Mana))
+	if err != nil {
+		panic(err)
+	}
+	//Now set their styles
+	hpCtx, err := hpText.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	techCtx, err := techText.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	manaCtx, err := manaText.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	hpCtx.AddClass("button")
+	techCtx.AddClass("button")
+	manaCtx.AddClass("button")
+	prompt.Add(hpText)
+	prompt.Add(techText)
+	prompt.Add(manaText)
+	prompt.ShowAll()
 	play.Rezz -= 1
-	qAct2Un, err := twoBuilder.GetObject("qAction2")
+	qAct2Un, err := twoBuilder.GetObject("statsUp")
 	if err != nil {
 		panic(err)
 	}
@@ -334,14 +361,24 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		play.Rezz += 10
 		play.Mana += 10
 		play.Tech += 10
-		prompt.QueueDraw()
+		hpText.SetLabel(strconv.Itoa(play.Rezz))
+		techText.SetLabel(strconv.Itoa(play.Tech))
+		manaText.SetLabel(strconv.Itoa(play.Mana))
+	})
+	qAct1Un, err := twoBuilder.GetObject("statsDown")
+	if err != nil {
+		panic(err)
+	}
+	qAct1 := qAct1Un.(*gtk.Button)
+	qAct1.Connect("pressed", func () {
+		play.Rezz -= 10
+		play.Mana -= 10
+		play.Tech -= 10
+		hpText.SetLabel(strconv.Itoa(play.Rezz))
+		techText.SetLabel(strconv.Itoa(play.Tech))
+		manaText.SetLabel(strconv.Itoa(play.Mana))
 	})
 
-	prompt.Connect("draw", func (da *gtk.DrawingArea, cr *cairo.Context) {
-
-			da.Show()
-//			fmt.Println("drawing")
-	})
 	equipUn, err := twoBuilder.GetObject("equipMain")
 	if err != nil {
 		panic(err)

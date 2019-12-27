@@ -673,12 +673,19 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <child>
-                              <object class="GtkDrawingArea" id="prompt">
-                                <property name="height_request">20</property>
+                              <object class="GtkBox" id="prompt">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="hexpand">True</property>
-                                <property name="vexpand">False</property>
+                                <property name="homogeneous">True</property>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
                               </object>
                             </child>
                           </object>
@@ -796,8 +803,8 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="qAction2">
-                                    <property name="label" translatable="yes">qAct2</property>
+                                  <object class="GtkButton" id="statsUp">
+                                    <property name="label" translatable="yes">statsUp</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
@@ -807,8 +814,8 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="qAction1">
-                                    <property name="label" translatable="yes">QA1</property>
+                                  <object class="GtkButton" id="statsDown">
+                                    <property name="label" translatable="yes">statsDown</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
