@@ -12,11 +12,35 @@ import (
 	"os"
 	"io/ioutil"
 	"log"
+	"container/list"
 	"github.com/go-yaml/yaml"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/fsnotify/fsnotify"
 	"github.com/streadway/amqp"
 )
+
+func walkRooms(root *Space) {
+	visited := make(map[string]*Space)
+	queue := list.New()
+
+	queue.PushBack(root)
+	rootVnum := strconv.Itoa(root.Vnum)
+	visited[rootVnum] = root
+
+	for queue.Len() > 0 {
+
+		qnode := queue.Front()
+
+		for id, room := range qnode.Value.(*Space).ExitMap {
+			if _, ok := visited[id]; !ok {
+
+				visited[id] = qnode.Value.(*Space)
+				queue.PushBack(room)
+			}
+		}
+		queue.Remove(qnode)
+	}
+}
 
 func failOnError(err error, msg string) {
 	if err != nil {
@@ -98,8 +122,8 @@ func readPfiles() []Player {
 	return players
 }
 
-func populateWorld() []Space {
-	rooms := make([]Space, 250, 250)
+func populateWorld() map[string]*Space {
+	rooms := make(map[string]*Space)
 	files := make([]string, 250, 250)
 	prefix := "../pot/zones/"
 	count := 0
@@ -112,11 +136,11 @@ func populateWorld() []Space {
 		panic(err)
 	}
 
-	for i, room := range files {
+	for _, room := range files {
 		var roomSpace Space
 		if len(room) <= 3 {
 			roomSpace.Vnums = "0000"
-			rooms[i] = roomSpace
+			rooms[roomSpace.Vnums] = &roomSpace
 			continue
 		}
 
@@ -133,7 +157,7 @@ func populateWorld() []Space {
 			if err != nil {
 				panic(err)
 			}
-			rooms[i] = roomSpace
+			rooms[roomSpace.Vnums] = &roomSpace
 
 		}else {
 			roomSpace.Vnums = "0000"
@@ -153,7 +177,7 @@ func main() {
 	}
 	pList := readPfiles()
 	world := populateWorld()
-	fmt.Println(world)
+	//fmt.Println(world)
 	fileChange := make(chan bool)
 	if os.Args[1] == "--headless" {
 		for {

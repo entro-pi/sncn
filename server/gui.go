@@ -53,7 +53,7 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 
 }
 
-func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, world []Space, pList []Player) {
+func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, world map[string]*Space, pList []Player) {
 	// Create ApplicationWindow
         appWindow, err := twoBuilder.GetObject("maininterface")
         if err != nil {
@@ -82,9 +82,9 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 	if err != nil {
 		panic(err)
 	}
-//	var roomYaml []byte
 	createRoomCreate := createRoomCreateUn.(*gtk.Button)
 	createRoomCreate.Connect("clicked", func() {
+
 		var newRoom Space
 		//create the yaml file here
 		inspectUn, err := twoBuilder.GetObject("inspectMess")
@@ -637,7 +637,7 @@ func labelColumns(twee *gtk.TreeView, value string, constant int, col *gtk.TreeV
 	return col
 
 }
-func fillWorld(world []Space, twoBuilder *gtk.Builder) {
+func fillWorld(world map[string]*Space, twoBuilder *gtk.Builder) {
 	gridUn, err := twoBuilder.GetObject("smalltalkGrid")
 	if err != nil {
 		panic(err)
@@ -665,19 +665,19 @@ func fillWorld(world []Space, twoBuilder *gtk.Builder) {
 				if err != nil {
 					panic(err)
 				}
-				if world[c].Vnums == value {
+				if world[value].Vnums == value {
 					fullText := ""
-					fullText = "DESC :"+world[c].Desc
+					fullText = "DESC :"+world[value].Desc
 					fullText += "\n"
-					fullText += world[c].Vnums+"\n"
-					fullText += "North :" +strconv.Itoa(world[c].Exits.North)+"\n"
-					fullText += "NorthEast :" +strconv.Itoa(world[c].Exits.NorthEast)+"\n"
-					fullText += "NorthWest :" +strconv.Itoa(world[c].Exits.NorthWest)+"\n"
-					fullText += "West :" +strconv.Itoa(world[c].Exits.West)+"\n"
-					fullText += "East :" +strconv.Itoa(world[c].Exits.East)+"\n"
-					fullText += "South :" +strconv.Itoa(world[c].Exits.South)+"\n"
-					fullText += "SouthEast :" +strconv.Itoa(world[c].Exits.SouthEast)+"\n"
-					fullText += "SouthWest :" +strconv.Itoa(world[c].Exits.SouthWest)+"\n"
+					fullText += world[value].Vnums+"\n"
+					fullText += "North :" +strconv.Itoa(world[value].Exits.North)+"\n"
+					fullText += "NorthEast :" +strconv.Itoa(world[value].Exits.NorthEast)+"\n"
+					fullText += "NorthWest :" +strconv.Itoa(world[value].Exits.NorthWest)+"\n"
+					fullText += "West :" +strconv.Itoa(world[value].Exits.West)+"\n"
+					fullText += "East :" +strconv.Itoa(world[value].Exits.East)+"\n"
+					fullText += "South :" +strconv.Itoa(world[value].Exits.South)+"\n"
+					fullText += "SouthEast :" +strconv.Itoa(world[value].Exits.SouthEast)+"\n"
+					fullText += "SouthWest :" +strconv.Itoa(world[value].Exits.SouthWest)+"\n"
 					inspect.SetText(fullText)
 				}
 			}
@@ -1211,7 +1211,7 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 }
 
 
-func LaunchGUI(fileChange chan bool, world []Space, pList []Player) {
+func LaunchGUI(fileChange chan bool, world map[string]*Space, pList []Player) {
     // Create Gtk Application, change appID to your application domain name reversed.
     const appID = "org.gtk.sncn"
     application, err := gtk.ApplicationNew(appID, glib.APPLICATION_FLAGS_NONE)
