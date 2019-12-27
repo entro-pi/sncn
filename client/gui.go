@@ -111,7 +111,17 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	logMain.SetText(buildString)
 */	
 	logMain.SetText("You are here, floating in the void.\n A single lamppost shines light upon a small cobbstone square.\nA fountain pours water out endlessly into space.")
-
+	zoomInUn, err := twoBuilder.GetObject("zoomIn")
+	if err != nil {
+		panic(err)
+	}
+	zoomIn := zoomInUn.(*gtk.Button)
+	zoomOutUn, err := twoBuilder.GetObject("zoomOut")
+	if err != nil {
+		panic(err)
+	}
+	zoomOut := zoomOutUn.(*gtk.Button)
+	
 	mapBoxUn, err := twoBuilder.GetObject("mapBox")
 	if err != nil {
 		panic(err)
@@ -141,7 +151,33 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			col++
 		}
 	}
+	zoomIn.Connect("clicked", func() {
 
+/*		for i := 0;i < numRow;i++ {
+			defer glib.TimeoutAdd(250, func () {
+				mapGrid.RemoveRow(1)
+				mapGrid.ShowNow()
+			})
+		}
+*/	})
+
+	zoomOut.Connect("clicked", func(button *gtk.Button) {
+		for i := 0;i < numCol * numRow;i++ {
+			roomButton, err := gtk.ButtonNewWithLabel("0000")
+			if err != nil {
+				panic(err)
+			}
+			boxMap[i] = roomButton
+			mapGrid.Attach(boxMap[i], col, row, 1, 1)
+			if col == numCol {
+				col = 1
+				row++
+			}else {
+				col++
+			}
+			mapGrid.ShowAll()
+		}
+	})
 	//now loop over the in place map
 	for i := 0;i < len(boxMap);i++ {
 		if i == (len(boxMap) / 2) {
@@ -1178,7 +1214,6 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 	return newBroadcast
 
 }
-
 
 func LaunchGUI(fileChange chan bool) {
     // Create Gtk Application, change appID to your application domain name reversed.

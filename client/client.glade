@@ -774,8 +774,8 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
-                                  <object class="GtkButton" id="qAction4">
-                                    <property name="label" translatable="yes">button</property>
+                                  <object class="GtkButton" id="zoomOut">
+                                    <property name="label" translatable="yes">zoomOut</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
@@ -785,8 +785,8 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="qAction3">
-                                    <property name="label" translatable="yes">button</property>
+                                  <object class="GtkButton" id="zoomIn">
+                                    <property name="label" translatable="yes">zoomIn</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
