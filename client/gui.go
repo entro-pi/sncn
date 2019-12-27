@@ -482,7 +482,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		fmt.Println(area.GetError())
 	})
 	rezzGL.Connect("render", func (area *gtk.GLArea)  {
-		renderRezz()
+		renderRezz(play)
 	})
 	techGLUn, err := twoBuilder.GetObject("TechGL")
 	if err != nil {
@@ -492,7 +492,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	techGL.AddTickCallback(render, uintptr(0))
 	techGL.SetAutoRender(true)
 	techGL.Connect("render", func (area *gtk.GLArea) {
-		renderTech()
+		renderTech(play)
 	})
 	manaGLUn, err := twoBuilder.GetObject("ManaGL")
 	if err != nil {
@@ -502,7 +502,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	manaGL.AddTickCallback(render, uintptr(0))
 	manaGL.SetAutoRender(true)
 	manaGL.Connect("render", func (area *gtk.GLArea) {
-		renderMana()
+		renderMana(play)
 	})
 	sideGLUn, err := twoBuilder.GetObject("sideGL")
 	if err != nil {
@@ -511,7 +511,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	sideGL := sideGLUn.(*gtk.GLArea)
 	sideGL.AddTickCallback(render, uintptr(0))
 	sideGL.Connect("render", func (area *gtk.GLArea) {
-		renderMana()
+		renderMana(play)
 	})
         wind.Show()
 	application.AddWindow(wind)
@@ -523,26 +523,29 @@ func render(widget *gtk.Widget, frameClock *gdk.FrameClock, Userdata uintptr) bo
 	widget.QueueDraw()
 	return true
 }
-func renderRezz() bool {
-	deltaSin := float64(1.0)
+func renderRezz(play Player) bool {
+	delta := play.MaxRezz - play.Rezz
+	deltaSin := float64(delta) / 60.0
 	
-	colorRed := float32(math.Sin(float64(deltaSin)))
+	colorRed := float32(math.Cos(float64(deltaSin)))
 		gl.ClearColor(colorRed, 0, 0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
 }
-func renderTech() bool {
-	deltaSin := float64(1.0)
+func renderTech(play Player) bool {
+	delta := play.MaxTech - play.Tech
+	deltaSin := float64(delta) / 60.0
 	
-	colorGreen := float32(math.Sin(float64(deltaSin)))
+	colorGreen := float32(math.Cos(float64(deltaSin)))
 		gl.ClearColor(0, colorGreen, 0, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
 }
-func renderMana() bool {
-	deltaSin := float64(1.0)
+func renderMana(play Player) bool {
+	delta := play.MaxMana - play.Mana
+	deltaSin := float64(delta) / 60.0
 	
-	colorPurp := float32(math.Sin(float64(deltaSin)))
+	colorPurp := float32(math.Cos(float64(deltaSin)))
 		gl.ClearColor(colorPurp, 0, colorPurp, 1.0)
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 	return true
