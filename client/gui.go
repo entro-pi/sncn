@@ -344,9 +344,12 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 					if err != nil {
 						panic(err)
 					}
-					mapRight := mapRightUn.(*gtk.Popover)
-					mapRight.SetVisible(true)
-					mapRight.Show()
+					if val != "0000" {
+						mapRight := mapRightUn.(*gtk.Popover)
+						mapRight.SetRelativeTo(butt)
+						mapRight.SetVisible(true)
+						mapRight.Show()
+					}
                                 }
                         })
 
