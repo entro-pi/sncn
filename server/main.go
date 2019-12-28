@@ -19,8 +19,8 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func walkRooms(root *Space) map[string]*Space {
-	visited := make(map[string]*Space)
+func walkRooms(root Space) map[string]Space {
+	visited := make(map[string]Space)
 	queue := list.New()
 
 	queue.PushBack(root)
@@ -31,11 +31,20 @@ func walkRooms(root *Space) map[string]*Space {
 
 		qnode := queue.Front()
 
-		for id, room := range qnode.Value.(*Space).ExitRooms {
+		for id, room := range qnode.Value.(Space).ExitRooms {
 			if _, ok := visited[id]; !ok {
-
-				visited[id] = qnode.Value.(*Space)
-				queue.PushBack(room)
+				var queueRoom Space
+				roomFile, err := os.Open("../pot/zones/"+room.Vnums+".yaml")
+				if err != nil {
+					panic(err)
+				}
+				roomRaw, err := ioutil.ReadAll(roomFile)
+				if err != nil {
+					panic(err)
+				}
+				err = yaml.Unmarshal(roomRaw, &queueRoom) 
+				visited[id] = queueRoom
+				queue.PushBack(queueRoom)
 			}
 		}
 		queue.Remove(qnode)
@@ -123,8 +132,8 @@ func readPfiles() []Player {
 	return players
 }
 
-func populateWorld() map[string]*Space {
-	rooms := make(map[string]*Space)
+func populateWorld() map[string]Space {
+	rooms := make(map[string]Space)
 	files := make([]string, 250, 250)
 	prefix := "../pot/zones/"
 	count := 0
@@ -141,7 +150,7 @@ func populateWorld() map[string]*Space {
 		var roomSpace Space
 		if len(room) <= 3 {
 			roomSpace.Vnums = "0000"
-			rooms[roomSpace.Vnums] = &roomSpace
+			rooms[roomSpace.Vnums] = roomSpace
 			continue
 		}
 
@@ -158,7 +167,7 @@ func populateWorld() map[string]*Space {
 			if err != nil {
 				panic(err)
 			}
-			rooms[roomSpace.Vnums] = &roomSpace
+			rooms[roomSpace.Vnums] = roomSpace
 
 		}else {
 			roomSpace.Vnums = "0000"

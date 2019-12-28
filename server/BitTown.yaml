@@ -1,0 +1,95 @@
+room:
+  width: 0
+  height: 0
+  data: []
+  customseed: false
+vnums: "4000"
+zone: ""
+roompos: []
+roommap: []
+vnum: 0
+desc: Weasels, weasels and stoats everywhere!
+mobiles: []
+mobilesinroom: []
+items: []
+coreboard: ""
+exits:
+  north: 4001
+  south: 4002
+  east: 0
+  west: 0
+  northwest: 0
+  northeast: 0
+  southwest: 0
+  southeast: 0
+  up: 0
+  down: 0
+exitmap:
+  North: 4001
+  South: 4002
+exitrooms:
+  "4001":
+    room:
+      width: 0
+      height: 0
+      data: []
+      customseed: false
+    vnums: "4001"
+    zone: ""
+    roompos: []
+    roommap: []
+    vnum: 0
+    desc: The Great Dodecahedral rotates slowly here.
+    mobiles: []
+    mobilesinroom: []
+    items: []
+    coreboard: ""
+    exits:
+      north: 0
+      south: 4000
+      east: 0
+      west: 0
+      northwest: 0
+      northeast: 0
+      southwest: 0
+      southeast: 0
+      up: 0
+      down: 0
+    exitmap:
+      South: 4000
+    exitrooms:
+      "4000": null
+    altered: false
+  "4002":
+    room:
+      width: 0
+      height: 0
+      data: []
+      customseed: false
+    vnums: "4002"
+    zone: ""
+    roompos: []
+    roommap: []
+    vnum: 0
+    desc: A fountain pours neon blue water endlessly here.
+    mobiles: []
+    mobilesinroom: []
+    items: []
+    coreboard: ""
+    exits:
+      north: 4000
+      south: 0
+      east: 0
+      west: 0
+      northwest: 0
+      northeast: 0
+      southwest: 0
+      southeast: 0
+      up: 0
+      down: 0
+    exitmap:
+      North: 4000
+    exitrooms:
+      "4000": null
+    altered: false
+altered: false

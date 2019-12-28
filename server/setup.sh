@@ -1,10 +1,13 @@
 #!/bin/bash
 
 mkdir ../pot
+mkdir ../pot/zones
 
 touch ../pot/broadcast
 touch ../pot/tells
 touch ../pot/who
+
+cp BitTown.yaml ../pot/zones/4000.yaml
 
 echo Wallace >> ../pot/who
 echo ::SENDER::WEASEL::SENDER::=@WEASEL@ hello ::=::SENDTO::WEASEL::SENDTO::::TIMESTAMP::Wednesday-21:17::TIMESTAMP:: >> ../pot/tells

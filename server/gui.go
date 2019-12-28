@@ -53,10 +53,9 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 
 }
 
-func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, world map[string]*Space, pList []Player) {
-
-	fmt.Println(walkRooms(world["4000"]))
-	for _, value := range world {
+func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, world map[string]Space, pList []Player) {
+	populatedRooms := walkRooms(world["4000"])
+	for _, value := range populatedRooms {
 		fmt.Println(value.Vnums)
 	}
 	// Create ApplicationWindow
@@ -181,6 +180,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 			SEEnt := SEEntUn.(*gtk.Entry)
 			SWEnt := SWEntUn.(*gtk.Entry)
 			newRoom.ExitMap = make(map[string]int, 8)
+			newRoom.ExitRooms = make(map[string]Space, 8)
 			//TODO check for no length entries and log the error rather than panicing
 			if North.GetActive() {
 				value, err := NEnt.GetText()
@@ -189,6 +189,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 				}
 				newRoom.Exits.North, err = strconv.Atoi(value)
 				newRoom.ExitMap["North"], err = strconv.Atoi(value)
+				newRoom.ExitRooms[value] = world[value]
 				if err != nil {
 					panic(err)
 				}
@@ -200,6 +201,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 				}
 				newRoom.Exits.South, err = strconv.Atoi(value)
 				newRoom.ExitMap["South"], err = strconv.Atoi(value)
+				newRoom.ExitRooms[value] = world[value]
 				if err != nil {
 					panic(err)
 				}
@@ -211,6 +213,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 				}
 				newRoom.Exits.East, err = strconv.Atoi(value)
 				newRoom.ExitMap["East"], err = strconv.Atoi(value)
+				newRoom.ExitRooms[value] = world[value]
 				if err != nil {
 					panic(err)
 				}
@@ -222,6 +225,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 				}
 				newRoom.Exits.West, err = strconv.Atoi(value)
 				newRoom.ExitMap["West"], err = strconv.Atoi(value)
+				newRoom.ExitRooms[value] = world[value]
 				if err != nil {
 					panic(err)
 				}
@@ -233,6 +237,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 				}
 				newRoom.Exits.NorthWest, err = strconv.Atoi(value)
 				newRoom.ExitMap["NorthWest"], err = strconv.Atoi(value)
+				newRoom.ExitRooms[value] = world[value]
 				if err != nil {
 					panic(err)
 				}
@@ -244,6 +249,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 				}
 				newRoom.Exits.NorthEast, err = strconv.Atoi(value)
 				newRoom.ExitMap["NorthEast"], err = strconv.Atoi(value)
+				newRoom.ExitRooms[value] = world[value]
 				if err != nil {
 					panic(err)
 				}
@@ -255,6 +261,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 				}
 				newRoom.Exits.SouthWest, err = strconv.Atoi(value)
 				newRoom.ExitMap["SouthWest"], err = strconv.Atoi(value)
+				newRoom.ExitRooms[value] = world[value]
 				if err != nil {
 					panic(err)
 				}
@@ -266,6 +273,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 				}
 				newRoom.Exits.SouthEast, err = strconv.Atoi(value)
 				newRoom.ExitMap["SouthEast"], err = strconv.Atoi(value)
+				newRoom.ExitRooms[value] = world[value]
 				if err != nil {
 					panic(err)
 				}
@@ -642,7 +650,7 @@ func labelColumns(twee *gtk.TreeView, value string, constant int, col *gtk.TreeV
 	return col
 
 }
-func fillWorld(world map[string]*Space, twoBuilder *gtk.Builder) {
+func fillWorld(world map[string]Space, twoBuilder *gtk.Builder) {
 	gridUn, err := twoBuilder.GetObject("smalltalkGrid")
 	if err != nil {
 		panic(err)
@@ -1216,7 +1224,7 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 }
 
 
-func LaunchGUI(fileChange chan bool, world map[string]*Space, pList []Player) {
+func LaunchGUI(fileChange chan bool, world map[string]Space, pList []Player) {
     // Create Gtk Application, change appID to your application domain name reversed.
     const appID = "org.gtk.sncn"
     application, err := gtk.ApplicationNew(appID, glib.APPLICATION_FLAGS_NONE)
