@@ -156,32 +156,9 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	zoomIn.Connect("clicked", func() {
 
-/*		for i := 0;i < numRow;i++ {
-			defer glib.TimeoutAdd(250, func () {
-				mapGrid.RemoveRow(1)
-				mapGrid.ShowNow()
-			})
-		}
-*/	})
+	})
 
 	zoomOut.Connect("clicked", func(button *gtk.Button) {
-		for i := 0;i < numCol * numRow;i++ {
-			roomButton, err := gtk.ButtonNewWithLabel("0000")
-			if err != nil {
-				panic(err)
-			}
-			roomButton.SetHExpand(true)
-			roomButton.SetVExpand(true)
-			boxMap[i] = roomButton
-			mapGrid.Attach(boxMap[i], col, row, 1, 1)
-			if col == numCol {
-				col = 1
-				row++
-			}else {
-				col++
-			}
-			mapGrid.ShowAll()
-		}
 	})
 	rootClicked := false
 	rootPos := 0
