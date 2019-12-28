@@ -294,7 +294,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 						if err != nil {
 							panic(err)
 						}
-						ctx.RemoveClass("mapButton")
 
 						if !rootClicked {
 							inspect.SetText(roomDesc+"\n\n\n\nassign(Destination "+value+")")
@@ -304,6 +303,13 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 						}else {
 							inspect.SetText("\n\n\n\nmalloc(Destination)")
 							rootClicked = false
+							for d := 0;d < len(boxMap);d++ {
+								newCtx, err := boxMap[d].GetStyleContext()
+								if err != nil {
+									panic(err)
+								}
+								newCtx.RemoveClass("mapButton")
+							}
 						}
 					}
 				}
@@ -315,7 +321,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 					panic(err)
 				}
 				mapRight := mapRightUn.(*gtk.Popover)
-                                if keyEvent.ButtonVal() == 1 {
+				if keyEvent.ButtonVal() == 1 {
                                         val, err := butt.GetLabel()
                                         if err != nil {
                                                 panic(err)
