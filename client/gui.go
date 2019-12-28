@@ -290,25 +290,16 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 						}
 						inspect := inspectUn.(*gtk.Label)
 						fmt.Println("value:"+value)
-						ctxL, err := boxMap[c+1].GetStyleContext()
-						ctxR, err := boxMap[c-1].GetStyleContext()
-						ctxT, err := boxMap[c+numCol].GetStyleContext()
-						ctxB, err := boxMap[c-numCol].GetStyleContext()
+						ctx, err := boxMap[c].GetStyleContext()
 						if err != nil {
 							panic(err)
 						}
-						ctxL.RemoveClass("mapButton")
-						ctxR.RemoveClass("mapButton")
-						ctxT.RemoveClass("mapButton")
-						ctxB.RemoveClass("mapButton")
+						ctx.RemoveClass("mapButton")
 
 						if !rootClicked {
 							inspect.SetText(roomDesc+"\n\n\n\nassign(Destination "+value+")")
 
-							ctxL.AddClass("mapButton")
-							ctxR.AddClass("mapButton")
-							ctxT.AddClass("mapButton")
-							ctxB.AddClass("mapButton")
+							ctx.AddClass("mapButton")
 							rootClicked = true
 						}else {
 							inspect.SetText("\n\n\n\nmalloc(Destination)")
@@ -319,12 +310,17 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			})
                         boxMap[i].Connect("button-release-event", func (butt *gtk.Button, ev *gdk.Event) {
                                 keyEvent := gdk.EventButtonNewFromEvent(ev)
-
+				mapRightUn, err := twoBuilder.GetObject("mapRight")
+				if err != nil {
+					panic(err)
+				}
+				mapRight := mapRightUn.(*gtk.Popover)
                                 if keyEvent.ButtonVal() == 1 {
                                         val, err := butt.GetLabel()
                                         if err != nil {
                                                 panic(err)
                                         }
+					mapRight.SetVisible(false)
                                         fmt.Println("Left click on : "+ val)
                                 }
                                 if keyEvent.ButtonVal() == 2 {
@@ -333,6 +329,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
                                                 panic(err)
                                         }
                                         fmt.Println("Middle click on : "+ val)
+					mapRight.SetVisible(false)
                                 }
                                 if keyEvent.ButtonVal() == 3 {
                                         val, err := butt.GetLabel()
@@ -340,15 +337,12 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
                                                 panic(err)
                                         }
                                         fmt.Println("Right click on : "+ val)
-					mapRightUn, err := twoBuilder.GetObject("mapRight")
-					if err != nil {
-						panic(err)
-					}
 					if val != "0000" {
-						mapRight := mapRightUn.(*gtk.Popover)
 						mapRight.SetRelativeTo(butt)
 						mapRight.SetVisible(true)
 						mapRight.Show()
+					}else {
+						mapRight.SetVisible(false)
 					}
                                 }
                         })
