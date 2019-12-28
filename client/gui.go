@@ -270,26 +270,40 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		}
 
 		if i > 1 && i < len(boxMap) {
-			boxMap[i].Connect("clicked", func() {
-				ctxL, err := boxMap[rootPos+1].GetStyleContext()
-				ctxR, err := boxMap[rootPos-1].GetStyleContext()
-				ctxT, err := boxMap[rootPos+numCol].GetStyleContext()
-				ctxB, err := boxMap[rootPos-numCol].GetStyleContext()
+			boxMap[i].Connect("clicked", func(butt *gtk.Button) {
+				value, err := butt.GetLabel()
 				if err != nil {
 					panic(err)
 				}
-				if !rootClicked {
-					ctxL.AddClass("button")
-					ctxR.AddClass("button")
-					ctxT.AddClass("button")
-					ctxB.AddClass("button")
-					rootClicked = true
-				}else {
-					ctxL.RemoveClass("button")
-					ctxR.RemoveClass("button")
-					ctxT.RemoveClass("button")
-					ctxB.RemoveClass("button")
-					rootClicked = false
+				for c := 0;c < len(boxMap);c++ {
+					tocompare, err := boxMap[c].GetLabel()
+					if err != nil {
+						panic(err)
+					}
+					if tocompare == value && (tocompare != "0000" && value != "0000") {
+						fmt.Println("tocompare:"+tocompare)
+						fmt.Println("value:"+value)
+						ctxL, err := boxMap[c+1].GetStyleContext()
+						ctxR, err := boxMap[c-1].GetStyleContext()
+						ctxT, err := boxMap[c+numCol].GetStyleContext()
+						ctxB, err := boxMap[c-numCol].GetStyleContext()
+						if err != nil {
+							panic(err)
+						}
+						if !rootClicked {
+							ctxL.AddClass("button")
+							ctxR.AddClass("button")
+							ctxT.AddClass("button")
+							ctxB.AddClass("button")
+							rootClicked = true
+						}else {
+							ctxL.RemoveClass("button")
+							ctxR.RemoveClass("button")
+							ctxT.RemoveClass("button")
+							ctxB.RemoveClass("button")
+							rootClicked = false
+						}
+					}
 				}
 			})
                         boxMap[i].Connect("button-release-event", func (butt *gtk.Button, ev *gdk.Event) {
