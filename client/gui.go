@@ -310,11 +310,12 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 								}
 								newCtx.RemoveClass("mapButton")
 							}
+							gtk.MainIterationDo(true)
 						}
 					}
 				}
 			})
-                        boxMap[i].Connect("button-release-event", func (butt *gtk.Button, ev *gdk.Event) {
+                        boxMap[i].Connect("button-press-event", func (butt *gtk.Button, ev *gdk.Event) {
                                 keyEvent := gdk.EventButtonNewFromEvent(ev)
 				mapRightUn, err := twoBuilder.GetObject("mapRight")
 				if err != nil {
@@ -1122,7 +1123,30 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 	}
 	row := 0
 	numCount := 0
+	broadRightUn, err := twoBuilder.GetObject("broadRight")
+	if err != nil {
+		panic(err)
+	}
+	broadRight := broadRightUn.(*gtk.Popover)
 	for i := 0;i < len(buttonContainer);i++ {
+                buttonContainer[i].Connect("button-press-event", func (butt *gtk.Button, ev *gdk.Event) {
+                        keyEvent := gdk.EventButtonNewFromEvent(ev)
+                        if keyEvent.ButtonVal() == 1 {
+				broadRight.SetVisible(false)
+				broadRight.Show()
+                        }
+                        if keyEvent.ButtonVal() == 2 {
+				broadRight.SetVisible(false)
+				broadRight.Show()
+                        }
+                        if keyEvent.ButtonVal() == 3 {
+				broadRight.SetRelativeTo(butt)
+				broadRight.SetVisible(true)
+				broadRight.Show()
+                        }
+			gtk.MainIterationDo(true)
+
+                })
 		if numCount < numInRow {
 //			small.Add(buttonContainer[i])
 //			buttonContainer[i].SetVAlign(gtk.ALIGN_CENTER)
@@ -1131,25 +1155,6 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 			if err != nil {
 				panic(err)
 			}
-	                buttonContainer[i].Connect("button-release-event", func (butt *gtk.Button, ev *gdk.Event) {
-	                        keyEvent := gdk.EventButtonNewFromEvent(ev)
-				broadRightUn, err := twoBuilder.GetObject("broadRight")
-				if err != nil {
-					panic(err)
-				}
-				broadRight := broadRightUn.(*gtk.Popover)
-	                        if keyEvent.ButtonVal() == 1 {
-					broadRight.SetVisible(false)
-	                        }
-	                        if keyEvent.ButtonVal() == 2 {
-					broadRight.SetVisible(false)
-	                        }
-	                        if keyEvent.ButtonVal() == 3 {
-					broadRight.SetRelativeTo(butt)
-					broadRight.SetVisible(true)
-					broadRight.Show()
-	                        }
-	                })
 			box.SetCenterWidget(buttonContainer[i])
 			box.SetChildPacking(buttonContainer[i], true, true, 1, gtk.PACK_START)
 //			box.PackEnd(buttonContainer[i], true, true, 0)
@@ -1157,7 +1162,7 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 			box.SetVExpand(true)
 			small.Attach(box, numCount, row, 1, 1)
 			numCount++
-			small.Show()
+			small.ShowAll()
 //			small.ShowAll()
 //			fmt.Println("Num in row", numCount)
 
@@ -1169,25 +1174,6 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 			if err != nil {
 				panic(err)
 			}
-	                buttonContainer[i].Connect("button-release-event", func (butt *gtk.Button, ev *gdk.Event) {
-	                        keyEvent := gdk.EventButtonNewFromEvent(ev)
-				broadRightUn, err := twoBuilder.GetObject("broadRight")
-				if err != nil {
-					panic(err)
-				}
-				broadRight := broadRightUn.(*gtk.Popover)
-	                        if keyEvent.ButtonVal() == 1 {
-					broadRight.SetVisible(false)
-	                        }
-	                        if keyEvent.ButtonVal() == 2 {
-					broadRight.SetVisible(false)
-	                        }
-	                        if keyEvent.ButtonVal() == 3 {
-					broadRight.SetRelativeTo(butt)
-					broadRight.SetVisible(true)
-					broadRight.Show()
-	                        }
-	                })
 			box.SetCenterWidget(buttonContainer[i])
 			box.SetChildPacking(buttonContainer[i], true, true, 1, gtk.PACK_START)
 //			box.PackEnd(buttonContainer[i], true, true, 0)
@@ -1198,7 +1184,7 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 			numCount = 0
 //			fmt.Println("row", row)
 //			small.ShowAll()
-			small.Show()
+			small.ShowAll()
 		}
 
 	}
