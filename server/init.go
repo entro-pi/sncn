@@ -82,6 +82,8 @@ func InitPlayer(name string, pass string) Player {
 	play.Con = 10
 	play.Cha = 10
   play.Channels = append(play.Channels, "")
+world := populateWorld()
+	play.CurrentRoom = world["4000"]
 	return play
 
 }

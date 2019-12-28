@@ -11,10 +11,46 @@ import (
 	"os"
 	"io/ioutil"
 	"log"
+	"container/list"
+	"github.com/go-yaml/yaml"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/fsnotify/fsnotify"
 	"github.com/streadway/amqp"
 )
+
+func walkRooms(root Space) map[string]Space {
+        visited := make(map[string]Space)
+        queue := list.New()
+
+        queue.PushBack(root)
+        rootVnum := strconv.Itoa(root.Vnum)
+        visited[rootVnum] = root
+
+        for queue.Len() > 0 {
+
+                qnode := queue.Front()
+
+                for id, room := range qnode.Value.(Space).ExitRooms {
+                        if _, ok := visited[id]; !ok {
+                                var queueRoom Space
+                                roomFile, err := os.Open("../pot/zones/"+room.Vnums+".yaml")
+                                if err != nil {
+                                        panic(err)
+                                }
+                                roomRaw, err := ioutil.ReadAll(roomFile)
+                                if err != nil {
+                                        panic(err)
+                                }
+                                err = yaml.Unmarshal(roomRaw, &queueRoom) 
+                                visited[id] = queueRoom
+                                queue.PushBack(queueRoom)
+                        }
+                }
+                queue.Remove(qnode)
+        }
+	return visited
+}
+
 
 func failOnError(err error, msg string) {
 	if err != nil {

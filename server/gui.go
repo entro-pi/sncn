@@ -714,13 +714,25 @@ func fillWorld(world map[string]Space, twoBuilder *gtk.Builder) {
 //				ev := butt.GetEvents()
 //				value := gdk.KeyvalName
 				if keyEvent.ButtonVal() == 1 {
-					roomButton.SetLabel("LEFTCLICK")
+					val, err := butt.GetLabel()
+					if err != nil {
+						panic(err)
+					}
+					fmt.Println("Left click on : "+ val)
 				}
 				if keyEvent.ButtonVal() == 2 {
-					roomButton.SetLabel("MIDDLECLICK")
+					val, err := butt.GetLabel()
+					if err != nil {
+						panic(err)
+					}
+					fmt.Println("Middle click on : "+ val)
 				}
 				if keyEvent.ButtonVal() == 3 {
-					roomButton.SetLabel("RIGHTCLICK")
+					val, err := butt.GetLabel()
+					if err != nil {
+						panic(err)
+					}
+					fmt.Println("Right click on : "+ val)
 				}
 			})
 		}

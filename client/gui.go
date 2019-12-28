@@ -127,7 +127,8 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	numCol := 7
-	numRow := 10
+	numRow := 10//TODO
+	//rooms := walkRooms
 	boxMap := make([]*gtk.Button, numCol*numRow)
 	mapBox := mapBoxUn.(*gtk.Box)
 	mapGrid, err := gtk.GridNew()
@@ -184,6 +185,9 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	})
 	rootClicked := false
 	rootPos := 0
+//	world := populateWorld()
+	//initiate the world by walking all rooms we currently have access to
+	mappedWorld := walkRooms(play.CurrentRoom)
 	//now loop over the in place map
 	for i := 0;i < len(boxMap)-2;i++ {
 		if i == (len(boxMap) / 2) {
@@ -194,7 +198,47 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				panic(err)
 			}
 			boxStyle.AddClass("gOnBl")
+/*		}
+		lab, err := boxMap[rootPos].GetLabel()
+		if err != nil {
+			panic(err)
 		}
+		if lab == "ROOT" {
+		*/	boxMap[rootPos].SetLabel(mappedWorld[play.CurrentRoom.Vnums].Vnums)
+			if play.CurrentRoom.ExitMap["North"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["North"])
+				boxMap[rootPos-numCol].SetLabel(stringRoom)
+			}
+			if play.CurrentRoom.ExitMap["South"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["South"])
+				boxMap[rootPos+numCol].SetLabel(stringRoom)
+			}
+			if play.CurrentRoom.ExitMap["East"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["East"])
+				boxMap[rootPos+1].SetLabel(stringRoom)
+			}
+			if play.CurrentRoom.ExitMap["West"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["West"])
+				boxMap[rootPos-1].SetLabel(stringRoom)
+			}
+			if play.CurrentRoom.ExitMap["NorthEast"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["NorthEast"])
+				boxMap[rootPos-1-numCol].SetLabel(stringRoom)
+			}
+			if play.CurrentRoom.ExitMap["NorthWest"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["NorthWest"])
+				boxMap[rootPos+1-numCol].SetLabel(stringRoom)
+			}
+			if play.CurrentRoom.ExitMap["SouthEast"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["SouthEast"])
+				boxMap[rootPos+1+numCol].SetLabel(stringRoom)
+			}
+			if play.CurrentRoom.ExitMap["SouthWest"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["SouthWest"])
+				boxMap[rootPos+1-numCol].SetLabel(stringRoom)
+			}
+		}
+
 		if i > 1 && i < len(boxMap) {
 			boxMap[i].Connect("clicked", func() {
 				ctxL, err := boxMap[rootPos+1].GetStyleContext()
@@ -218,9 +262,36 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 					rootClicked = false
 				}
 			})
+                        boxMap[i].Connect("button-release-event", func (butt *gtk.Button, ev *gdk.Event) {
+                                keyEvent := gdk.EventButtonNewFromEvent(ev)
+
+                                if keyEvent.ButtonVal() == 1 {
+                                        val, err := butt.GetLabel()
+                                        if err != nil {
+                                                panic(err)
+                                        }
+                                        fmt.Println("Left click on : "+ val)
+                                }
+                                if keyEvent.ButtonVal() == 2 {
+                                        val, err := butt.GetLabel()
+                                        if err != nil {
+                                                panic(err)
+                                        }
+                                        fmt.Println("Middle click on : "+ val)
+                                }
+                                if keyEvent.ButtonVal() == 3 {
+                                        val, err := butt.GetLabel()
+                                        if err != nil {
+                                                panic(err)
+                                        }
+                                        fmt.Println("Right click on : "+ val)
+                                }
+                        })
+
 		}
 	}
 	mapBox.ShowAll()
+
 
 	sendUn, err := twoBuilder.GetObject("Send")
 	if err != nil {
