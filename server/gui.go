@@ -304,7 +304,15 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 			f.Close()
 			inspect.SetText("ROOM CREATED")
 		}else {
-			inspect.SetText("ROOM EXISTS, ROOM NOT CREATED")
+			fmt.Println("Does exist, continue")
+			f, err := os.Create("../pot/zones/"+newRoom.Vnums+".yaml")
+			if err != nil {
+				panic(err)
+			}
+			f.WriteString(string(roomYaml))
+			f.Sync()
+			f.Close()
+			inspect.SetText("ROOM OVERWRITTEN")
 		}
 		fmt.Println(string(roomYaml))
 
@@ -364,6 +372,21 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 			//the popup when clicked
 			inspect.SetText("ERROR\nPLAYERFILE EXISTS")
 			//createPopup.SetText("Playerfile exists!")
+			playNew := InitPlayer(Name, Pass)
+			yamlPlay, err := yaml.Marshal(playNew)
+			if err != nil {
+				panic(err)
+			}
+			file, err := os.OpenFile("../pot/pfiles/"+Name+".yaml", os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				panic(err)
+			}
+			defer file.Close()
+			file.Write(yamlPlay)
+			readYamlFile(Name)
+			createPopup.Close()
+			inspect.SetText("Playerfile "+Name+" overwritten")
+			//get the values of the player and do the thing
 		}else {
 			playNew := InitPlayer(Name, Pass)
 			yamlPlay, err := yaml.Marshal(playNew)
