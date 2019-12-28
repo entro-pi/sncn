@@ -340,6 +340,13 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
                                                 panic(err)
                                         }
                                         fmt.Println("Right click on : "+ val)
+					mapRightUn, err := twoBuilder.GetObject("mapRight")
+					if err != nil {
+						panic(err)
+					}
+					mapRight := mapRightUn.(*gtk.Popover)
+					mapRight.SetVisible(true)
+					mapRight.Show()
                                 }
                         })
 
