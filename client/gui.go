@@ -208,34 +208,87 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			if play.CurrentRoom.ExitMap["North"] > 1 {
 				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["North"])
 				boxMap[rootPos-numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos-numCol].GetStyleContext()
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("gOnBl")
 			}
 			if play.CurrentRoom.ExitMap["South"] > 1 {
 				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["South"])
 				boxMap[rootPos+numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos+numCol].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("gOnBl")
+
 			}
 			if play.CurrentRoom.ExitMap["East"] > 1 {
 				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["East"])
 				boxMap[rootPos+1].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos+1].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("gOnBl")
+
 			}
 			if play.CurrentRoom.ExitMap["West"] > 1 {
 				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["West"])
 				boxMap[rootPos-1].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos-1].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("gOnBl")
+
 			}
 			if play.CurrentRoom.ExitMap["NorthEast"] > 1 {
 				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["NorthEast"])
 				boxMap[rootPos-1-numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos-1-numCol].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("gOnBl")
+
 			}
 			if play.CurrentRoom.ExitMap["NorthWest"] > 1 {
 				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["NorthWest"])
 				boxMap[rootPos+1-numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos+1-numCol].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("gOnBl")
+
 			}
 			if play.CurrentRoom.ExitMap["SouthEast"] > 1 {
 				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["SouthEast"])
 				boxMap[rootPos+1+numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos+1+numCol].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("gOnBl")
+
 			}
 			if play.CurrentRoom.ExitMap["SouthWest"] > 1 {
 				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["SouthWest"])
 				boxMap[rootPos+1-numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos+1-numCol].GetStyleContext()
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("gOnBl")
+
 			}
 		}
 
