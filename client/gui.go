@@ -110,7 +110,8 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	logMain.SetText(buildString)
 */	
-	logMain.SetText("You are here, floating in the void.\n A single lamppost shines light upon a small cobbstone square.\nA fountain pours water out endlessly into space.")
+	
+	logMain.SetText("Connection interrupted.\nLock destination and engage to view.")
 	zoomInUn, err := twoBuilder.GetObject("zoomIn")
 	if err != nil {
 		panic(err)
@@ -174,7 +175,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			if err != nil {
 				panic(err)
 			}
-			boxStyle.AddClass("gOnBl")
+			boxStyle.AddClass("mapgOnBl")
 /*		}
 		lab, err := boxMap[rootPos].GetLabel()
 		if err != nil {
@@ -189,7 +190,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				if err != nil {
 					panic(err)
 				}
-				styCtx.AddClass("gOnBl")
+				styCtx.AddClass("mapgOnBl")
 			}
 			if play.CurrentRoom.ExitMap["South"] > 1 {
 				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["South"])
@@ -199,7 +200,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				if err != nil {
 					panic(err)
 				}
-				styCtx.AddClass("gOnBl")
+				styCtx.AddClass("mapgOnBl")
 
 			}
 			if play.CurrentRoom.ExitMap["East"] > 1 {
@@ -210,7 +211,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				if err != nil {
 					panic(err)
 				}
-				styCtx.AddClass("gOnBl")
+				styCtx.AddClass("mapgOnBl")
 
 			}
 			if play.CurrentRoom.ExitMap["West"] > 1 {
@@ -221,7 +222,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				if err != nil {
 					panic(err)
 				}
-				styCtx.AddClass("gOnBl")
+				styCtx.AddClass("mapgOnBl")
 
 			}
 			if play.CurrentRoom.ExitMap["NorthEast"] > 1 {
@@ -232,7 +233,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				if err != nil {
 					panic(err)
 				}
-				styCtx.AddClass("gOnBl")
+				styCtx.AddClass("mapgOnBl")
 
 			}
 			if play.CurrentRoom.ExitMap["NorthWest"] > 1 {
@@ -243,7 +244,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				if err != nil {
 					panic(err)
 				}
-				styCtx.AddClass("gOnBl")
+				styCtx.AddClass("mapgOnBl")
 
 			}
 			if play.CurrentRoom.ExitMap["SouthEast"] > 1 {
@@ -254,7 +255,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				if err != nil {
 					panic(err)
 				}
-				styCtx.AddClass("gOnBl")
+				styCtx.AddClass("mapgOnBl")
 
 			}
 			if play.CurrentRoom.ExitMap["SouthWest"] > 1 {
@@ -264,7 +265,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				if err != nil {
 					panic(err)
 				}
-				styCtx.AddClass("gOnBl")
+				styCtx.AddClass("mapgOnBl")
 
 			}
 		}
@@ -282,6 +283,12 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 					}
 					if tocompare == value && (tocompare != "0000" && value != "0000") {
 						fmt.Println("tocompare:"+tocompare)
+						roomDesc := mappedWorld[value].Desc
+						inspectUn, err := twoBuilder.GetObject("inspectMess")
+						if err != nil {
+							panic(err)
+						}
+						inspect := inspectUn.(*gtk.Label)
 						fmt.Println("value:"+value)
 						ctxL, err := boxMap[c+1].GetStyleContext()
 						ctxR, err := boxMap[c-1].GetStyleContext()
@@ -290,17 +297,21 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 						if err != nil {
 							panic(err)
 						}
+						ctxL.RemoveClass("mapButton")
+						ctxR.RemoveClass("mapButton")
+						ctxT.RemoveClass("mapButton")
+						ctxB.RemoveClass("mapButton")
+
 						if !rootClicked {
-							ctxL.AddClass("button")
-							ctxR.AddClass("button")
-							ctxT.AddClass("button")
-							ctxB.AddClass("button")
+							inspect.SetText(roomDesc+"\n\n\n\nassign(Destination "+value+")")
+
+							ctxL.AddClass("mapButton")
+							ctxR.AddClass("mapButton")
+							ctxT.AddClass("mapButton")
+							ctxB.AddClass("mapButton")
 							rootClicked = true
 						}else {
-							ctxL.RemoveClass("button")
-							ctxR.RemoveClass("button")
-							ctxT.RemoveClass("button")
-							ctxB.RemoveClass("button")
+							inspect.SetText("\n\n\n\nmalloc(Destination)")
 							rootClicked = false
 						}
 					}

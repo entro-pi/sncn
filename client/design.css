@@ -66,6 +66,10 @@ textview {
 	border: 0px;
 	border-radius: 0em;
 }
+.mapButton {
+	background: #fb9d45;
+
+}
 
 frame {
 	border-style: dotted;
@@ -139,6 +143,10 @@ frame {
 	color: rgb(0, 0, 0);
 }
 .gOnBl {
+	background-color: rgb(0, 0, 0);
+	color: rgb(10, 250, 10);
+}
+.mapgOnBl {
 	background-color: rgb(0, 0, 0);
 	color: rgb(10, 250, 10);
 }
