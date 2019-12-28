@@ -12,7 +12,7 @@ import (
 //    "encoding/json"
     "github.com/gotk3/gotk3/glib"
     "github.com/gotk3/gotk3/gtk"
-//    "github.com/gotk3/gotk3/gdk"
+    "github.com/gotk3/gotk3/gdk"
 )
 
 
@@ -704,18 +704,37 @@ func fillWorld(world map[string]Space, twoBuilder *gtk.Builder) {
 		}else {
 			styleCtx.AddClass("GonB")
 			styleCtx.AddClass("GonB:hover")
+			roomButton.Connect("button-release-event", func (butt *gtk.Button, ev *gdk.Event) {
+//				keyEvent := gdk.EventKey{ev}
+				keyEvent := gdk.EventButtonNewFromEvent(ev)
+
+//				keyEvent := keyE
+			
+//				fmt.Println(gdk.KeyvalToUnicode(keyEvent.KeyVal()))
+//				ev := butt.GetEvents()
+//				value := gdk.KeyvalName
+				if keyEvent.ButtonVal() == 1 {
+					roomButton.SetLabel("LEFTCLICK")
+				}
+				if keyEvent.ButtonVal() == 2 {
+					roomButton.SetLabel("MIDDLECLICK")
+				}
+				if keyEvent.ButtonVal() == 3 {
+					roomButton.SetLabel("RIGHTCLICK")
+				}
+			})
 		}
 		roomButton.SetVExpand(true)
-			roomButton.SetHExpand(true)
-			grid.Attach(roomButton, count, row, 1, 1)
-	//		grid.InsertColumn(1)
-			if count == 20 {
-	//			grid.InsertRow(1)
-				row++
-				count = 0
-			}
-			count++
-	//		grid.Attach(roomButton, i, i, 50, 50)
+		roomButton.SetHExpand(true)
+		grid.Attach(roomButton, count, row, 1, 1)
+//		grid.InsertColumn(1)
+		if count == 20 {
+//			grid.InsertRow(1)
+			row++
+			count = 0
+		}
+		count++
+//		grid.Attach(roomButton, i, i, 50, 50)
 		
 	}
 	grid.ShowAll()
