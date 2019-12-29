@@ -10,6 +10,7 @@ import (
     "math"
     "io/ioutil"
     "github.com/go-yaml/yaml"
+    "unsafe"
 //    "github.com/gotk3/gotk3/cairo"
     "github.com/gotk3/gotk3/glib"
     "github.com/gotk3/gotk3/gtk"
@@ -112,6 +113,8 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 */	
 	
 	logMain.SetText("Connection interrupted.\nLock destination and engage to view.")
+	logMain.AddTickCallback(round, uintptr(unsafe.Pointer(&play)))
+
 	zoomInUn, err := twoBuilder.GetObject("zoomIn")
 	if err != nil {
 		panic(err)
@@ -659,6 +662,17 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 
 func render(widget *gtk.Widget, frameClock *gdk.FrameClock, Userdata uintptr) bool {
 	widget.QueueDraw()
+	return true
+}
+func round(widget *gtk.Widget, frameClock *gdk.FrameClock, Userdata uintptr) bool {
+//	play := Userdata.(*Player)
+	log := (*gtk.Label)(unsafe.Pointer(widget))
+	play := (*Player)(unsafe.Pointer(Userdata))
+//	log, err := widget.GetLabel()
+//	if err != nil {
+//		panic(err)
+//	}
+	log.SetText(play.CurrentRoom.Desc)
 	return true
 }
 func renderRezz(play Player, count int) int {
