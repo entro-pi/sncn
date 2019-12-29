@@ -199,7 +199,7 @@ frame {
 	font: 18px courier;
 	color: rgb(10, 75, 10);
 	border: 5px black;
-	border-radius: 1em;
+	border-radius: 0em;
 	background: rgb(95, 0, 85);
 }
 
@@ -210,6 +210,6 @@ frame {
 	font: 18px courier;
 	color: rgb(10, 75, 10);
 	border: 5px black;
-	border-radius: 5em;
+	border-radius: 0em;
 	background: rgb(95, 0, 85);
 }
