@@ -161,7 +161,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	zoomIn.Connect("clicked", func() {
 
 	})
-
 	zoomOut.Connect("clicked", func(button *gtk.Button) {
 	})
 	rootClicked := false
@@ -354,6 +353,17 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 					}else {
 						mapRight.SetVisible(false)
 					}
+					engageUn, err := twoBuilder.GetObject("mapRightEngage")
+					if err != nil {
+						panic(err)
+					}
+					engage := engageUn.(*gtk.Button)
+					engage.Connect("clicked", func(button *gtk.Button) {
+						if val != "0000" {
+							play.CurrentRoom = mappedWorld[val]
+						}
+					})
+
                                 }
                         })
 
@@ -665,13 +675,8 @@ func render(widget *gtk.Widget, frameClock *gdk.FrameClock, Userdata uintptr) bo
 	return true
 }
 func round(widget *gtk.Widget, frameClock *gdk.FrameClock, Userdata uintptr) bool {
-//	play := Userdata.(*Player)
 	log := (*gtk.Label)(unsafe.Pointer(widget))
 	play := (*Player)(unsafe.Pointer(Userdata))
-//	log, err := widget.GetLabel()
-//	if err != nil {
-//		panic(err)
-//	}
 	log.SetText(play.CurrentRoom.Desc)
 	return true
 }
