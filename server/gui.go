@@ -748,7 +748,9 @@ func fillWorld(world map[string]Space, twoBuilder *gtk.Builder) {
 						panic(err)
 					}
 					statusRoom := statusRoomUn.(*gtk.Window)
-					mappedWorld := populateWorld()
+					world := populateWorld()
+					mappedWorld := walkRooms(world[val])
+					fmt.Println(val + "val, desc:"+mappedWorld[val].Desc)
 					setStatusRoom(statusRoom, twoBuilder, mappedWorld[val])
 				}
 				if keyEvent.ButtonVal() == 2 {
@@ -1350,42 +1352,64 @@ func setStatusRoom(window *gtk.Window, twoBuilder *gtk.Builder, room Space) {
 	NWEnt := NWEntUn.(*gtk.Entry)
 	SEEnt := SEEntUn.(*gtk.Entry)
 	SWEnt := SWEntUn.(*gtk.Entry)
-	for _, val := range room.ExitRooms {
-		if val.Exits.North > 1 {
-			North.SetActive(true)
-			NEnt.SetText(strconv.Itoa(val.Exits.North))
-		}
-		if val.Exits.South > 1 {
-			South.SetActive(true)
-			SEnt.SetText(strconv.Itoa(val.Exits.South))
-		}
-		if val.Exits.East > 1 {
-			East.SetActive(true)
-			EEnt.SetText(strconv.Itoa(val.Exits.East))
-		}
-		if val.Exits.West > 1 {
-			West.SetActive(true)
-			WEnt.SetText(strconv.Itoa(val.Exits.West))
-		}
-		if val.Exits.NorthEast > 1 {
-			NorthEast.SetActive(true)
-			NEEnt.SetText(strconv.Itoa(val.Exits.NorthEast))
-		}
-		if val.Exits.NorthWest > 1 {
-			NorthWest.SetActive(true)
-			NWEnt.SetText(strconv.Itoa(val.Exits.NorthWest))
-		}
-		if val.Exits.SouthEast > 1 {
-			SouthEast.SetActive(true)
-			SEEnt.SetText(strconv.Itoa(val.Exits.SouthEast))
-		}
-		if val.Exits.SouthWest > 1 {
-			SouthWest.SetActive(true)
-			SWEnt.SetText(strconv.Itoa(val.Exits.SouthWest))
-		}
-		entryVnum.SetText(val.Vnums)
-		entryDesc.SetText(val.Desc)
+	if room.Exits.North > 1 {
+		North.SetActive(true)
+		NEnt.SetText(strconv.Itoa(room.Exits.North))
+	}else {
+		North.SetActive(false)
+		NEnt.SetText("")
 	}
+	if room.Exits.South > 1 {
+		South.SetActive(true)
+		SEnt.SetText(strconv.Itoa(room.Exits.South))
+	}else {
+		South.SetActive(false)
+		SEnt.SetText("")
+	}
+	if room.Exits.East > 1 {
+		East.SetActive(true)
+		EEnt.SetText(strconv.Itoa(room.Exits.East))
+	}else {
+		East.SetActive(false)
+		EEnt.SetText("")
+	}
+	if room.Exits.West > 1 {
+		West.SetActive(true)
+		WEnt.SetText(strconv.Itoa(room.Exits.West))
+	}else {
+		West.SetActive(false)
+		WEnt.SetText("")
+	}
+	if room.Exits.NorthEast > 1 {
+		NorthEast.SetActive(true)
+		NEEnt.SetText(strconv.Itoa(room.Exits.NorthEast))
+	}else {
+		NorthEast.SetActive(false)
+		NEEnt.SetText("")
+	}
+	if room.Exits.NorthWest > 1 {
+		NorthWest.SetActive(true)
+		NWEnt.SetText(strconv.Itoa(room.Exits.NorthWest))
+	}else {
+		NorthWest.SetActive(false)
+		NWEnt.SetText("")
+	}
+	if room.Exits.SouthEast > 1 {
+		SouthEast.SetActive(true)
+		SEEnt.SetText(strconv.Itoa(room.Exits.SouthEast))
+	}else {
+		SouthEast.SetActive(false)
+		SEEnt.SetText("")
+	}
+	if room.Exits.SouthWest > 1 {
+		SouthWest.SetActive(true)
+		SWEnt.SetText(strconv.Itoa(room.Exits.SouthWest))
+	}else {
+		SouthWest.SetActive(false)
+		SWEnt.SetText("")
+	}
+	entryVnum.SetText(room.Vnums)
+	entryDesc.SetText(room.Desc)
 	window.ShowAll()
 }
 
