@@ -84,8 +84,8 @@ func register(twoBuilder *gtk.Builder) {
 		registerWindow.SetVisible(false)
 		fmt.Println("Register login")
 	})
-	registerWindow.GrabFocus()
         registerWindow.ShowAll()
+	registerWindow.GrabFocus()
 
 //	start := time.Now()
 //	for {

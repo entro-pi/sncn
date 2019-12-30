@@ -6,145 +6,11 @@
   <object class="GtkTextBuffer" id="buf1">
     <property name="text" translatable="yes">SYNCRO</property>
   </object>
-  <object class="GtkEntryBuffer" id="entrybuffer1"/>
-  <object class="GtkEntryBuffer" id="entrybuffer2"/>
-  <object class="GtkWindow" id="createWindow">
-    <property name="can_focus">True</property>
-    <property name="has_focus">True</property>
-    <property name="has_default">True</property>
-    <property name="receives_default">True</property>
-    <property name="hexpand">True</property>
-    <property name="vexpand">True</property>
-    <property name="resizable">False</property>
-    <property name="window_position">center</property>
-    <property name="default_width">440</property>
-    <property name="default_height">250</property>
-    <property name="destroy_with_parent">True</property>
-    <property name="urgency_hint">True</property>
-    <property name="decorated">False</property>
-    <property name="gravity">center</property>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <object class="GtkAspectFrame">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label_xalign">0.5</property>
-        <property name="shadow_type">etched-out</property>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">SNOWCRASH.NETWORK</property>
-                <style>
-                  <class name="splash"/>
-                </style>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkEntry">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="buffer">entrybuffer1</property>
-                    <property name="max_length">36</property>
-                    <property name="has_frame">False</property>
-                    <property name="truncate_multiline">True</property>
-                    <property name="placeholder_text" translatable="yes">Name...</property>
-                    <style>
-                      <class name="loginText"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="buffer">entrybuffer2</property>
-                    <property name="max_length">36</property>
-                    <property name="visibility">False</property>
-                    <property name="has_frame">False</property>
-                    <property name="invisible_char">*</property>
-                    <property name="truncate_multiline">True</property>
-                    <property name="placeholder_text" translatable="yes">Password...</property>
-                    <style>
-                      <class name="loginText"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="create">
-                    <property name="label" translatable="yes">Create</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="hexpand">True</property>
-                    <style>
-                      <class name="button"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="exitCreate">
-                <property name="label" translatable="yes">Exit</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <style>
-                  <class name="button"/>
-                </style>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-          </object>
-        </child>
-        <style>
-          <class name="splash"/>
-        </style>
-      </object>
-    </child>
+  <object class="GtkEntryBuffer" id="entrybuffer1">
+    <property name="max_length">15</property>
+  </object>
+  <object class="GtkEntryBuffer" id="entrybuffer2">
+    <property name="max_length">20</property>
   </object>
   <object class="GtkListStore" id="icons"/>
   <object class="GtkWindow" id="color_swatches">
@@ -996,41 +862,8 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
-                                  <object class="GtkButton" id="zoomOut">
-                                    <property name="label" translatable="yes">zoomOut</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="zoomIn">
-                                    <property name="label" translatable="yes">zoomIn</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="statsUp">
-                                    <property name="label" translatable="yes">statsUp</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="statsDown">
-                                    <property name="label" translatable="yes">statsDown</property>
+                                  <object class="GtkButton" id="killSwitch">
+                                    <property name="label" translatable="yes">button</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
@@ -1051,8 +884,41 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="killSwitch">
-                                    <property name="label" translatable="yes">button</property>
+                                  <object class="GtkButton" id="statsDown">
+                                    <property name="label" translatable="yes">statsDown</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="statsUp">
+                                    <property name="label" translatable="yes">statsUp</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="zoomIn">
+                                    <property name="label" translatable="yes">zoomIn</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="zoomOut">
+                                    <property name="label" translatable="yes">zoomOut</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
@@ -1442,6 +1308,143 @@
     <style>
       <class name="syncro"/>
     </style>
+  </object>
+  <object class="GtkWindow" id="createWindow">
+    <property name="can_focus">False</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="window_position">center</property>
+    <property name="default_width">440</property>
+    <property name="default_height">250</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="type_hint">popup-menu</property>
+    <property name="accept_focus">False</property>
+    <property name="decorated">False</property>
+    <property name="gravity">center</property>
+    <property name="attached_to">mainwindow</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkAspectFrame">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label_xalign">0.5</property>
+        <property name="shadow_type">etched-out</property>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">SNOWCRASH.NETWORK</property>
+                <style>
+                  <class name="splash"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkEntry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="buffer">entrybuffer1</property>
+                    <property name="max_length">36</property>
+                    <property name="truncate_multiline">True</property>
+                    <property name="placeholder_text" translatable="yes">Name...</property>
+                    <property name="input_purpose">alpha</property>
+                    <style>
+                      <class name="loginText"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="buffer">entrybuffer2</property>
+                    <property name="max_length">36</property>
+                    <property name="visibility">False</property>
+                    <property name="invisible_char">*</property>
+                    <property name="activates_default">True</property>
+                    <property name="truncate_multiline">True</property>
+                    <property name="placeholder_text" translatable="yes">Password...</property>
+                    <property name="input_purpose">password</property>
+                    <style>
+                      <class name="loginText"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="create">
+                    <property name="label" translatable="yes">Register</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="hexpand">True</property>
+                    <style>
+                      <class name="button"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="exitCreate">
+                <property name="label" translatable="yes">Exit</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <style>
+                  <class name="button"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+        <style>
+          <class name="splash"/>
+        </style>
+      </object>
+    </child>
   </object>
   <object class="GtkTextTagTable" id="texttagtable1">
     <child type="tag">
