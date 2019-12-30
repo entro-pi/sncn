@@ -135,7 +135,8 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	//rooms := walkRooms
 	boxMap := make([]*gtk.Button, numCol*numRow)
 	mapBox := mapBoxUn.(*gtk.Box)
-	mapGrid, err := gtk.GridNew()
+	mapGridUn, err := twoBuilder.GetObject("mapGrid")
+	mapGrid := mapGridUn.(*gtk.Grid)
 	if err != nil {
 		panic(err)
 	}
@@ -361,6 +362,9 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 					engage.Connect("clicked", func(button *gtk.Button) {
 						if val != "0000" {
 							play.CurrentRoom = mappedWorld[val]
+							mappedWorld = walkRooms(play.CurrentRoom)
+							reWalkRooms(play.CurrentRoom, twoBuilder, play, mapBox, mapGrid)
+
 						}
 					})
 
@@ -1474,6 +1478,243 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 		inctx.AddClass("inspectIn")
 	})
 	return newBroadcast
+
+}
+
+func reWalkRooms(root Space, twoBuilder *gtk.Builder, play Player, mapBox *gtk.Box, mapGrid *gtk.Grid) {
+	rootPos := 0
+	rootClicked := false
+	numCol := 7
+	numRow := 10//TODO
+	boxMap := make([]*gtk.Button, numCol*numRow)
+	mappedWorld := walkRooms(root)
+	for i := 0;i < numRow;i++ {
+		mapGrid.RemoveRow(0)
+	}
+	mapBox.Add(mapGrid)
+	col := 1
+	row := 1
+	for i := 0;i < numCol * numRow;i++ {
+		roomButton, err := gtk.ButtonNewWithLabel("0000")
+		if err != nil {
+			panic(err)
+		}
+		roomButton.SetHExpand(true)
+		roomButton.SetVExpand(true)
+		boxMap[i] = roomButton
+		mapGrid.Attach(boxMap[i], col, row, 1, 1)
+		if col == numCol {
+			col = 1
+			row++
+		}else {
+			col++
+		}
+	}
+	for i := 0;i < len(boxMap)-2;i++ {
+		if i == (len(boxMap) / 2) {
+			rootPos = i-4
+			boxMap[i-4].SetLabel("ROOT")
+			boxStyle, err := boxMap[i-4].GetStyleContext()
+			if err != nil {
+				panic(err)
+			}
+			boxStyle.AddClass("mapgOnBl")
+/*		}
+		lab, err := boxMap[rootPos].GetLabel()
+		if err != nil {
+			panic(err)
+		}
+		if lab == "ROOT" {
+		*/	boxMap[rootPos].SetLabel(mappedWorld[play.CurrentRoom.Vnums].Vnums)
+			if play.CurrentRoom.ExitMap["North"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["North"])
+				boxMap[rootPos-numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos-numCol].GetStyleContext()
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("mapgOnBl")
+			}
+			if play.CurrentRoom.ExitMap["South"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["South"])
+				boxMap[rootPos+numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos+numCol].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("mapgOnBl")
+
+			}
+			if play.CurrentRoom.ExitMap["East"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["East"])
+				boxMap[rootPos+1].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos+1].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("mapgOnBl")
+
+			}
+			if play.CurrentRoom.ExitMap["West"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["West"])
+				boxMap[rootPos-1].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos-1].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("mapgOnBl")
+
+			}
+			if play.CurrentRoom.ExitMap["NorthEast"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["NorthEast"])
+				boxMap[rootPos-1-numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos-1-numCol].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("mapgOnBl")
+
+			}
+			if play.CurrentRoom.ExitMap["NorthWest"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["NorthWest"])
+				boxMap[rootPos+1-numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos+1-numCol].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("mapgOnBl")
+
+			}
+			if play.CurrentRoom.ExitMap["SouthEast"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["SouthEast"])
+				boxMap[rootPos+1+numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos+1+numCol].GetStyleContext()
+
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("mapgOnBl")
+
+			}
+			if play.CurrentRoom.ExitMap["SouthWest"] > 1 {
+				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["SouthWest"])
+				boxMap[rootPos+1-numCol].SetLabel(stringRoom)
+				styCtx, err := boxMap[rootPos+1-numCol].GetStyleContext()
+				if err != nil {
+					panic(err)
+				}
+				styCtx.AddClass("mapgOnBl")
+
+			}
+		}
+
+		if i > 1 && i < len(boxMap) {
+			boxMap[i].Connect("clicked", func(butt *gtk.Button) {
+				value, err := butt.GetLabel()
+				if err != nil {
+					panic(err)
+				}
+				for c := 0;c < len(boxMap);c++ {
+					tocompare, err := boxMap[c].GetLabel()
+					if err != nil {
+						panic(err)
+					}
+					if tocompare == value && (tocompare != "0000" && value != "0000") {
+						fmt.Println("tocompare:"+tocompare)
+						roomDesc := mappedWorld[value].Desc
+						inspectUn, err := twoBuilder.GetObject("inspectMess")
+						if err != nil {
+							panic(err)
+						}
+						inspect := inspectUn.(*gtk.Label)
+						fmt.Println("value:"+value)
+						ctx, err := boxMap[c].GetStyleContext()
+						if err != nil {
+							panic(err)
+						}
+
+						if !rootClicked {
+							inspect.SetText(roomDesc+"\n\n\n\nassign(Destination "+value+")")
+
+							ctx.AddClass("mapButton")
+							rootClicked = true
+						}else {
+							inspect.SetText("\n\n\n\nmalloc(Destination)")
+							rootClicked = false
+							for d := 0;d < len(boxMap);d++ {
+								newCtx, err := boxMap[d].GetStyleContext()
+								if err != nil {
+									panic(err)
+								}
+								newCtx.RemoveClass("mapButton")
+							}
+							gtk.MainIterationDo(true)
+						}
+					}
+				}
+			})
+                        boxMap[i].Connect("button-press-event", func (butt *gtk.Button, ev *gdk.Event) {
+                                keyEvent := gdk.EventButtonNewFromEvent(ev)
+				mapRightUn, err := twoBuilder.GetObject("mapRight")
+				if err != nil {
+					panic(err)
+				}
+				mapRight := mapRightUn.(*gtk.Popover)
+				if keyEvent.ButtonVal() == 1 {
+                                        val, err := butt.GetLabel()
+                                        if err != nil {
+                                                panic(err)
+                                        }
+					mapRight.SetVisible(false)
+                                        fmt.Println("Left click on : "+ val)
+                                }
+                                if keyEvent.ButtonVal() == 2 {
+                                        val, err := butt.GetLabel()
+                                        if err != nil {
+                                                panic(err)
+                                        }
+                                        fmt.Println("Middle click on : "+ val)
+					mapRight.SetVisible(false)
+                                }
+                                if keyEvent.ButtonVal() == 3 {
+                                        val, err := butt.GetLabel()
+                                        if err != nil {
+                                                panic(err)
+                                        }
+                                        fmt.Println("Right click on : "+ val)
+					if val != "0000" {
+						mapRight.SetRelativeTo(butt)
+						mapRight.SetVisible(true)
+						mapRight.Show()
+					}else {
+						mapRight.SetVisible(false)
+					}
+					engageUn, err := twoBuilder.GetObject("mapRightEngage")
+					if err != nil {
+						panic(err)
+					}
+					engage := engageUn.(*gtk.Button)
+					engage.Connect("clicked", func(button *gtk.Button) {
+						if val != "0000" {
+							play.CurrentRoom = mappedWorld[val]
+							mappedWorld = walkRooms(play.CurrentRoom)
+							reWalkRooms(play.CurrentRoom, twoBuilder, play, mapBox, mapGrid)
+							mapBox.ShowAll()
+						}
+					})
+
+                                }
+                        })
+
+		}
+	}
+	mapBox.ShowAll()
+	fmt.Println("Showing all")
 
 }
 
