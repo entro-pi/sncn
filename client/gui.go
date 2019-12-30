@@ -56,32 +56,48 @@ func getUserPass(twoBuilder *gtk.Builder) (string, string) {
 
 }
 
-func splash(moni *gdk.Monitor, application *gtk.Application, twoBuilder *gtk.Builder) {
-	splashWindowUn, err := twoBuilder.GetObject("splash")
+func register(twoBuilder *gtk.Builder) {
+	registerWindowUn, err := twoBuilder.GetObject("createWindow")
 	if err != nil {
 		panic(err)
 	}
-	splashWindow := splashWindowUn.(*gtk.Window)
-//	splashWindow.Fullscreen()
-//	splashWindow.ShowAll()
-	geo := moni.GetGeometry()
-	height := geo.GetHeight()
-	width := geo.GetWidth()
-	splashWindow.SetDefaultSize(width, height)
-	splashWindow.Fullscreen()
-	splashWindow.GrabFocus()
-        splashWindow.Show()
-	start := time.Now()
-	for {
-//		splashWindow.GrabFocus()
-//		splashWindow.Show()
-		time.Sleep(100*time.Millisecond)
-		end := time.Now().Sub(start)
-		if end >= (5*time.Second) {
-			splashWindow.Close()
-			break
-		}
+	registerWindow := registerWindowUn.(*gtk.Window)
+//	registerWindow.Fullscreen()
+//	registerWindow.ShowAll()
+	registerWindow.SetDefaultSize(400, 200)
+//	registerWindow.Fullscreen()
+	registerExitUn, err := twoBuilder.GetObject("exitCreate")
+	if err != nil {
+		panic(err)
 	}
+	registerExit := registerExitUn.(*gtk.Button)
+	registerExit.Connect("clicked", func() {
+		registerWindow.SetVisible(false)
+		fmt.Println("Do not create player")
+	})
+	registerCreateUn, err := twoBuilder.GetObject("create")
+	if err != nil {
+		panic(err)
+	}
+	registerCreate := registerCreateUn.(*gtk.Button)
+	registerCreate.Connect("clicked", func() {
+		registerWindow.SetVisible(false)
+		fmt.Println("Register login")
+	})
+	registerWindow.GrabFocus()
+        registerWindow.ShowAll()
+
+//	start := time.Now()
+//	for {
+//		registerWindow.GrabFocus()
+//		registerWindow.Show()
+//		time.Sleep(100*time.Millisecond)
+//		end := time.Now().Sub(start)
+//		if end >= (5*time.Second) {
+//			registerWindow.Close()
+//			break
+//		}
+//	}
 }
 
 func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) {
@@ -612,8 +628,8 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	if err != nil {
 		panic(err)
 	}
-	//launch the splash screen
-	//go splash(moni, application, twoBuilder)
+	//launch the register screen
+	//register(moni, application, twoBuilder)
 	fillTree(twoBuilder)
 	fillList(twoBuilder)
 	geo := moni.GetGeometry()
@@ -1741,6 +1757,14 @@ func LaunchGUI(fileChange chan bool) {
 	if err == nil {
 	//	loginTitle, err := twoBuilder.GetObject("loginTitle")
 	//	passTitle, err := twoBuilder.GetObject("passTitle")
+		registerUn, err := twoBuilder.GetObject("register")
+		if err != nil {
+			panic(err)
+		}
+		registerButton := registerUn.(*gtk.Button)
+		registerButton.Connect("clicked", func() {
+			register(twoBuilder)
+		})
 		view, err := twoBuilder.GetObject("syn-ack")
 		if err != nil {
 			panic(err)
