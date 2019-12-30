@@ -236,15 +236,6 @@ func doInput(input string, play Player, fileChange chan bool, whoList []string) 
 		direct = true
 		room = true
 	}
-	/*for i := 0;i < len(whoList);i++ {
-		fmt.Println(inputArray[1])
-		if inputArray[0] == "tell" && inputArray[1] == whoList[i] {
-			direct = true
-			tellTo = inputArray[1]
-			fmt.Println("\033[48:2:0:0:120m",direct, tellTo,"\033[0m")
-			break
-		}
-	}*/
 
 
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -356,15 +347,6 @@ func doGUIInput(play Player, input string) {
 		direct = true
 		tellTo = strings.ToUpper(play.Name)
 	}
-	/*for i := 0;i < len(whoList);i++ {
-		fmt.Println(inputArray[1])
-		if inputArray[0] == "tell" && inputArray[1] == whoList[i] {
-			direct = true
-			tellTo = inputArray[1]
-			fmt.Println("\033[48:2:0:0:120m",direct, tellTo,"\033[0m")
-			break
-		}
-	}*/
 
 
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -455,10 +437,8 @@ func doGUIInput(play Player, input string) {
 
 	}
 
-//	fmt.Print("\033[26;53H\n")
 	log.Printf(" [x] Sent %s", body)
 	failOnError(err, "Failed to publish a message")
-//	return tell
 }
 
 
@@ -475,12 +455,6 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
         failOnError(err, "Failed to open a channel")
 
         defer ch.Close()
-    /*    chDirect, err := conn.Channel()
-
-        failOnError(err, "Failed to open a channel")
-
-        defer chDirect.Close()
-*/
 	err = ch.ExchangeDeclare(
 		"ballast",//name
 		"topic",//type
@@ -531,8 +505,6 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 	forever := make(chan bool)
 	for {
 
-//		select {
-//		default:
 		go func() {
 			fmt.Println("Awaiting messages")
 			for msg := range msgs {
@@ -548,12 +520,10 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 								panic(err)
 							}
 							//strip the thingies out
-	//						message = strings.ReplaceAll(message, "tell:", "\033[38:2:150:0:100mtell")
 							_, err = f.WriteString(message+"::TIMESTAMP::"+time.Now().Weekday().String()+"-"+strconv.Itoa(time.Now().Hour())+":"+strconv.Itoa(time.Now().Minute())+"::TIMESTAMP::\n")
 							if err != nil {
 								panic(err)
 							}
-//							f.Sync()
 							forever <- true
 							f.Close()
 						}
@@ -573,14 +543,12 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 						f.Close()
 						forever <- true
 
-						//go doWatch(string(msg.Body), blank, fileChange)
 					}
 				}else {
 					roomNum := strings.Split(message, "::ROOM::")[1]
 
 					fmt.Println(play.Name+"Moving "+roomNum)
 					if strings.Contains(message, "::ROOM::") {
-//						roomNum := strings.Split(message, "::ROOM::")[1]
 						f, err := os.Create("../pot/zones/"+roomNum+".yaml")
 						if err != nil {
 							panic(err)
@@ -595,7 +563,6 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 			}
 		}()
 		<-forever
-//		}
 	}
 }
 
@@ -627,10 +594,7 @@ func watch(play Player, fileChange chan bool) {
 	            if !ok {
 	                return
 	            }
-	           // fmt.Print("\033[26;53H\n")
-		  //  log.Print("event:", event)
 	            if event.Op&fsnotify.Write == fsnotify.Write {
-	        //        log.Print("\033[48:2:150:0:150mmodified file:", event.Name,"\033[0m")
 	            }
 		if event.Name == "../pot/broadcast" || event.Name == "../pot/tells" {
 			broadcastContainer = nil
@@ -647,9 +611,6 @@ func watch(play Player, fileChange chan bool) {
 	            	fmt.Print("\033[26;53H\n")
 			log.Print("error:", err)
 		default:
-//			for i := 0;i < len(broadcastContainer);i++ {
-//				fmt.Print(broadcastContainer[i])
-//			}
 			//DO NOTHING
 	        }
 	    }
@@ -682,7 +643,6 @@ func drawBroadcasts(format string, play Player, broadcastContainer []string) []s
 			lines = append(lines, lineIn[i])
 		}
 	}
-	//			var broadcastContainer []Broadcast
 	col := 0
 	row := 0
 	colVal := 0
@@ -732,11 +692,8 @@ func drawBroadcasts(format string, play Player, broadcastContainer []string) []s
 			}
 		}
 		for i := 0;i < len(broadcastContainer);i++ {
-			//fmt.Print(broadcastContainer[i])
 		}
-		//fmt.Print("\033[26;53H\n")
 
-		//log.Print(string(contents))
 	return broadcastContainer
 }
 func drawPlainBroadcasts(play Player) []string {
@@ -827,9 +784,7 @@ func drawTells(format string, play Player, colVal int, rowVal int) []string {
 			}
 		}
 		for i := 0;i < len(broadcastContainer);i++ {
-		//	fmt.Print(broadcastContainer[i])
 		}
-//		fmt.Print("\033[26;53H\n")
 	return broadcastContainer
 }
 
@@ -919,7 +874,6 @@ func doWatch(input string, play Player, fileChange chan bool) string {
 	if inputList[0] == "broadcast" || do {
 		broadcastContainer = nil
 		broadcastContainer = drawBroadcasts(os.Args[1], play, broadcastContainer)
-		//log.Print(string(contents))
 	}
 	for i := 0;i < len(broadcastContainer);i++ {
 		fmt.Print(broadcastContainer[i])
