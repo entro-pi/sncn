@@ -62,10 +62,7 @@ func register(twoBuilder *gtk.Builder) {
 		panic(err)
 	}
 	registerWindow := registerWindowUn.(*gtk.Window)
-//	registerWindow.Fullscreen()
-//	registerWindow.ShowAll()
 	registerWindow.SetDefaultSize(400, 200)
-//	registerWindow.Fullscreen()
 	registerExitUn, err := twoBuilder.GetObject("exitCreate")
 	if err != nil {
 		panic(err)
@@ -87,17 +84,6 @@ func register(twoBuilder *gtk.Builder) {
         registerWindow.ShowAll()
 	registerWindow.GrabFocus()
 
-//	start := time.Now()
-//	for {
-//		registerWindow.GrabFocus()
-//		registerWindow.Show()
-//		time.Sleep(100*time.Millisecond)
-//		end := time.Now().Sub(start)
-//		if end >= (5*time.Second) {
-//			registerWindow.Close()
-//			break
-//		}
-//	}
 }
 
 func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) {
@@ -121,13 +107,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	logMain := logMainUn.(*gtk.Label)
-	/*buildString := ""
-	for i := 0;i < 45;i++ {
-		buildString += strconv.Itoa(i)+"\n"
-	}
-	logMain.SetText(buildString)
-*/	
-	
+
 	logMain.SetText("Connection interrupted.\nLock destination and engage to view.")
 	logMain.AddTickCallback(round, uintptr(unsafe.Pointer(&play)))
 
@@ -148,7 +128,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	numCol := 7
 	numRow := 10//TODO
-	//rooms := walkRooms
 	boxMap := make([]*gtk.Button, numCol*numRow)
 	mapBox := mapBoxUn.(*gtk.Box)
 	mapGridUn, err := twoBuilder.GetObject("mapGrid")
@@ -182,7 +161,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	})
 	rootClicked := false
 	rootPos := 0
-//	world := populateWorld()
 	//initiate the world by walking all rooms we currently have access to
 	mappedWorld := walkRooms(play.CurrentRoom)
 	//now loop over the in place map
@@ -195,13 +173,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 				panic(err)
 			}
 			boxStyle.AddClass("mapgOnBl")
-/*		}
-		lab, err := boxMap[rootPos].GetLabel()
-		if err != nil {
-			panic(err)
-		}
-		if lab == "ROOT" {
-		*/	boxMap[rootPos].SetLabel(mappedWorld[play.CurrentRoom.Vnums].Vnums)
+			boxMap[rootPos].SetLabel(mappedWorld[play.CurrentRoom.Vnums].Vnums)
 			if play.CurrentRoom.ExitMap["North"] > 1 {
 				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["North"])
 				boxMap[rootPos-numCol].SetLabel(stringRoom)
@@ -411,7 +383,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			panic(err)
 		}
 		spinner := spinUn.(*gtk.Spinner)
-	//	spinner.SetVisible(true)
 		spinner.Start()
 		posting.ShowAll()
 	})
@@ -466,7 +437,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			small.ShowAll()
 			input.SetText("")
 			spinner.Stop()
-		//	spinner.SetVisible(false)
 			posting.ShowAll()
 		}()
 	})
@@ -481,11 +451,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 			panic(err)
 		}
 		box := boxUn.(*gtk.ScrolledWindow)
-		//if box.GetVisible() {
-			box.SetVisible(false)
-		//}else {
-		//	box.SetVisible(true)
-		//}
+		box.SetVisible(false)
 	})
 	//now we test the prompt
 
@@ -579,8 +545,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	small := smallUn.(*gtk.ScrolledWindow)
-//	fill(play, twoBuilder, true)
-	
 	tells.Connect("clicked", func () {
 		small.Show()
 	})
@@ -628,8 +592,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	if err != nil {
 		panic(err)
 	}
-	//launch the register screen
-	//register(moni, application, twoBuilder)
 	fillTree(twoBuilder)
 	fillList(twoBuilder)
 	geo := moni.GetGeometry()
@@ -643,7 +605,6 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	rezzGL := rezzGLUn.(*gtk.GLArea)
 	fmt.Println(rezzGL)
-	//startDelta := time.Now()
 	rezzGL.AddTickCallback(render, uintptr(0))
 	rezzGL.SetAutoRender(true)
 	rezzGL.Connect("create-context", func (area *gtk.GLArea) {
@@ -768,14 +729,12 @@ func showRoom(path string) string {
 
 func initColumn(value string, constant int, col *gtk.TreeViewColumn) (*gtk.TreeViewColumn) {
 	healthy, failing, failed := initIcons()
-//	time.Sleep(10*time.Millisecond)
         renderer, err := gtk.CellRendererPixbufNew()
         if err != nil {
                 panic(err)
         }
 	col.PackStart(renderer, true)
         renderer.Set("visible", true)
-//        renderer.Set("text", value)
 	if value == "failing"  {
 		renderer.Set("pixbuf", failing)
        	}else if value == "failed" {
@@ -784,7 +743,6 @@ func initColumn(value string, constant int, col *gtk.TreeViewColumn) (*gtk.TreeV
 		renderer.Set("pixbuf", healthy)
 	}
 
-//	col.AddAttribute(renderer, "text", 0)
         col.SetVisible(true)
         return col
 
@@ -823,11 +781,6 @@ func backAndForthProgress(startHealth int, endHealth int, twoBuilder *gtk.Builde
 		panic(err)
 	}
 	healthBar.SetModel(healthStore)
-//	healthy := " "
-//	failing := " "
-//	failed := " "
-
-//	bar := ""
 	pos = healthStore.Append()
 	for i := 0;i < 100 ;i++ {
 		col := healthBar.GetColumn(i)
@@ -845,8 +798,6 @@ func backAndForthProgress(startHealth int, endHealth int, twoBuilder *gtk.Builde
 		}
 		initColumn("healthy", i, col)
 		healthBar.AppendColumn(col)
-//		healthStore.SetValue(pos, i, healthy)
-//		pos = healthStore.Append()
 		count++
 	}
 	col, err := gtk.TreeViewColumnNew()
@@ -855,8 +806,6 @@ func backAndForthProgress(startHealth int, endHealth int, twoBuilder *gtk.Builde
 	}
 	healthBar.AppendColumn(col)
 	initColumn("failing", count, col)
-//	healthStore.SetValue(pos, count, failing)
-//	pos = healthStore.Append()
 	count++
 	for i := count;i < 100;i++ {
 		time.Sleep(10*time.Millisecond)
@@ -866,8 +815,6 @@ func backAndForthProgress(startHealth int, endHealth int, twoBuilder *gtk.Builde
 		}
 		healthBar.AppendColumn(col)
 		initColumn("failed", i, col)
-//		healthStore.SetValue(pos, i, failed)
-//		pos = healthStore.Append()
 		count++
 	}
 	pos = healthStore.Append()
@@ -893,15 +840,7 @@ func createColumnPackStart(twee *gtk.TreeView, val string, value string, constan
 	if err != nil {
 		panic(err)
 	}
-/*	renderer, err := gtk.CellRendererTextNew()
-	if err != nil {
-		panic(err)
-	}*/
-//	col.PackStart(renderer, true)
-//	renderer.Set("visible", true)
-//	renderer.Set("text", value)
 	col.SetTitle(val)
-//	col.AddAttribute(renderer, col.GetTitle(), constant)
 	col.SetVisible(true)
 	return col
 
@@ -914,8 +853,6 @@ func labelColumns(twee *gtk.TreeView, value string, constant int, col *gtk.TreeV
 	}
 	col.PackStart(renderer, true)
 	renderer.Set("visible", true)
-//	renderer.Set("text", value)
-	
 	col.AddAttribute(renderer, "text", constant)
 	col.SetVisible(true)
 	return col
@@ -934,14 +871,6 @@ func fillList(twoBuilder *gtk.Builder) {
 		panic(err)
 	}
 
-/*	listStoreUn, err := twoBuilder.GetObject("liststore1")
-	if err != nil {
-		panic(err)
-	}
-	listStore, err := gtk.ListStoreNew()
-	if err != nil {
-		panic(err)
-	}*/
 	zeroColumn := createColumnPackStart(twee, "Slot", "", COLUMN_SLOT)
 	twee.AppendColumn(zeroColumn)
 	firstColumn := createColumnPackStart(twee, "Name", "Nyancat", COLUMN_NAME)
@@ -1031,14 +960,6 @@ func fillTree(twoBuilder *gtk.Builder) {
 		panic(err)
 	}
 
-/*	listStoreUn, err := twoBuilder.GetObject("liststore1")
-	if err != nil {
-		panic(err)
-	}
-	listStore, err := gtk.ListStoreNew()
-	if err != nil {
-		panic(err)
-	}*/
 	zeroColumn := createColumnPackStart(twee, "", "", COLUMN_SLOT)
 	twee.AppendColumn(zeroColumn)
 	firstColumn := createColumnPackStart(twee, "Name", "Nyancat", COLUMN_NAME)
@@ -1121,7 +1042,6 @@ func fillTree(twoBuilder *gtk.Builder) {
 		panic(err)
 	}
 
-//	listStore.Insert(top, 0)
 
 
 
@@ -1135,10 +1055,8 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 	var broadcastContainer []string
 	var buttonContainer []*gtk.Button
 	if tellorbroad {
-//		play := InitPlayer("WEASEL", "lol")
 		broadcastContainer = drawPlainTells(play)
 	}else {
-//		play := InitPlayer("WEASEL", "lol")
 		broadcastContainer = drawPlainBroadcasts(play)
 	}
 	if len(broadcastContainer) >= 6 {
@@ -1187,42 +1105,30 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 
                 })
 		if numCount < numInRow {
-//			small.Add(buttonContainer[i])
-//			buttonContainer[i].SetVAlign(gtk.ALIGN_CENTER)
-//			buttonContainer[i].SetVExpand(true)
 			box, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
 			if err != nil {
 				panic(err)
 			}
 			box.SetCenterWidget(buttonContainer[i])
 			box.SetChildPacking(buttonContainer[i], true, true, 1, gtk.PACK_START)
-//			box.PackEnd(buttonContainer[i], true, true, 0)
 			box.SetVAlign(gtk.ALIGN_FILL)
 			box.SetVExpand(true)
 			small.Attach(box, numCount, row, 1, 1)
 			numCount++
 			small.ShowAll()
-//			small.ShowAll()
-//			fmt.Println("Num in row", numCount)
 
 		}else {
-//			small.InsertRow(row)
-//			buttonContainer[i].SetVAlign(gtk.ALIGN_CENTER)
-//			buttonContainer[i].SetVExpand(true)
 			box, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
 			if err != nil {
 				panic(err)
 			}
 			box.SetCenterWidget(buttonContainer[i])
 			box.SetChildPacking(buttonContainer[i], true, true, 1, gtk.PACK_START)
-//			box.PackEnd(buttonContainer[i], true, true, 0)
 			box.SetVAlign(gtk.ALIGN_FILL)
 			box.SetVExpand(true)
 			small.Attach(box, numCount, row, 1, 1)
 			row++
 			numCount = 0
-//			fmt.Println("row", row)
-//			small.ShowAll()
 			small.ShowAll()
 		}
 
@@ -1426,7 +1332,6 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 
 
 	newBroadcast.Connect("clicked", func (button *gtk.Button) {
-		//fmt.Println("GETTING LABEL")
 		mess := strings.Split(message, "::=")[1]
 		messHolder := ""
 		addNewLine := false
@@ -1535,13 +1440,7 @@ func reWalkRooms(root Space, twoBuilder *gtk.Builder, play Player, mapBox *gtk.B
 				panic(err)
 			}
 			boxStyle.AddClass("mapgOnBl")
-/*		}
-		lab, err := boxMap[rootPos].GetLabel()
-		if err != nil {
-			panic(err)
-		}
-		if lab == "ROOT" {
-		*/	boxMap[rootPos].SetLabel(mappedWorld[play.CurrentRoom.Vnums].Vnums)
+			boxMap[rootPos].SetLabel(mappedWorld[play.CurrentRoom.Vnums].Vnums)
 			if play.CurrentRoom.ExitMap["North"] > 1 {
 				stringRoom := strconv.Itoa(play.CurrentRoom.ExitMap["North"])
 				boxMap[rootPos-numCol].SetLabel(stringRoom)
@@ -1796,11 +1695,8 @@ func LaunchGUI(fileChange chan bool) {
 			if len(userCaps) > 3 && len(pass) > 3 {
         		        play := LogPlayerIn(user, pass)
 
-//				play := InitPlayer(user, pass)
 				whoList := who(play.Name)
-//	                	go actOn(play, fileChange, whoList)
 	                	go func() { actOn(play, fileChange, whoList)}()
-				
 				launch(play, application, twoBuilder)
 			}
 		})
