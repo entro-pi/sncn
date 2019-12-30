@@ -1325,26 +1325,6 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="b1">
-                <property name="label" translatable="yes">Exit</property>
-                <property name="visible">True</property>
-                <property name="app_paintable">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="hexpand">False</property>
-                <property name="vexpand">False</property>
-                <style>
-                  <class name="button"/>
-                </style>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="pack_type">end</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkEntry" id="login">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -1398,6 +1378,26 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="b1">
+                <property name="label" translatable="yes">Exit</property>
+                <property name="visible">True</property>
+                <property name="app_paintable">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="hexpand">False</property>
+                <property name="vexpand">False</property>
+                <style>
+                  <class name="button"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="pack_type">end</property>
+                <property name="position">6</property>
               </packing>
             </child>
             <child>
