@@ -323,7 +323,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 	}
 	exitCreateRoom := exitCreateRoomUn.(*gtk.Button)
 	exitCreateRoom.Connect("clicked", func() {
-		createRoomPopup.Close()
+		createRoomPopup.SetVisible(false)
 	})
 
 
@@ -384,7 +384,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 			defer file.Close()
 			file.Write(yamlPlay)
 			readYamlFile(Name)
-			createPopup.Close()
+			createPopup.SetVisible(false)
 			inspect.SetText("Playerfile "+Name+" overwritten")
 			//get the values of the player and do the thing
 		}else {
@@ -400,7 +400,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 			defer file.Close()
 			file.Write(yamlPlay)
 			readYamlFile(Name)
-			createPopup.Close()
+			createPopup.SetVisible(false)
 			inspect.SetText("Playerfile "+Name+" created")
 			//get the values of the player and do the thing
 		}
@@ -413,7 +413,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 	cancelCreatePlayer := cancelCreatePlayerUn.(*gtk.Button)
 	cancelCreatePlayer.Connect("clicked", func () {
 		//cancel the thingy
-		createPopup.Close()
+		createPopup.SetVisible(false)
 	})
 
 	sendUn, err := twoBuilder.GetObject("Send")
