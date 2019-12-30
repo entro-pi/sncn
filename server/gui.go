@@ -742,6 +742,14 @@ func fillWorld(world map[string]Space, twoBuilder *gtk.Builder) {
 						panic(err)
 					}
 					fmt.Println("Left click on : "+ val)
+					fmt.Println("Bringing up status window for room : "+ val)
+					statusRoomUn, err := twoBuilder.GetObject("statusRoom")
+					if err != nil {
+						panic(err)
+					}
+					statusRoom := statusRoomUn.(*gtk.Window)
+					mappedWorld := populateWorld()
+					setStatusRoom(statusRoom, twoBuilder, mappedWorld[val])
 				}
 				if keyEvent.ButtonVal() == 2 {
 					val, err := butt.GetLabel()
@@ -756,6 +764,14 @@ func fillWorld(world map[string]Space, twoBuilder *gtk.Builder) {
 						panic(err)
 					}
 					fmt.Println("Right click on : "+ val)
+					fmt.Println("Bringing up status window for room : "+ val)
+					statusRoomUn, err := twoBuilder.GetObject("statusRoom")
+					if err != nil {
+						panic(err)
+					}
+					statusRoom := statusRoomUn.(*gtk.Window)
+					mappedWorld := populateWorld()
+					setStatusRoom(statusRoom, twoBuilder, mappedWorld[val])
 				}
 			})
 		}
@@ -1277,6 +1293,101 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 
 }
 
+func setStatusRoom(window *gtk.Window, twoBuilder *gtk.Builder, room Space) {
+	exitUn, err := twoBuilder.GetObject("exitCreateRoom1")
+	createRoomUn, err := twoBuilder.GetObject("createRoomCreate1")
+	exit := exitUn.(*gtk.Button)
+	createRoom := createRoomUn.(*gtk.Button)
+	exit.Connect("clicked", func () {
+		window.SetVisible(false)
+	})
+	createRoom.Connect("clicked", func() {
+		window.SetVisible(true)
+		window.Show()
+
+	})
+	entryVnumUn, err := twoBuilder.GetObject("entryVnum1")
+//	applyVnumUn, err := twoBuilder.GetObject("applyVnum1")
+	entryDescUn, err := twoBuilder.GetObject("entryDesc1")
+//	applyDescUn, err := twoBuilder.GetObject("applyDesc1")
+	entryVnum := entryVnumUn.(*gtk.Entry)
+	entryDesc := entryDescUn.(*gtk.Entry)
+
+	NorthUn, err := twoBuilder.GetObject("North1")
+	SouthUn, err := twoBuilder.GetObject("South1")
+	EastUn, err := twoBuilder.GetObject("East1")
+	WestUn, err := twoBuilder.GetObject("West1")
+	NorthWestUn, err := twoBuilder.GetObject("NorthWest1")
+	NorthEastUn, err := twoBuilder.GetObject("NorthEast1")
+	SouthWestUn, err := twoBuilder.GetObject("SouthWest1")
+	SouthEastUn, err := twoBuilder.GetObject("SouthEast1")
+	NorthEntUn, err := twoBuilder.GetObject("NEntry1")
+	SouthEntUn, err := twoBuilder.GetObject("SEntry1")
+	EastEntUn, err := twoBuilder.GetObject("EEntry1")
+	WestEntUn, err := twoBuilder.GetObject("WEntry1")
+	NWEntUn, err := twoBuilder.GetObject("NWEntry1")
+	NEEntUn, err := twoBuilder.GetObject("NEEntry1")
+	SWEntUn, err := twoBuilder.GetObject("SWEntry1")
+	SEEntUn, err := twoBuilder.GetObject("SEEntry1")
+//	applyExitUn, err := twoBuilder.GetObject("applyExit1")
+//	applySpecExitUn, err := twoBuilder.GetObject("applySpecExit1")
+	if err != nil {
+		panic(err)
+	}
+	North := NorthUn.(*gtk.CheckButton)
+	South := SouthUn.(*gtk.CheckButton)
+	East := EastUn.(*gtk.CheckButton)
+	West := WestUn.(*gtk.CheckButton)
+	NorthWest := NorthWestUn.(*gtk.CheckButton)
+	NorthEast := NorthEastUn.(*gtk.CheckButton)
+	SouthWest := SouthWestUn.(*gtk.CheckButton)
+	SouthEast := SouthEastUn.(*gtk.CheckButton)
+	NEnt := NorthEntUn.(*gtk.Entry)
+	SEnt := SouthEntUn.(*gtk.Entry)
+	EEnt := EastEntUn.(*gtk.Entry)
+	WEnt := WestEntUn.(*gtk.Entry)
+	NEEnt := NEEntUn.(*gtk.Entry)
+	NWEnt := NWEntUn.(*gtk.Entry)
+	SEEnt := SEEntUn.(*gtk.Entry)
+	SWEnt := SWEntUn.(*gtk.Entry)
+	for _, val := range room.ExitRooms {
+		if val.Exits.North > 1 {
+			North.SetActive(true)
+			NEnt.SetText(strconv.Itoa(val.Exits.North))
+		}
+		if val.Exits.South > 1 {
+			South.SetActive(true)
+			SEnt.SetText(strconv.Itoa(val.Exits.South))
+		}
+		if val.Exits.East > 1 {
+			East.SetActive(true)
+			EEnt.SetText(strconv.Itoa(val.Exits.East))
+		}
+		if val.Exits.West > 1 {
+			West.SetActive(true)
+			WEnt.SetText(strconv.Itoa(val.Exits.West))
+		}
+		if val.Exits.NorthEast > 1 {
+			NorthEast.SetActive(true)
+			NEEnt.SetText(strconv.Itoa(val.Exits.NorthEast))
+		}
+		if val.Exits.NorthWest > 1 {
+			NorthWest.SetActive(true)
+			NWEnt.SetText(strconv.Itoa(val.Exits.NorthWest))
+		}
+		if val.Exits.SouthEast > 1 {
+			SouthEast.SetActive(true)
+			SEEnt.SetText(strconv.Itoa(val.Exits.SouthEast))
+		}
+		if val.Exits.SouthWest > 1 {
+			SouthWest.SetActive(true)
+			SWEnt.SetText(strconv.Itoa(val.Exits.SouthWest))
+		}
+		entryVnum.SetText(val.Vnums)
+		entryDesc.SetText(val.Desc)
+	}
+	window.ShowAll()
+}
 
 func LaunchGUI(fileChange chan bool, world map[string]Space, pList []Player) {
     // Create Gtk Application, change appID to your application domain name reversed.
@@ -1301,15 +1412,6 @@ func LaunchGUI(fileChange chan bool, world map[string]Space, pList []Player) {
 	if err == nil {
 	//	loginTitle, err := twoBuilder.GetObject("loginTitle")
 	//	passTitle, err := twoBuilder.GetObject("passTitle")
-		view, err := twoBuilder.GetObject("syn-ack")
-		if err != nil {
-			panic(err)
-		}
-		drawField := view.(*gtk.TextView)
-		draw, err := drawField.GetBuffer()
-		if err != nil {
-			panic(err)
-		}
 		yesButton, err := twoBuilder.GetObject("b1")
 		if err != nil {
 			panic(err)
@@ -1324,17 +1426,12 @@ func LaunchGUI(fileChange chan bool, world map[string]Space, pList []Player) {
 		}
 		no := noButton.(*gtk.Button)
 		no.Connect("clicked", func (btn *gtk.Button) {
-			user, pass := getUserPass(twoBuilder)
-			userCaps := strings.ToUpper(user)
-			draw.SetText(userCaps+"-ACK")
-			fmt.Print(pass)
+			//user, pass := getUserPass(twoBuilder)
 			fmt.Println("b2 clicked")
-			if len(userCaps) > 3 && len(pass) > 3 {
-        		        play := InitPlayer(user, pass)
-				whoList := who(play.Name)
-	                	go func() { actOn(play, fileChange, whoList)}()
-				launch(play, application, twoBuilder, world, pList)
-			}
+		        play := InitPlayer("admin", "ducksizedhorse")
+			whoList := who(play.Name)
+                	go func() { actOn(play, fileChange, whoList)}()
+			launch(play, application, twoBuilder, world, pList)
 		})
 
 

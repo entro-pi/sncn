@@ -19,6 +19,11 @@
 
 }
 
+.loginLabel {
+	color: rgb(200, 0, 0);
+
+}
+
 .GonB {
 	font: 18px courier new;
 	border: 0em;
