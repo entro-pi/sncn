@@ -82,7 +82,7 @@ func register(twoBuilder *gtk.Builder) {
 		fmt.Println("Register login")
 	})
         registerWindow.ShowAll()
-	registerWindow.GrabFocus()
+//	registerWindow.GrabFocus()
 
 }
 
