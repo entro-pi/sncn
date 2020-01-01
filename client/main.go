@@ -31,7 +31,7 @@ func walkRooms(root Space) map[string]Space {
                 qnode := queue.Front()
 
                 for id, room := range qnode.Value.(Space).ExitRooms {
-                        if _, ok := visited[id]; !ok {
+                        if _, ok := visited[room.Vnums]; !ok {
                                 var queueRoom Space
                                 roomFile, err := os.Open("../pot/zones/"+room.Vnums+".yaml")
                                 if err != nil {

@@ -140,6 +140,11 @@ type Space struct{
 	ExitRooms map[string]Space
 	Altered bool
 }
+type MapPosition struct {
+	X int
+	Y int
+	Vnum string
+}
 type Exit struct {
 	North int
 	South int

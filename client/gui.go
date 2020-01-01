@@ -1403,19 +1403,21 @@ func assembleBroadButtonWithMessage(name string, message string, twoBuilder *gtk
 }
 
 func reWalkRooms(root Space, twoBuilder *gtk.Builder, play Player, mapBox *gtk.Box, mapGrid *gtk.Grid) {
-	rootPos := 0
-	rootClicked := false
-	numCol := 7
-	numRow := 10//TODO
-	boxMap := make([]*gtk.Button, numCol*numRow)
+//	rootPos := 0
+//	rootClicked := false
+//	numCol := 7
+//	numRow := 10//TODO
+//	boxMap := make([]*gtk.Button, numCol*numRow)
 	mappedWorld := walkRooms(root)
-	for i := 0;i < numRow;i++ {
-		mapGrid.RemoveRow(0)
-	}
-	mapBox.Add(mapGrid)
-	col := 1
-	row := 1
-	for i := 0;i < numCol * numRow;i++ {
+	fmt.Println("mappedWorld")
+	fmt.Println(mappedWorld)
+//	for i := 0;i < numRow;i++ {
+//		mapGrid.RemoveRow(0)
+//	}
+//	mapBox.Add(mapGrid)
+//	col := 1
+//	row := 1
+/*	for i := 0;i < numCol * numRow;i++ {
 		roomButton, err := gtk.ButtonNewWithLabel("0000")
 		if err != nil {
 			panic(err)
@@ -1430,7 +1432,64 @@ func reWalkRooms(root Space, twoBuilder *gtk.Builder, play Player, mapBox *gtk.B
 		}else {
 			col++
 		}
+	}*/
+	count := 1
+	var enum []string
+	enum = append(enum, "North")
+	enum = append(enum, "South")
+	enum = append(enum, "East")
+	enum = append(enum, "West")
+	enum = append(enum, "NorthEast")
+	enum = append(enum, "NorthWest")
+	enum = append(enum, "SouthWest")
+	enum = append(enum, "SouthEast")
+	mapping := make(map[string]*MapPosition, 12*8)
+	xCount := 1
+	yCount := 1
+	visited := make(map[string]bool, 1)
+	for _, val := range mappedWorld {
+
+		if !visited[val.Vnums] {
+			for _, dir := range enum {
+					if dir == "North" && val.ExitMap[dir] > 1 {
+						fmt.Println(dir)
+						fmt.Println(val.ExitMap[dir])
+						yCount++
+						var currentPos MapPosition
+						mapping[val.Vnums] = &currentPos
+						mapping[val.Vnums].X = xCount
+						mapping[val.Vnums].Y = yCount
+						yMap := mapping[val.Vnums].X
+						xMap := mapping[val.Vnums].Y
+						fmt.Println(val.Vnums)
+						fmt.Println(xMap)
+						fmt.Println(yMap)
+						count++
+						fmt.Println(mapping[strconv.Itoa(val.ExitMap[dir])])
+					}
+					if dir == "East" && val.ExitMap[dir] > 1 {
+						fmt.Println(dir)
+						fmt.Println(val.ExitMap[dir])
+						xCount++
+						var currentPos MapPosition
+						mapping[val.Vnums] = &currentPos
+						mapping[val.Vnums].X = xCount
+						mapping[val.Vnums].Y = yCount
+						yMap := mapping[val.Vnums].X
+						xMap := mapping[val.Vnums].Y
+						fmt.Println(val.Vnums)
+						fmt.Println(xMap)
+						fmt.Println(yMap)
+						fmt.Println(mapping[strconv.Itoa(val.ExitMap[dir])])
+					}
+			}
+		}
+		visited[val.Vnums] = true
 	}
+	fmt.Println("Northernmost is possibly")
+	fmt.Println(count)
+/*
+
 	for i := 0;i < len(boxMap)-2;i++ {
 		if i == (len(boxMap) / 2) {
 			rootPos = i-4
@@ -1627,7 +1686,7 @@ func reWalkRooms(root Space, twoBuilder *gtk.Builder, play Player, mapBox *gtk.B
                         })
 
 		}
-	}
+	}*/
 	mapBox.ShowAll()
 	fmt.Println("Showing all")
 
