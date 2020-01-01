@@ -68,6 +68,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 	exit.Connect("clicked", func () {
 		os.Exit(1)
 	})
+
 	createRoomPopupUn, err := twoBuilder.GetObject("createRoom")
 	if err != nil {
 		panic(err)
@@ -287,6 +288,38 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder, 
 		applyExitSpec := applyExitSpecUn.(*gtk.CheckButton)
 		if applyExitSpec.GetActive() {
 			fmt.Println("Make special exit yaml")
+		}
+		applyXYCreateUn, err := twoBuilder.GetObject("applyXYCreate")
+		if err != nil {
+			panic(err)
+		}
+		applyXYCreate := applyXYCreateUn.(*gtk.CheckButton)
+		xPos, yPos := 0, 0
+		if applyXYCreate.GetActive() {
+				yPosCreateUn, err := twoBuilder.GetObject("yPosCreate")
+				if err != nil {
+					panic(err)
+				}
+				xPosCreateUn, err := twoBuilder.GetObject("xPosCreate")
+				if err != nil {
+					panic(err)
+				}
+				yPosCreate := yPosCreateUn.(*gtk.Entry)
+				xPosCreate := xPosCreateUn.(*gtk.Entry)
+				yPosS, err := yPosCreate.GetText()
+				xPosS, err := xPosCreate.GetText()
+				if len(yPosS) >= 1 && len(xPosS) >= 1 {
+					yPos, err = strconv.Atoi(yPosS)
+					xPos, err = strconv.Atoi(xPosS)
+					if err != nil {
+						panic(err)
+					}
+				}
+				if err != nil {
+					panic(err)
+				}
+				newRoom.MapPos.X = xPos
+				newRoom.MapPos.Y = yPos
 		}
 		roomYaml, err := yaml.Marshal(newRoom)
 		if err != nil {
@@ -1408,6 +1441,39 @@ func setStatusRoom(window *gtk.Window, twoBuilder *gtk.Builder, room Space) {
 		SouthWest.SetActive(false)
 		SWEnt.SetText("")
 	}
+	applyXYStatusUn, err := twoBuilder.GetObject("applyXYStatus")
+	if err != nil {
+		panic(err)
+	}
+	applyXYStatus := applyXYStatusUn.(*gtk.CheckButton)
+	xPos, yPos := 0, 0
+	if applyXYStatus.GetActive() {
+			yPosStatusUn, err := twoBuilder.GetObject("yPosStatus")
+			if err != nil {
+				panic(err)
+			}
+			xPosStatusUn, err := twoBuilder.GetObject("xPosStatus")
+			if err != nil {
+				panic(err)
+			}
+			yPosStatus := yPosStatusUn.(*gtk.Entry)
+			xPosStatus := xPosStatusUn.(*gtk.Entry)
+			yPosS, err := yPosStatus.GetText()
+			xPosS, err := xPosStatus.GetText()
+			if len(yPosS) >= 1 && len(xPosS) >= 1 {
+				yPos, err = strconv.Atoi(yPosS)
+				xPos, err = strconv.Atoi(xPosS)
+				if err != nil {
+					panic(err)
+				}
+			}
+			if err != nil {
+				panic(err)
+			}
+			room.MapPos.X = xPos
+			room.MapPos.Y = yPos
+	}
+
 	entryVnum.SetText(room.Vnums)
 	entryDesc.SetText(room.Desc)
 	window.ShowAll()

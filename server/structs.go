@@ -127,6 +127,7 @@ type Space struct{
 	Room dngn.Room
 	Vnums string
 	Zone string
+	MapPos MapPosition
 	RoomPos []int
 	RoomMap [][]int
 	Vnum int
@@ -139,6 +140,11 @@ type Space struct{
 	ExitMap map[string]int
 	ExitRooms map[string]Space
 	Altered bool
+}
+type MapPosition struct {
+	X int
+	Y int
+	Vnum string
 }
 type Exit struct {
 	North int
