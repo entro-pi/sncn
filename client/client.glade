@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.36.0 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <!-- interface-css-provider-path design.css -->
@@ -15,9 +15,6 @@
   <object class="GtkListStore" id="icons"/>
   <object class="GtkWindow" id="color_swatches">
     <property name="can_focus">False</property>
-    <child>
-      <placeholder/>
-    </child>
     <child>
       <object class="GtkGrid">
         <property name="visible">True</property>
@@ -76,6 +73,9 @@
         </child>
       </object>
     </child>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
   </object>
   <object class="GtkListStore" id="liststore1"/>
   <object class="GtkListStore" id="liststore2"/>
@@ -88,9 +88,6 @@
     <property name="resizable">False</property>
     <property name="window_position">center</property>
     <property name="decorated">False</property>
-    <child>
-      <placeholder/>
-    </child>
     <child>
       <object class="GtkBox" id="mainBox">
         <property name="visible">True</property>
@@ -862,41 +859,8 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
-                                  <object class="GtkButton" id="zoomOut">
-                                    <property name="label" translatable="yes">zoomOut</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="zoomIn">
-                                    <property name="label" translatable="yes">zoomIn</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="statsUp">
-                                    <property name="label" translatable="yes">statsUp</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="statsDown">
-                                    <property name="label" translatable="yes">statsDown</property>
+                                  <object class="GtkButton" id="killSwitch">
+                                    <property name="label" translatable="yes">button</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
@@ -917,8 +881,41 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="killSwitch">
-                                    <property name="label" translatable="yes">button</property>
+                                  <object class="GtkButton" id="statsDown">
+                                    <property name="label" translatable="yes">statsDown</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="statsUp">
+                                    <property name="label" translatable="yes">statsUp</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="zoomIn">
+                                    <property name="label" translatable="yes">zoomIn</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="zoomOut">
+                                    <property name="label" translatable="yes">zoomOut</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
@@ -995,6 +992,9 @@
           <class name="glow"/>
         </style>
       </object>
+    </child>
+    <child type="titlebar">
+      <placeholder/>
     </child>
   </object>
   <object class="GtkPopover" id="broadRight">
@@ -1132,9 +1132,6 @@
     <property name="gravity">center</property>
     <property name="show_menubar">False</property>
     <child>
-      <placeholder/>
-    </child>
-    <child>
       <object class="GtkAspectFrame">
         <property name="width_request">50</property>
         <property name="visible">True</property>
@@ -1199,6 +1196,9 @@
                 <property name="wrap_mode">word-char</property>
                 <property name="track_visited_links">False</property>
                 <property name="yalign">0.5</property>
+                <style>
+                  <class name="gOnB"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -1234,6 +1234,9 @@
                 <property name="wrap_mode">word-char</property>
                 <property name="track_visited_links">False</property>
                 <property name="yalign">0.5</property>
+                <style>
+                  <class name="gOnB"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -1303,7 +1306,13 @@
             </child>
           </object>
         </child>
+        <style>
+          <class name="header"/>
+        </style>
       </object>
+    </child>
+    <child type="titlebar">
+      <placeholder/>
     </child>
     <style>
       <class name="syncro"/>
@@ -1325,9 +1334,6 @@
     <property name="gravity">center</property>
     <property name="attached_to">mainwindow</property>
     <child>
-      <placeholder/>
-    </child>
-    <child>
       <object class="GtkAspectFrame">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -1345,6 +1351,8 @@
                 <property name="label" translatable="yes">SNOWCRASH.NETWORK</property>
                 <style>
                   <class name="splash"/>
+                  <class name="footer"/>
+                  <class name="gOnB"/>
                 </style>
               </object>
               <packing>
@@ -1442,8 +1450,12 @@
         </child>
         <style>
           <class name="splash"/>
+          <class name="header"/>
         </style>
       </object>
+    </child>
+    <child type="titlebar">
+      <placeholder/>
     </child>
   </object>
   <object class="GtkTextTagTable" id="texttagtable1">

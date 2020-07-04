@@ -109,7 +109,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	logMain := logMainUn.(*gtk.Label)
 
 	logMain.SetText("Connection interrupted.\nLock destination and engage to view.")
-	logMain.AddTickCallback(round, uintptr(unsafe.Pointer(&play)))
+	
 
 	zoomInUn, err := twoBuilder.GetObject("zoomIn")
 	if err != nil {
@@ -313,7 +313,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 					panic(err)
 				}
 				mapRight := mapRightUn.(*gtk.Popover)
-				if keyEvent.ButtonVal() == 1 {
+				if keyEvent.Button() == gdk.BUTTON_PRIMARY {
                                         val, err := butt.GetLabel()
                                         if err != nil {
                                                 panic(err)
@@ -321,7 +321,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 					mapRight.SetVisible(false)
                                         fmt.Println("Left click on : "+ val)
                                 }
-                                if keyEvent.ButtonVal() == 2 {
+                                if keyEvent.Button() == gdk.BUTTON_MIDDLE {
                                         val, err := butt.GetLabel()
                                         if err != nil {
                                                 panic(err)
@@ -329,7 +329,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
                                         fmt.Println("Middle click on : "+ val)
 					mapRight.SetVisible(false)
                                 }
-                                if keyEvent.ButtonVal() == 3 {
+                                if keyEvent.Button() == gdk.BUTTON_SECONDARY {
                                         val, err := butt.GetLabel()
                                         if err != nil {
                                                 panic(err)
@@ -605,7 +605,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	}
 	rezzGL := rezzGLUn.(*gtk.GLArea)
 	fmt.Println(rezzGL)
-	rezzGL.AddTickCallback(render, uintptr(0))
+	
 	rezzGL.SetAutoRender(true)
 	rezzGL.Connect("create-context", func (area *gtk.GLArea) {
 		gl.Init()
@@ -621,7 +621,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	techGL := techGLUn.(*gtk.GLArea)
-	techGL.AddTickCallback(render, uintptr(0))
+	
 	techGL.SetAutoRender(true)
 	techGL.Connect("render", func (area *gtk.GLArea) {
 		GLCount = renderTech(play, GLCount)
@@ -631,7 +631,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	manaGL := manaGLUn.(*gtk.GLArea)
-	manaGL.AddTickCallback(render, uintptr(0))
+	
 	manaGL.SetAutoRender(true)
 	manaGL.Connect("render", func (area *gtk.GLArea) {
 		GLCount = renderMana(play, GLCount)
@@ -641,7 +641,7 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	sideGL := sideGLUn.(*gtk.GLArea)
-	sideGL.AddTickCallback(render, uintptr(0))
+
 	sideGL.Connect("render", func (area *gtk.GLArea) {
 		GLCount = renderMana(play, GLCount)
 	})
@@ -1088,15 +1088,15 @@ func fill(play Player, twoBuilder *gtk.Builder, tellorbroad bool)  {
 	for i := 0;i < len(buttonContainer);i++ {
                 buttonContainer[i].Connect("button-press-event", func (butt *gtk.Button, ev *gdk.Event) {
                         keyEvent := gdk.EventButtonNewFromEvent(ev)
-                        if keyEvent.ButtonVal() == 1 {
+                        if keyEvent.Button() == gdk.BUTTON_PRIMARY {
 				broadRight.SetVisible(false)
 				broadRight.Show()
                         }
-                        if keyEvent.ButtonVal() == 2 {
+                        if keyEvent.Button() == gdk.BUTTON_MIDDLE {
 				broadRight.SetVisible(false)
 				broadRight.Show()
                         }
-                        if keyEvent.ButtonVal() == 3 {
+                        if keyEvent.Button() == gdk.BUTTON_SECONDARY {
 				broadRight.SetRelativeTo(butt)
 				broadRight.SetVisible(true)
 				broadRight.Show()
