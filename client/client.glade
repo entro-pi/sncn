@@ -857,41 +857,8 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
-                                  <object class="GtkButton" id="zoomOut">
-                                    <property name="label" translatable="yes">zoomOut</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="zoomIn">
-                                    <property name="label" translatable="yes">zoomIn</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="statsUp">
-                                    <property name="label" translatable="yes">statsUp</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="statsDown">
-                                    <property name="label" translatable="yes">statsDown</property>
+                                  <object class="GtkButton" id="killSwitch">
+                                    <property name="label" translatable="yes">button</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
@@ -912,8 +879,41 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="killSwitch">
-                                    <property name="label" translatable="yes">button</property>
+                                  <object class="GtkButton" id="statsDown">
+                                    <property name="label" translatable="yes">statsDown</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="statsUp">
+                                    <property name="label" translatable="yes">statsUp</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="zoomIn">
+                                    <property name="label" translatable="yes">zoomIn</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="zoomOut">
+                                    <property name="label" translatable="yes">zoomOut</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
@@ -1125,6 +1125,8 @@
     <property name="vexpand">False</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="default_width">-1</property>
+    <property name="default_height">-1</property>
     <property name="decorated">False</property>
     <property name="gravity">center</property>
     <property name="show_menubar">False</property>
@@ -1192,13 +1194,12 @@
                 <property name="wrap">True</property>
                 <property name="wrap_mode">word-char</property>
                 <property name="track_visited_links">False</property>
-                <property name="yalign">0.5</property>
                 <style>
                   <class name="gOnB"/>
                 </style>
               </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">2</property>
               </packing>
@@ -1230,13 +1231,12 @@
                 <property name="wrap">True</property>
                 <property name="wrap_mode">word-char</property>
                 <property name="track_visited_links">False</property>
-                <property name="yalign">0.5</property>
                 <style>
                   <class name="gOnB"/>
                 </style>
               </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">4</property>
               </packing>
