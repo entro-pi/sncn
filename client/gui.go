@@ -570,6 +570,12 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	go fill(play, twoBuilder, false)
 	broad.Connect("clicked", func () {
 		small.Show()
+		go func() {
+
+			fill(play, twoBuilder, false)
+		}()	
+
+
 	})
 	windowWidget, err := wind.GetStyleContext()
 	if err != nil {
