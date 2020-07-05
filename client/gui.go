@@ -107,7 +107,11 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		panic(err)
 	}
 	logMain := logMainUn.(*gtk.Label)
-
+	logStyle, err := logMain.GetStyleContext()
+	if err != nil {
+		panic(err)
+	}
+	logStyle.AddClass("gOnG")
 	logMain.SetText("Connection interrupted.\nLock destination and engage to view.")
 	
 
@@ -384,7 +388,14 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 		}
 		spinner := spinUn.(*gtk.Spinner)
 		spinner.Start()
-		posting.ShowAll()
+	
+		go func() {
+
+			fill(play, twoBuilder, false)
+			spinner.Stop()
+			posting.ShowAll()
+		}()	
+
 	})
 	inputMainUn, err := twoBuilder.GetObject("inputMain")
 	if err != nil {
@@ -483,6 +494,9 @@ func launch(play Player, application *gtk.Application, twoBuilder *gtk.Builder) 
 	hpCtx.AddClass("button")
 	techCtx.AddClass("button")
 	manaCtx.AddClass("button")
+	hpCtx.AddClass("gOnB")
+	techCtx.AddClass("gOnB")
+	manaCtx.AddClass("gOnB")
 	prompt.Add(hpText)
 	prompt.Add(techText)
 	prompt.Add(manaText)

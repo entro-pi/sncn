@@ -561,6 +561,7 @@ func actOn(play Player, fileChange chan bool, whoList []string) {
 
 				}
 			}
+		watch(play, fileChange) 
 		}()
 		<-forever
 	}
